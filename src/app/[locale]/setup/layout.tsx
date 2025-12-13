@@ -3,7 +3,7 @@
  * Minimal layout for the setup wizard - no header, sidebar, or footer
  */
 
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from 'next-themes';
 
 export default function SetupLayout({
   children,
