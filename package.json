@@ -6,6 +6,7 @@
     "node": ">=20.19.0"
   },
   "scripts": {
+    "predev": "tsx scripts/setup/ensure-env.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

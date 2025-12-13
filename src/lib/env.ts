@@ -4,20 +4,47 @@
  * SECURITY: Validates required environment variables at startup
  * to prevent runtime crashes from missing configuration.
  *
+ * In development mode, allows placeholder values to enable the setup wizard.
  * Import this file in your app's entry point to validate on startup.
  */
 
 import { z } from 'zod';
 
+const isDev = process.env.NODE_ENV !== 'production';
+
+// Placeholder values that indicate the user hasn't configured the env yet
+const DATABASE_URL_PLACEHOLDERS = [
+  'postgresql://user:password@localhost:5432/shipkit',
+  'postgresql://user:password@localhost:5432/db',
+  '',
+];
+
+/**
+ * Check if DATABASE_URL is a placeholder value (not yet configured)
+ */
+export function isDatabasePlaceholder(): boolean {
+  const dbUrl = process.env.DATABASE_URL || '';
+  return (
+    DATABASE_URL_PLACEHOLDERS.includes(dbUrl) ||
+    dbUrl.includes('user:password') ||
+    !dbUrl
+  );
+}
+
 /**
  * Schema for required environment variables
+ * In development, we're more lenient to allow the setup wizard to load
  */
 const envSchema = z.object({
-  // Database
-  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  // Database - in dev, allow placeholder values so setup wizard can load
+  DATABASE_URL: isDev
+    ? z.string().min(1, 'DATABASE_URL is required').or(z.literal(''))
+    : z.string().min(1, 'DATABASE_URL is required'),
 
-  // Authentication
-  AUTH_SECRET: z.string().min(32, 'AUTH_SECRET must be at least 32 characters'),
+  // Authentication - in dev, allow empty if not yet configured
+  AUTH_SECRET: isDev
+    ? z.string().min(1).optional().or(z.literal(''))
+    : z.string().min(32, 'AUTH_SECRET must be at least 32 characters'),
   NEXTAUTH_URL: z.string().url().optional(),
 
   // Security (required in production)
