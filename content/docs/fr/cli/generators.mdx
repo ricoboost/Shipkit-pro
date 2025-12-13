@@ -1,0 +1,226 @@
+---
+title: Générateurs de Code
+description: Générez des pages, routes API et composants avec les meilleures pratiques intégrées.
+---
+
+# Générateurs de Code
+
+ShipKit inclut des générateurs qui créent du code suivant les conventions du projet. Chaque générateur crée des fichiers avec TypeScript, des imports appropriés et le support i18n.
+
+## Générateur de Pages
+
+Créez de nouvelles pages avec des fichiers de traduction i18n automatiques :
+
+```bash
+npm run generate:page
+```
+
+### Mode Interactif
+
+Le générateur demande :
+
+1. **Nom de la page** - ex., `analytics`, `team-settings`
+2. **Groupe de route** - `(dashboard)`, `(admin)`, `(marketing)`, ou aucun
+3. **Type de page** - Composant client ou composant serveur
+
+### Mode Ligne de Commande
+
+```bash
+npx tsx scripts/generators/generate-page.ts \
+  --name analytics \
+  --group dashboard \
+  --type server
+```
+
+### Ce qu'il Crée
+
+Pour une page nommée `analytics` dans le groupe dashboard :
+
+```
+src/app/[locale]/(dashboard)/analytics/
+├── page.tsx              # Composant de page
+└── loading.tsx           # État de chargement
+
+src/i18n/messages/
+├── en.json               # Traductions anglaises (mis à jour)
+├── es.json               # Traductions espagnoles (mis à jour)
+├── fr.json               # Traductions françaises (mis à jour)
+├── de.json               # Traductions allemandes (mis à jour)
+├── pt.json               # Traductions portugaises (mis à jour)
+├── ja.json               # Traductions japonaises (mis à jour)
+└── zh.json               # Traductions chinoises (mis à jour)
+```
+
+### Exemple de Page Générée
+
+```tsx
+import { getTranslations } from 'next-intl/server';
+
+export default async function AnalyticsPage() {
+  const t = await getTranslations('analytics');
+
+  return (
+    <div className="container py-6">
+      <h1 className="text-3xl font-bold">{t('title')}</h1>
+      <p className="text-muted-foreground">{t('description')}</p>
+    </div>
+  );
+}
+```
+
+## Générateur d'API
+
+Créez des routes API avec validation et gestion des erreurs :
+
+```bash
+npm run generate:api
+```
+
+### Mode Interactif
+
+Le générateur demande :
+
+1. **Nom de la route** - ex., `analytics`, `team/members`
+2. **Méthodes HTTP** - GET, POST, PUT, DELETE, PATCH
+
+### Mode Ligne de Commande
+
+```bash
+npx tsx scripts/generators/generate-api.ts \
+  --name analytics \
+  --methods GET,POST
+```
+
+### Ce qu'il Crée
+
+Pour une route API nommée `analytics` :
+
+```
+src/app/api/analytics/
+└── route.ts              # Gestionnaire de route API
+```
+
+### Exemple d'API Générée
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+const analyticsSchema = z.object({
+  // Définissez votre schéma ici
+});
+
+export async function GET(request: NextRequest) {
+  try {
+    // Votre logique GET ici
+    return NextResponse.json({ data: [] });
+  } catch (error) {
+    console.error('[API] GET /api/analytics error:', error);
+    return NextResponse.json(
+      { error: 'Erreur interne du serveur' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const validated = analyticsSchema.parse(body);
+
+    // Votre logique POST ici
+    return NextResponse.json({ success: true }, { status: 201 });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Validation échouée', details: error.errors },
+        { status: 400 }
+      );
+    }
+    console.error('[API] POST /api/analytics error:', error);
+    return NextResponse.json(
+      { error: 'Erreur interne du serveur' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## Générateur de Composants
+
+Créez des composants réutilisables avec des props TypeScript :
+
+```bash
+npm run generate:component
+```
+
+### Mode Interactif
+
+Le générateur demande :
+
+1. **Nom du composant** - ex., `DataCard`, `UserAvatar`
+2. **Type de composant** - Client ou Serveur
+3. **Répertoire** - `ui`, `layout`, `features`, ou personnalisé
+
+### Mode Ligne de Commande
+
+```bash
+npx tsx scripts/generators/generate-component.ts \
+  --name DataCard \
+  --type client \
+  --dir features
+```
+
+### Ce qu'il Crée
+
+Pour un composant nommé `DataCard` :
+
+```
+src/components/features/
+└── data-card.tsx         # Fichier du composant
+```
+
+### Exemple de Composant Généré
+
+```tsx
+'use client';
+
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+
+interface DataCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  // Ajoutez vos props ici
+}
+
+export function DataCard({ className, ...props }: DataCardProps) {
+  return (
+    <div
+      className={cn(
+        'rounded-lg border bg-card p-4 text-card-foreground shadow-sm',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+```
+
+## Intégration Claude Code
+
+Si vous utilisez Claude Code, vous pouvez utiliser des commandes slash à la place :
+
+```
+/scaffold-page analytics --group dashboard
+/scaffold-api analytics --methods GET,POST
+/scaffold-component DataCard --type client
+```
+
+Ces commandes fournissent une guidance interactive et peuvent générer les fichiers directement.
+
+## Meilleures Pratiques
+
+1. **Utilisez des noms significatifs** - Les noms doivent décrire la fonctionnalité ou le but
+2. **Suivez les conventions** - Utilisez kebab-case pour les fichiers, PascalCase pour les composants
+3. **Ajoutez les traductions immédiatement** - Le générateur de pages gère cela automatiquement
+4. **Incluez les états de chargement** - Les pages générées incluent `loading.tsx`
+5. **Ajoutez la validation** - Les routes API incluent la validation Zod par défaut

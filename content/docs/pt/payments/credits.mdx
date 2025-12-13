@@ -1,0 +1,86 @@
+---
+title: Sistema de Créditos
+description: Faturamento por uso com o sistema de créditos ShipKit.
+---
+
+# Sistema de Créditos
+
+ShipKit inclui um sistema de créditos flexível para faturamento por uso.
+
+## Visão Geral
+
+Os créditos permitem:
+- Cobrar por gerações de IA
+- Limitar chamadas de API
+- Oferecer preços pague conforme usar
+- Incluir com assinaturas
+
+## Uso
+
+```typescript
+import { credits } from '@/lib/payments/credits';
+
+// Verificar saldo
+const balance = await credits.getBalance(userId);
+
+// Deduzir créditos
+const success = await credits.deduct(userId, 10, 'Mensagem de chat IA');
+
+if (!success) {
+  throw new Error('Créditos insuficientes');
+}
+
+// Adicionar créditos
+await credits.add(userId, 100, 'Recarga de assinatura mensal');
+
+// Obter histórico
+const history = await credits.getHistory(userId);
+```
+
+## Rotas de API
+
+```typescript
+// GET /api/credits/balance
+const balance = await fetch('/api/credits/balance');
+
+// GET /api/credits/history
+const history = await fetch('/api/credits/history');
+```
+
+## Esquema de Banco de Dados
+
+```prisma
+model CreditTransaction {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int      // positivo = adicionar, negativo = deduzir
+  reason    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+```
+
+## Integração com Assinatura
+
+Recarga automática de créditos na renovação de assinatura:
+
+```typescript
+// No manipulador de webhook
+case 'invoice.paid':
+  const plan = getPlanFromSubscription(event.data);
+  await credits.add(userId, plan.monthlyCredits, 'Recarga mensal');
+  break;
+```
+
+## Custos de Créditos
+
+Configurar custos em seu aplicativo:
+
+```typescript
+export const creditCosts = {
+  'ai-chat': 1,
+  'ai-image': 10,
+  'api-call': 1,
+  'export': 5,
+};
+```

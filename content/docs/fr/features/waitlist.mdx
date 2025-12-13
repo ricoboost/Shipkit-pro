@@ -1,0 +1,285 @@
+---
+title: Liste d'Attente et Constructeur de Pages
+description: Créez et personnalisez des pages de liste d'attente avec un éditeur visuel glisser-déposer.
+---
+
+# Liste d'Attente et Constructeur de Pages
+
+ShipKit inclut un système complet de gestion de liste d'attente avec un constructeur de pages visuel pour créer des pages d'atterrissage personnalisées.
+
+## Aperçu
+
+La fonctionnalité de liste d'attente vous permet de :
+
+- Collecter des inscriptions par email avant le lancement
+- Créer de belles pages d'atterrissage sans code
+- Gérer les abonnés avec des tags et une segmentation
+- Exporter les données des abonnés en CSV
+- Activer le mode liste d'attente pour rediriger les nouvelles inscriptions
+
+## Activer le Mode Liste d'Attente
+
+### Via le Panneau d'Administration
+
+1. Allez dans **Admin** > **Paramètres** > **Flags de Fonctionnalités**
+2. Activez **Mode Liste d'Attente**
+3. Les nouveaux utilisateurs seront redirigés vers la page de liste d'attente au lieu de l'inscription
+
+### Via le Code
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// Activer le mode liste d'attente
+await admin.toggleFeatureFlag('waitlistMode', true);
+
+// Désactiver le mode liste d'attente
+await admin.toggleFeatureFlag('waitlistMode', false);
+```
+
+## Constructeur de Pages
+
+Le constructeur de pages visuel vous permet de créer des pages de liste d'attente personnalisées.
+
+### Accéder à l'Éditeur
+
+Naviguez vers **Admin** > **Liste d'Attente** > **Modifier la Page** ou allez directement à `/admin/waitlist/editor`.
+
+### Sections Disponibles
+
+#### Section Hero
+
+La section d'en-tête principale avec :
+- Texte de badge (ex. "Bientôt Disponible")
+- Titre et sous-titre
+- Formulaire d'inscription ou bouton CTA
+- Image hero optionnelle
+
+#### Grille de Fonctionnalités (Bento)
+
+Présentez les fonctionnalités de votre produit :
+- Mises en page à 2, 3 ou 4 colonnes
+- Cartes de fonctionnalités avec icônes
+- Arrière-plans personnalisables
+
+#### Comment Ça Marche
+
+Explication du processus étape par étape :
+- Étapes numérotées avec icônes
+- Mise en page horizontale ou verticale
+- Titres et descriptions personnalisés
+
+#### Pied de Page
+
+Pied de page avec :
+- Texte de copyright
+- Liens de navigation
+- Icônes de réseaux sociaux
+
+### Personnaliser les Sections
+
+Cliquez sur n'importe quelle section pour la sélectionner, puis utilisez la barre latérale droite pour :
+
+- **Arrière-plan** : Définir une couleur unie, un dégradé ou une image
+- **Espacement** : Ajuster le padding et les marges
+- **Visibilité** : Masquer/afficher les sections
+- **CSS Personnalisé** : Ajouter des styles personnalisés
+
+### Modifier le Contenu
+
+- Cliquez sur le texte pour modifier en ligne
+- Modifiez la typographie (taille, poids, couleur, alignement)
+- Mettez à jour le texte et les styles des boutons
+- Personnalisez le placeholder du formulaire et le message de succès
+
+### Publier
+
+1. Cliquez sur **Enregistrer** pour persister vos modifications
+2. Cliquez sur **Publier** pour rendre la page publique
+3. Prévisualisez votre page sur `/waitlist`
+
+### Raccourcis Clavier
+
+| Raccourci | Action |
+|-----------|--------|
+| `Cmd/Ctrl + S` | Enregistrer les modifications |
+| `Cmd/Ctrl + Z` | Annuler |
+| `Cmd/Ctrl + Shift + Z` | Rétablir |
+
+## Gestion des Abonnés
+
+### Tableau de Bord Admin
+
+Accédez au tableau de bord des abonnés dans **Admin** > **Liste d'Attente**.
+
+#### Statistiques
+
+- **Total des Abonnés** : Toutes les inscriptions
+- **Confirmés** : Emails vérifiés
+- **En Attente** : En attente de confirmation
+- **Désabonnés** : Ont choisi de se désinscrire
+- **Cette Semaine** : Inscriptions récentes
+
+#### Filtrage
+
+Filtrez les abonnés par :
+- Recherche par email
+- Statut (confirmé, en attente, désabonné)
+- Source (waitlist, footer, popup)
+- Tags
+
+### Opérations en Masse
+
+Sélectionnez plusieurs abonnés pour :
+- Ajouter des tags pour la segmentation
+- Supprimer de la liste
+- Exporter en CSV
+
+### Exporter les Données
+
+Cliquez sur **Exporter CSV** pour télécharger les données des abonnés. Options :
+- Exporter tous les abonnés
+- Exporter uniquement les confirmés
+- Filtrer par tag
+
+## Formulaire d'Inscription
+
+### Formulaire Intégré
+
+Ajoutez le formulaire d'inscription n'importe où :
+
+```tsx
+import { SubscribeFormBlock } from '@/components/waitlist-builder/blocks/subscribe-form-block';
+
+<SubscribeFormBlock
+  block={{
+    id: 'form-1',
+    type: 'subscribe-form',
+    placeholder: 'Entrez votre email',
+    buttonText: 'Rejoindre la Liste',
+    successMessage: 'Merci de vous être inscrit !',
+    source: 'homepage',
+    tags: ['early-access'],
+  }}
+/>
+```
+
+### Options de Configuration
+
+| Propriété | Type | Description |
+|-----------|------|-------------|
+| `placeholder` | string | Texte placeholder de l'input |
+| `buttonText` | string | Texte du bouton d'envoi |
+| `successMessage` | string | Message affiché après l'inscription |
+| `source` | string | Identifiant de source de suivi |
+| `tags` | string[] | Tags à appliquer à l'abonné |
+| `layout` | 'inline' \| 'stacked' | Mise en page du formulaire |
+
+## Référence API
+
+### S'abonner
+
+```typescript
+POST /api/newsletter/subscribe
+
+// Requête
+{
+  "email": "utilisateur@exemple.com",
+  "source": "waitlist",
+  "tags": ["early-access"]
+}
+
+// Réponse
+{
+  "success": true,
+  "isNew": true,
+  "confirmed": false
+}
+```
+
+### Se Désabonner
+
+```typescript
+POST /api/newsletter/unsubscribe
+
+// Requête
+{ "email": "utilisateur@exemple.com" }
+
+// Réponse
+{ "success": true }
+```
+
+### Désabonnement en Un Clic
+
+```typescript
+GET /api/newsletter/unsubscribe?token=xxx
+```
+
+## Fonctions de Bibliothèque
+
+```typescript
+import { newsletter } from '@/lib/newsletter';
+
+// S'abonner avec source et tags
+await newsletter.subscribe({
+  email: 'utilisateur@exemple.com',
+  source: 'waitlist',
+  tags: ['early-access', 'beta'],
+});
+
+// Obtenir les statistiques des abonnés
+const stats = await newsletter.getStats();
+// { total, confirmed, pending, unsubscribed, thisWeek }
+
+// Ajouter des tags à un abonné
+await newsletter.addTags('utilisateur@exemple.com', ['vip']);
+
+// Exporter en CSV
+const csv = await newsletter.exportCSV({
+  confirmedOnly: true,
+  tag: 'early-access',
+});
+```
+
+## Schéma de Base de Données
+
+```prisma
+model NewsletterSubscriber {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  confirmed     Boolean   @default(false)
+  confirmToken  String?   @unique
+  source        String?   // "waitlist", "footer", "popup"
+  tags          String[]  @default([])
+  unsubscribedAt DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+model WaitlistPage {
+  id              String   @id @default("default")
+  config          Json     // Configuration de la page
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+```
+
+## Variables d'Environnement
+
+Aucune variable d'environnement supplémentaire n'est requise. La liste d'attente utilise :
+
+- `DATABASE_URL` - Pour stocker les abonnés
+- `NEXT_PUBLIC_APP_URL` - Pour les liens de désabonnement
+- `RESEND_API_KEY` - (Optionnel) Pour les emails de confirmation
+- `EMAIL_FROM` - (Optionnel) Adresse de l'expéditeur
+
+## Bonnes Pratiques
+
+1. **Utilisez des tags significatifs** - Segmentez les abonnés par source, intérêt ou campagne
+2. **Configurez les emails de confirmation** - Activez le double opt-in pour des listes de qualité
+3. **Personnalisez votre page** - Adaptez votre marque avec le constructeur de pages
+4. **Surveillez les statistiques** - Suivez les taux de conversion et l'engagement
+5. **Exportez régulièrement** - Sauvegardez votre liste d'abonnés

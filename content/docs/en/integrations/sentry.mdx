@@ -1,0 +1,408 @@
+---
+title: Sentry Integration
+description: Error tracking and performance monitoring with Sentry.
+---
+
+# Sentry Integration
+
+Sentry provides real-time error tracking and performance monitoring for your ShipKit application.
+
+---
+
+## Setup
+
+### 1. Create Sentry Account
+
+1. Go to [sentry.io](https://sentry.io) and create an account
+2. Create a new project (select Next.js)
+3. Copy your DSN from project settings
+
+---
+
+### 2. Install Sentry SDK
+
+```bash
+npx @sentry/wizard@latest -i nextjs
+```
+
+This automatically:
+- Installs `@sentry/nextjs`
+- Creates `sentry.client.config.ts`
+- Creates `sentry.server.config.ts`
+- Creates `sentry.edge.config.ts`
+- Updates `next.config.ts`
+
+---
+
+### 3. Environment Variables
+
+```bash
+# .env
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+SENTRY_ORG=your-organization
+SENTRY_PROJECT=your-project
+
+# For source maps upload (optional but recommended)
+SENTRY_AUTH_TOKEN=sntrys_xxx
+```
+
+---
+
+## Configuration
+
+### Client-Side Configuration
+
+```typescript
+// sentry.client.config.ts
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+
+  // Performance monitoring
+  tracesSampleRate: 1.0, // Capture 100% of transactions in dev
+  // In production, use a lower rate:
+  // tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+
+  // Session replay
+  replaysSessionSampleRate: 0.1, // 10% of sessions
+  replaysOnErrorSampleRate: 1.0, // 100% of sessions with errors
+
+  integrations: [
+    Sentry.replayIntegration({
+      maskAllText: true,
+      blockAllMedia: true,
+    }),
+  ],
+
+  // Filter events
+  beforeSend(event) {
+    // Don't send events in development
+    if (process.env.NODE_ENV === 'development') {
+      return null;
+    }
+    return event;
+  },
+});
+```
+
+---
+
+### Server-Side Configuration
+
+```typescript
+// sentry.server.config.ts
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  tracesSampleRate: 1.0,
+
+  // Capture unhandled exceptions
+  integrations: [
+    Sentry.prismaIntegration(), // If using Prisma
+  ],
+});
+```
+
+---
+
+### Edge Configuration
+
+```typescript
+// sentry.edge.config.ts
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
+```
+
+---
+
+## Error Tracking
+
+### Automatic Error Capture
+
+Sentry automatically captures:
+- Unhandled exceptions
+- Promise rejections
+- React component errors
+
+---
+
+### Manual Error Capture
+
+```typescript
+import * as Sentry from '@sentry/nextjs';
+
+// Capture exception
+try {
+  await riskyOperation();
+} catch (error) {
+  Sentry.captureException(error, {
+    tags: {
+      feature: 'payments',
+    },
+    extra: {
+      userId: user.id,
+      orderId: order.id,
+    },
+  });
+}
+
+// Capture message
+Sentry.captureMessage('User reached credit limit', {
+  level: 'warning',
+  tags: { feature: 'credits' },
+});
+```
+
+---
+
+### Error Boundary
+
+```tsx
+// src/components/error-boundary.tsx
+'use client';
+
+import * as Sentry from '@sentry/nextjs';
+import { useEffect } from 'react';
+
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
+  return (
+    <html>
+      <body>
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <h2>Something went wrong!</h2>
+          <button onClick={() => reset()}>Try again</button>
+        </div>
+      </body>
+    </html>
+  );
+}
+```
+
+---
+
+## Performance Monitoring
+
+### Automatic Instrumentation
+
+Sentry automatically tracks:
+- Page load times
+- API route performance
+- Database queries (with Prisma integration)
+
+---
+
+### Custom Transactions
+
+```typescript
+import * as Sentry from '@sentry/nextjs';
+
+async function processOrder(orderId: string) {
+  return Sentry.startSpan(
+    {
+      name: 'processOrder',
+      op: 'function',
+    },
+    async (span) => {
+      // Nested spans
+      await Sentry.startSpan(
+        { name: 'validateOrder', op: 'validation' },
+        async () => {
+          await validateOrder(orderId);
+        }
+      );
+
+      await Sentry.startSpan(
+        { name: 'chargePayment', op: 'payment' },
+        async () => {
+          await chargePayment(orderId);
+        }
+      );
+
+      span?.setStatus({ code: 1 }); // OK
+    }
+  );
+}
+```
+
+---
+
+## User Context
+
+### Set User Information
+
+```typescript
+import * as Sentry from '@sentry/nextjs';
+
+// When user logs in
+Sentry.setUser({
+  id: user.id,
+  email: user.email,
+  username: user.name,
+});
+
+// When user logs out
+Sentry.setUser(null);
+```
+
+---
+
+### Add Custom Context
+
+```typescript
+Sentry.setContext('subscription', {
+  plan: user.subscription.plan,
+  status: user.subscription.status,
+  creditsRemaining: user.credits,
+});
+
+Sentry.setTag('tenant', organization.id);
+```
+
+---
+
+## Source Maps
+
+### Enable Source Maps Upload
+
+```typescript
+// next.config.ts
+import { withSentryConfig } from '@sentry/nextjs';
+
+const nextConfig = {
+  // Your config
+};
+
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  silent: true, // Suppress logs
+  hideSourceMaps: true, // Hide source maps from browser
+
+  // Upload source maps during build
+  widenClientFileUpload: true,
+});
+```
+
+---
+
+## Alerts & Notifications
+
+### Configure Alerts in Sentry
+
+1. Go to Alerts → Create Alert
+2. Set conditions:
+   - New errors
+   - Error frequency spike
+   - Performance degradation
+
+3. Set notifications:
+   - Email
+   - Slack
+   - PagerDuty
+
+---
+
+### Alert Examples
+
+**High Error Rate:**
+```
+When: Number of events > 100 in 1 hour
+Then: Send Slack notification
+```
+
+**Slow API Routes:**
+```
+When: p95 latency > 3000ms for /api/*
+Then: Send email to team
+```
+
+---
+
+## Best Practices
+
+### 1. Filter Sensitive Data
+
+```typescript
+Sentry.init({
+  beforeSend(event) {
+    // Remove sensitive data
+    if (event.request?.headers) {
+      delete event.request.headers['authorization'];
+      delete event.request.headers['cookie'];
+    }
+    return event;
+  },
+});
+```
+
+---
+
+### 2. Use Environments
+
+```typescript
+Sentry.init({
+  environment: process.env.NODE_ENV, // 'development', 'staging', 'production'
+});
+```
+
+---
+
+### 3. Set Release Version
+
+```typescript
+Sentry.init({
+  release: process.env.VERCEL_GIT_COMMIT_SHA || 'development',
+});
+```
+
+---
+
+## Troubleshooting
+
+### Events Not Appearing
+
+1. Check DSN is correct
+2. Verify `beforeSend` isn't filtering events
+3. Check browser console for errors
+4. Ensure Sentry is initialized before errors occur
+
+---
+
+### Source Maps Not Working
+
+1. Verify `SENTRY_AUTH_TOKEN` is set
+2. Check build output for upload errors
+3. Ensure source maps are generated:
+
+```typescript
+// next.config.ts
+const nextConfig = {
+  productionBrowserSourceMaps: true,
+};
+```
+
+---
+
+## Resources
+
+- [Sentry Next.js Documentation](https://docs.sentry.io/platforms/javascript/guides/nextjs/)
+- [Sentry Dashboard](https://sentry.io)
+- [Performance Monitoring](https://docs.sentry.io/product/performance/)

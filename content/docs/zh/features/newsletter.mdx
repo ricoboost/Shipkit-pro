@@ -1,0 +1,68 @@
+---
+title: 新闻通讯
+description: 具有双重确认的电子邮件新闻通讯系统。
+---
+
+# 新闻通讯系统
+
+ShipKit包含一个集成Resend的新闻通讯系统。
+
+## 配置
+
+```bash
+RESEND_API_KEY="re_xxx"
+EMAIL_FROM="noreply@yourdomain.com"
+```
+
+## 功能
+
+- 双重确认订阅
+- 退订处理
+- 电子邮件模板
+- 订阅者管理
+
+## API路由
+
+### 订阅
+
+```typescript
+POST /api/newsletter/subscribe
+{ "email": "user@example.com" }
+```
+
+### 确认
+
+```typescript
+POST /api/newsletter/confirm
+{ "token": "confirmation-token" }
+```
+
+### 退订
+
+```typescript
+POST /api/newsletter/unsubscribe
+{ "token": "unsubscribe-token" }
+```
+
+## 使用方法
+
+```typescript
+import { newsletter } from '@/lib/newsletter';
+
+// Subscribe
+await newsletter.subscribe('user@example.com');
+
+// Send to all subscribers
+await newsletter.sendToAll({
+  subject: 'Monthly Update',
+  html: '<h1>Hello!</h1>',
+});
+```
+
+## 订阅表单组件
+
+```tsx
+import { SubscribeForm } from '@/components/newsletter/subscribe-form';
+
+<SubscribeForm />
+```

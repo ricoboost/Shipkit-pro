@@ -1,0 +1,87 @@
+---
+title: 介绍
+description: 欢迎使用 ShipKit - 具有可视化主题、多供应商支持和内置 AI 功能的 AI 原生 SaaS 样板。
+---
+
+# 欢迎使用 ShipKit
+
+ShipKit 是一个使用 Next.js 16 构建的综合 SaaS 入门套件，旨在帮助您以完全的灵活性更快地启动 SaaS 产品。
+
+## 主要功能
+
+<Cards>
+  <Card title="多身份验证供应商" href="/docs/authentication/overview">
+    通过单个环境变量在 NextAuth.js、Supabase Auth 或 Better Auth 之间切换。
+  </Card>
+  <Card title="多支付供应商" href="/docs/payments/overview">
+    支持 Stripe、LemonSqueezy 和 Polar - 选择最适合您业务的方案。
+  </Card>
+  <Card title="AI 集成" href="/docs/ai/overview">
+    内置 AI 功能，支持 OpenRouter 和 Vercel AI SDK。
+  </Card>
+  <Card title="可视化主题" href="/docs/features/theming">
+    使用我们的可视化主题构建器自定义应用程序的外观。
+  </Card>
+</Cards>
+
+## 为什么选择 ShipKit？
+
+### 现有样板的问题
+
+- 将您锁定在单一身份验证供应商
+- 将您锁定在单一支付供应商
+- 没有准备好的 AI 集成
+- 文档静态且过时
+- 没有自定义选项，外观相同
+
+### ShipKit 解决方案
+
+具有完全灵活性的 SaaS 入门套件：
+
+- **供应商无关:** 通过一个环境变量切换身份验证、支付或 AI
+- **AI 原生:** Claude Code / Cursor 立即理解代码库
+- **自文档化:** 功能更改时文档自动更新
+- **可视化定制:** 通过 UI 配置设计系统
+- **演示就绪:** 可立即展示的工作 AI 组件
+
+## 快速开始
+
+```bash
+# 克隆仓库
+git clone https://github.com/your-org/shipkit.git
+
+# 安装依赖
+npm install
+
+# 复制环境变量
+cp .env.example .env
+
+# 启动开发服务器
+npm run dev
+```
+
+然后打开 [http://localhost:3000](http://localhost:3000) 查看您的应用程序。
+
+## 技术栈
+
+| 技术 | 用途 |
+|------|------|
+| Next.js 16 | 带 Turbopack 的 React 框架 |
+| TypeScript | 类型安全 |
+| Tailwind CSS 4 | 样式 |
+| Prisma | 数据库 ORM |
+| shadcn/ui | UI 组件 |
+
+## 下一步
+
+<Cards>
+  <Card title="安装" href="/docs/getting-started/installation">
+    几分钟内启动并运行 ShipKit。
+  </Card>
+  <Card title="配置" href="/docs/getting-started/configuration">
+    配置您的环境变量和供应商。
+  </Card>
+  <Card title="项目结构" href="/docs/getting-started/project-structure">
+    了解代码库布局。
+  </Card>
+</Cards>

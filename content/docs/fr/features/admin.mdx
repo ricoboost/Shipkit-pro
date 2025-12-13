@@ -1,0 +1,74 @@
+---
+title: Tableau de Bord Admin
+description: Panneau d'administration intégré pour gérer votre SaaS.
+---
+
+# Tableau de Bord Admin
+
+ShipKit comprend un tableau de bord d'administration complet à `/admin`.
+
+## Fonctionnalités
+
+- Gestion des utilisateurs
+- Analyses des abonnements
+- Suivi des revenus
+- Paramètres système
+
+## Contrôle d'Accès
+
+Seuls les utilisateurs avec `role: ADMIN` peuvent accéder au tableau de bord d'administration.
+
+## Pages
+
+### Vue d'Ensemble (`/admin`)
+
+- Total des utilisateurs
+- Abonnements actifs
+- Revenus mensuels
+- Inscriptions récentes
+
+### Utilisateurs (`/admin/users`)
+
+- Lister tous les utilisateurs
+- Rechercher et filtrer
+- Modifier les détails utilisateur
+- Gérer les rôles
+
+### Analyses (`/admin/analytics`)
+
+- Graphiques de croissance des utilisateurs
+- Tendances des revenus
+- Taux de conversion
+- Analyse du taux d'abandon
+
+### Abonnements (`/admin/subscriptions`)
+
+- Abonnements actifs
+- Distribution des plans
+- Suivi du MRR
+- Annulations
+
+## Utilisation
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// Get dashboard stats
+const stats = await admin.getStats();
+
+// List users with pagination
+const users = await admin.getUsers({ page: 1, limit: 20 });
+
+// Update user
+await admin.updateUser(userId, { role: 'ADMIN' });
+```
+
+## Composants
+
+```tsx
+import { AdminStats } from '@/components/admin/stats';
+import { UsersTable } from '@/components/admin/users-table';
+
+<AdminStats />
+<UsersTable users={users} />
+```

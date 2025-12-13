@@ -1,0 +1,81 @@
+---
+title: AI API
+description: AIエンドポイントのAPIリファレンス。
+---
+
+# AI API
+
+## エンドポイント
+
+### チャット補完
+
+ストリーミングサポート付きのAIチャット応答を生成します。
+
+```http
+POST /api/ai/chat
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "messages": [
+    { "role": "system", "content": "You are a helpful assistant." },
+    { "role": "user", "content": "Hello!" }
+  ],
+  "model": "gpt-4-turbo",
+  "stream": true
+}
+```
+
+**レスポンス (ストリーミングなし):**
+
+```json
+{
+  "content": "Hello! How can I help you today?",
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 10,
+    "total_tokens": 30
+  }
+}
+```
+
+**レスポンス (ストリーミングあり):**
+
+Server-Sent Eventsストリーム:
+
+```
+data: {"content": "Hello"}
+data: {"content": "!"}
+data: {"content": " How"}
+data: {"content": " can"}
+data: [DONE]
+```
+
+## パラメータ
+
+| パラメータ | 型 | 説明 |
+|-----------|-----|------|
+| messages | array | 会話メッセージ |
+| model | string | モデルID（オプション）|
+| stream | boolean | ストリーミングを有効化 |
+| temperature | number | ランダム性 (0-2) |
+| maxTokens | number | 最大レスポンス長 |
+
+## 利用可能なモデル
+
+| モデル | プロバイダー |
+|--------|-------------|
+| gpt-4-turbo | OpenAI |
+| gpt-3.5-turbo | OpenAI |
+| claude-3-opus | Anthropic |
+| claude-3-sonnet | Anthropic |
+| gemini-pro | Google |
+
+## エラーコード
+
+| コード | 説明 |
+|--------|------|
+| 401 | 認証されていません |
+| 402 | クレジットが不足しています |
+| 429 | レート制限 |
+| 500 | AIプロバイダーエラー |

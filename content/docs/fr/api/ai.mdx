@@ -1,0 +1,81 @@
+---
+title: API IA
+description: Référence API pour les endpoints IA.
+---
+
+# API IA
+
+## Endpoints
+
+### Complétion de Chat
+
+Générer des réponses de chat IA avec support du streaming.
+
+```http
+POST /api/ai/chat
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "messages": [
+    { "role": "system", "content": "You are a helpful assistant." },
+    { "role": "user", "content": "Hello!" }
+  ],
+  "model": "gpt-4-turbo",
+  "stream": true
+}
+```
+
+**Réponse (sans streaming):**
+
+```json
+{
+  "content": "Hello! How can I help you today?",
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 10,
+    "total_tokens": 30
+  }
+}
+```
+
+**Réponse (avec streaming):**
+
+Flux d'événements envoyés par le serveur:
+
+```
+data: {"content": "Hello"}
+data: {"content": "!"}
+data: {"content": " How"}
+data: {"content": " can"}
+data: [DONE]
+```
+
+## Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| messages | array | Messages de conversation |
+| model | string | ID du modèle (optionnel) |
+| stream | boolean | Activer le streaming |
+| temperature | number | Aléatoire (0-2) |
+| maxTokens | number | Longueur maximale de réponse |
+
+## Modèles Disponibles
+
+| Modèle | Fournisseur |
+|--------|-------------|
+| gpt-4-turbo | OpenAI |
+| gpt-3.5-turbo | OpenAI |
+| claude-3-opus | Anthropic |
+| claude-3-sonnet | Anthropic |
+| gemini-pro | Google |
+
+## Codes d'Erreur
+
+| Code | Description |
+|------|-------------|
+| 401 | Non autorisé |
+| 402 | Crédits insuffisants |
+| 429 | Limite de débit |
+| 500 | Erreur du fournisseur IA |

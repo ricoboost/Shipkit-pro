@@ -1,0 +1,231 @@
+---
+title: AI提供商设置
+description: 使用OpenAI、Anthropic、Google AI或OpenRouter配置AI/LLM集成。
+---
+
+# AI提供商设置
+
+AI设置命令帮助您为ShipKit的AI功能配置AI/LLM提供商。
+
+## 快速开始
+
+```bash
+npm run setup:ai
+```
+
+## 支持的提供商
+
+### OpenAI
+
+GPT-4、GPT-3.5和嵌入模型。
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider openai
+```
+
+**必需：** `OPENAI_API_KEY`
+
+**可用模型：**
+- `gpt-4o` - 最强大，多模态
+- `gpt-4o-mini` - 快速且实惠
+- `gpt-4-turbo` - 上一代旗舰
+- `gpt-3.5-turbo` - 快速，适合简单任务
+
+**获取API密钥：** [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+
+### Anthropic
+
+Claude 3.5 Sonnet、Claude 3 Opus和其他Claude模型。
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider anthropic
+```
+
+**必需：** `ANTHROPIC_API_KEY`
+
+**可用模型：**
+- `claude-3-5-sonnet-20241022` - 速度和能力的最佳平衡
+- `claude-3-opus-20240229` - 复杂任务最强大
+- `claude-3-haiku-20240307` - 最快且最实惠
+
+**获取API密钥：** [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+
+### Google AI (Gemini)
+
+Gemini Pro、Gemini Flash和其他Google模型。
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider google
+```
+
+**必需：** `GOOGLE_GENERATIVE_AI_API_KEY`
+
+**可用模型：**
+- `gemini-1.5-pro` - 最强大
+- `gemini-1.5-flash` - 快速高效
+- `gemini-pro` - 上一代
+
+**获取API密钥：** [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+
+### OpenRouter
+
+通过一个API访问100多个模型。
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider openrouter
+```
+
+**必需：** `OPENROUTER_API_KEY`
+
+**可用模型：**
+- 所有OpenAI模型
+- 所有Anthropic模型
+- Meta Llama模型
+- Mistral模型
+- 以及更多
+
+**获取API密钥：** [openrouter.ai/keys](https://openrouter.ai/keys)
+
+## 设置执行的操作
+
+1. **提示选择提供商** - 选择您的AI提供商
+2. **更新`.env`** - 设置`AI_PROVIDER`变量
+3. **配置API密钥** - 帮助设置适当的密钥
+4. **验证格式** - 检查API密钥格式
+5. **显示可用模型** - 列出您可以使用的模型
+
+## 在应用程序中使用AI
+
+设置后，您可以在整个应用程序中使用AI SDK：
+
+### 基本聊天补全
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const response = await ai.chat({
+  model: 'gpt-4o',
+  messages: [
+    { role: 'system', content: '你是一个有帮助的助手。' },
+    { role: 'user', content: '你好！' }
+  ],
+});
+
+console.log(response.content);
+```
+
+### 流式响应
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const stream = await ai.chatStream({
+  model: 'claude-3-5-sonnet-20241022',
+  messages: [
+    { role: 'user', content: '写一个关于机器人的短篇故事。' }
+  ],
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk);
+}
+```
+
+### 文本嵌入
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const embedding = await ai.embed({
+  model: 'text-embedding-3-small',
+  input: '敏捷的棕色狐狸跳过懒惰的狗。',
+});
+
+console.log(embedding.vector);
+```
+
+## 测试您的设置
+
+访问`/ai-playground`的AI Playground来测试您的配置：
+
+1. 从下拉菜单中选择一个模型
+2. 输入一条消息
+3. 实时查看AI响应
+
+## 环境变量参考
+
+```bash
+# AI提供商选择
+AI_PROVIDER="openai"  # 或 "anthropic"、"google"、"openrouter"
+
+# OpenAI
+OPENAI_API_KEY="sk-..."
+
+# Anthropic
+ANTHROPIC_API_KEY="sk-ant-..."
+
+# Google AI
+GOOGLE_GENERATIVE_AI_API_KEY="..."
+
+# OpenRouter
+OPENROUTER_API_KEY="sk-or-..."
+```
+
+## 切换提供商
+
+要在AI提供商之间切换：
+
+1. 运行设置命令：
+   ```bash
+   npm run setup:ai
+   ```
+
+2. 选择您的新提供商
+
+3. 代码会自动使用配置的提供商：
+   ```typescript
+   // 这适用于任何提供商
+   const response = await ai.chat({
+     model: 'gpt-4o', // 或claude、gemini等
+     messages: [...]
+   });
+   ```
+
+## 成本考虑
+
+| 提供商 | 定价模式 |
+|--------|----------|
+| OpenAI | 按token计费（输入/输出） |
+| Anthropic | 按token计费（输入/输出） |
+| Google AI | 有免费额度，之后按token计费 |
+| OpenRouter | 按使用付费，因模型而异 |
+
+**成本管理提示：**
+- 对简单任务使用较小的模型
+- 为重复查询实现缓存
+- 设置`maxTokens`以限制响应长度
+- 使用流式传输以获得更好的用户体验而无额外成本
+
+## 故障排除
+
+### 「无效的API密钥」
+
+验证您的API密钥格式：
+- OpenAI：以`sk-`开头
+- Anthropic：以`sk-ant-`开头
+- OpenRouter：以`sk-or-`开头
+
+### 「找不到模型」
+
+检查模型名称是否完全匹配。模型名称区分大小写。
+
+### 「超出速率限制」
+
+您已达到API速率限制。解决方案：
+- 等待后重试
+- 升级您的API计划
+- 实现指数退避
+
+### 「配额不足」
+
+向您的AI提供商账户添加账单信息或信用额度。

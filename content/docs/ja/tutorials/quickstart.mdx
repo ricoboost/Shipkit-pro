@@ -1,0 +1,58 @@
+---
+title: 30分で最初のSaaSを構築する
+description: 認証、支払い、ユーザーダッシュボードを備えた動作するSaaSアプリケーションを作成するための完全なステップバイステップガイド。
+---
+
+# 30分で最初のSaaSを構築する
+
+このチュートリアルでは、ゼロから完全に機能するSaaSアプリケーションを作成します。
+
+## 前提条件
+
+- **Node.js 20+**がインストールされていること
+- **PostgreSQL**データベース
+- テストモードの**Stripeアカウント**
+
+## ステップ1: クローンとインストール
+
+```bash
+git clone https://github.com/your-org/shipkit my-saas
+cd my-saas
+npm install
+```
+
+## ステップ2: セットアップウィザードを実行
+
+```bash
+npm run setup
+```
+
+## ステップ3: Stripe製品を設定
+
+StripeダッシュボードでサブスクリプションProductを作成します。
+
+## ステップ4: データベースを初期化
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+## ステップ5: 開発サーバーを起動
+
+```bash
+npm run dev
+```
+
+アプリは[http://localhost:3000](http://localhost:3000)で実行されています！
+
+## 次のステップ
+
+<Cards>
+  <Card title="AI機能を追加" href="/docs/tutorials/ai-saas">
+    クレジットベースの課金でAI機能を統合します。
+  </Card>
+  <Card title="本番環境にデプロイ" href="/docs/tutorials/deploy-production">
+    Vercel、Railway、またはDockerでアプリを起動します。
+  </Card>
+</Cards>

@@ -1,0 +1,142 @@
+---
+title: Wartungsmodus
+description: Blockieren Sie vorübergehend den öffentlichen Zugang während Updates oder Wartungsarbeiten.
+---
+
+# Wartungsmodus
+
+ShipKit enthält eine Wartungsmodus-Funktion, die es Ihnen ermöglicht, den Zugang zu Ihrer Anwendung während Updates, Deployments oder kritischen Wartungsaufgaben vorübergehend zu blockieren.
+
+## Überblick
+
+Wenn der Wartungsmodus aktiviert ist:
+
+- Alle Nicht-Admin-Benutzer werden auf eine Wartungsseite weitergeleitet
+- Administratoren können weiterhin auf die gesamte Anwendung zugreifen
+- API-Routen bleiben für interne Operationen zugänglich
+- Ein Notfall-Bypass ist über Umgebungsvariable verfügbar
+
+## Wartungsmodus Aktivieren
+
+### Über das Admin-Panel
+
+1. Gehen Sie zu **Admin** > **Einstellungen** > **Feature Flags**
+2. Aktivieren Sie **Wartungsmodus**
+3. Alle Nicht-Admin-Besucher sehen sofort die Wartungsseite
+
+### Über API
+
+```typescript
+// Wartungsmodus aktivieren
+const response = await fetch('/api/admin/settings/flags', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ maintenanceMode: true }),
+});
+```
+
+### Über Datenbank
+
+```typescript
+import { db } from '@/lib/db';
+
+await db.appConfig.upsert({
+  where: { id: 'default' },
+  update: { maintenanceMode: true },
+  create: { id: 'default', maintenanceMode: true },
+});
+```
+
+## Funktionsweise
+
+### Middleware-Durchsetzung
+
+Die Middleware prüft bei jeder Anfrage den Wartungsmodus:
+
+```typescript
+// src/middleware.ts
+if (flags.maintenanceMode && !isAdmin) {
+  if (!shouldBypassMaintenance(pathname)) {
+    return NextResponse.redirect(new URL('/maintenance', request.url));
+  }
+}
+```
+
+### Bypass-Pfade
+
+Diese Pfade sind während der Wartung immer zugänglich:
+
+- `/maintenance` - Die Wartungsseite selbst
+- `/login` - Authentifizierungsseite (damit Admins sich anmelden können)
+- `/api/auth/*` - Auth-API-Routen
+- `/onboarding` - Ersteinrichtung (wenn kein Admin existiert)
+
+### Admin-Erkennung
+
+Der Admin-Status wird über ein Cookie (`shipkit-is-admin`) ermittelt, das bei der Anmeldung gesetzt wird.
+
+## Notfall-Wiederherstellung
+
+Wenn Sie versehentlich den Wartungsmodus aktivieren und nicht auf das Admin-Panel zugreifen können:
+
+### Option 1: Bypass über Umgebungsvariable
+
+Fügen Sie zu Ihrer `.env`-Datei hinzu:
+
+```bash
+BYPASS_MAINTENANCE=true
+```
+
+### Option 2: Direkte Datenbank-Aktualisierung
+
+```bash
+npx prisma db execute --stdin <<< "UPDATE app_config SET \"maintenanceMode\" = false WHERE id = 'default';"
+```
+
+### Option 3: Prisma Studio
+
+```bash
+npx prisma studio
+```
+
+Navigieren Sie zu `AppConfig` und setzen Sie `maintenanceMode` auf `false`.
+
+## Wartungsseite Anpassen
+
+### Seitenstandort
+
+```
+src/app/[locale]/maintenance/page.tsx
+```
+
+### Übersetzungen
+
+Der Text der Wartungsseite wird über den `maintenance`-Namespace übersetzt:
+
+```json
+{
+  "maintenance": {
+    "title": "Wartungsarbeiten",
+    "description": "Wir führen geplante Wartungsarbeiten durch.",
+    "checkBack": "Bitte schauen Sie bald wieder vorbei.",
+    "backToHome": "Zurück zur Startseite"
+  }
+}
+```
+
+## Best Practices
+
+1. **Benutzer im Voraus benachrichtigen** - Kündigen Sie geplante Wartungen an
+2. **Wartung kurz halten** - Minimieren Sie Benutzerunterbrechungen
+3. **Admin-Zugang zuerst testen** - Überprüfen Sie, dass Sie sich als Admin anmelden können
+4. **Wiederherstellungsplan haben** - Wissen Sie, wie `BYPASS_MAINTENANCE` verwendet wird
+5. **Staging zuerst verwenden** - Testen Sie den Wartungsmodus in Staging
+
+## Vergleich: Wartung vs Waitlist-Modus
+
+| Funktion | Wartungsmodus | Waitlist-Modus |
+|----------|---------------|----------------|
+| Blockiert bestehende Benutzer | Ja | Nein |
+| Blockiert neue Anmeldungen | Ja | Ja |
+| Admin-Bypass | Ja | Ja |
+| Anwendungsfall | Updates, Notfälle | Pre-Launch, kontrollierter Zugang |

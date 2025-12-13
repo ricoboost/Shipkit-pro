@@ -1,0 +1,98 @@
+---
+title: Organizações
+description: Gerenciamento de equipes multi-tenant no ShipKit.
+---
+
+# Organizações
+
+ShipKit inclui um sistema completo de gerenciamento de organizações/equipes.
+
+## Recursos
+
+- Criar e gerenciar organizações
+- Convidar membros da equipe
+- Controle de acesso baseado em funções
+- Faturamento no nível da organização
+
+## Modelo de Dados
+
+```prisma
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  members   OrganizationMember[]
+  invitations OrganizationInvitation[]
+  createdAt DateTime @default(now())
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  organizationId String
+  userId         String
+  role           MemberRole   @default(MEMBER)
+  organization   Organization @relation(...)
+  user           User         @relation(...)
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+```
+
+## Rotas da API
+
+### Criar Organização
+
+```typescript
+POST /api/organizations
+{ "name": "My Team", "slug": "my-team" }
+```
+
+### Listar Membros
+
+```typescript
+GET /api/organizations/:id/members
+```
+
+### Convidar Membro
+
+```typescript
+POST /api/organizations/:id/invitations
+{ "email": "user@example.com", "role": "MEMBER" }
+```
+
+### Aceitar Convite
+
+```typescript
+POST /api/invitations/:token
+```
+
+## Uso
+
+```typescript
+import { organizations } from '@/lib/organizations';
+
+// Create organization
+const org = await organizations.create({
+  name: 'My Team',
+  slug: 'my-team',
+  ownerId: user.id,
+});
+
+// Add member
+await organizations.addMember(org.id, userId, 'MEMBER');
+
+// Check permission
+const canEdit = await organizations.hasPermission(org.id, userId, 'edit');
+```
+
+## Componentes React
+
+```tsx
+import { OrganizationSwitcher } from '@/components/organizations';
+
+<OrganizationSwitcher />
+```

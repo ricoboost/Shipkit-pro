@@ -1,0 +1,128 @@
+---
+title: 组件概述
+description: ShipKit 的预构建、可自定义营销和 UI 组件综合库
+---
+
+# 组件概述
+
+ShipKit 包含一个全面的预构建、可自定义组件库,专为现代 SaaS 应用程序设计。所有组件都支持:
+
+- **色彩方案**: `primary`、`secondary`、`accent`、`muted`、`destructive`
+- **动画**: 可选的 Framer Motion 动画
+- **响应式设计**: 移动优先,完全响应式
+- **TypeScript**: 完整的类型安全和导出的接口
+
+## 营销组件
+
+使用我们的营销组件库构建精美的落地页:
+
+| 类别 | 变体 | 描述 |
+|----------|----------|-------------|
+| [Hero](/docs/components/hero) | 5 个变体 | 落地页头部区域 |
+| [CTA](/docs/components/cta) | 4 个变体 | 行动号召区域 |
+| [Features](/docs/components/features) | 6 个变体 | 功能展示 |
+| [Pricing](/docs/components/pricing) | 4 个变体 | 定价表和卡片 |
+| [Testimonials](/docs/components/testimonials) | 4 个变体 | 社会证明展示 |
+| [FAQ](/docs/components/faq) | 3 个变体 | 常见问题 |
+| [Problem/Solution](/docs/components/problem) | 3 个变体 | PAS 框架区域 |
+| [Comparison](/docs/components/comparison) | 2 个变体 | 竞品比较 |
+| [Stats](/docs/components/stats) | 3 个变体 | 指标和成就 |
+| [Logo Cloud](/docs/components/logos) | 3 个变体 | 客户/合作伙伴徽标 |
+| [Dividers](/docs/components/dividers) | 4 个变体 | 区域分隔符 |
+
+## UI 原语
+
+ShipKit 使用 [shadcn/ui](https://ui.shadcn.com) 作为 UI 组件的基础。所有原语都是完全可自定义的,并遵循 Radix UI 设计模式。
+
+查看 [UI 原语](/docs/components/ui-primitives) 文档获取完整列表。
+
+## 功能组件
+
+特定功能的专用组件:
+
+| 组件 | 描述 |
+|-----------|-------------|
+| [主题构建器](/docs/components/theme-builder) | 可视化主题自定义界面 |
+
+## 导入模式
+
+### 营销组件
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+import { CTASimple } from '@/components/marketing/cta/cta-simple';
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+```
+
+### UI 原语
+
+```tsx
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+```
+
+## 共享类型
+
+所有营销组件共享在 `@/components/marketing/types` 中定义的通用类型:
+
+```typescript
+export type ColorScheme = 'primary' | 'secondary' | 'accent' | 'muted' | 'destructive';
+
+export interface CTAButton {
+  label: string;
+  href: string;
+  variant?: 'default' | 'outline' | 'ghost';
+}
+
+export interface BaseMarketingProps {
+  className?: string;
+  colorScheme?: ColorScheme;
+}
+
+export interface FeatureItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+}
+```
+
+## 快速入门
+
+以下是构建完整落地页的方法:
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+import { CTASimple } from '@/components/marketing/cta/cta-simple';
+import { Zap, Shield, Rocket } from 'lucide-react';
+
+export default function LandingPage() {
+  return (
+    <>
+      <HeroCentered
+        title="Build SaaS Products Faster"
+        description="The complete starter kit for modern web applications"
+        primaryCTA={{ label: 'Get Started', href: '/register' }}
+        secondaryCTA={{ label: 'View Demo', href: '/demo' }}
+        badge="Now in v3.0"
+      />
+
+      <FeaturesGrid
+        title="Everything You Need"
+        features={[
+          { title: 'Fast', description: 'Built for speed', icon: <Zap /> },
+          { title: 'Secure', description: 'Enterprise security', icon: <Shield /> },
+          { title: 'Scalable', description: 'Grows with you', icon: <Rocket /> },
+        ]}
+      />
+
+      <CTASimple
+        title="Ready to Start?"
+        description="Join thousands of developers building with ShipKit"
+        primaryCTA={{ label: 'Start Free Trial', href: '/register' }}
+      />
+    </>
+  );
+}
+```

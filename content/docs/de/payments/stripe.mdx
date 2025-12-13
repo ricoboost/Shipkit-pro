@@ -1,0 +1,91 @@
+---
+title: Stripe
+description: Stripe-Zahlungen in ShipKit konfigurieren.
+---
+
+# Stripe-Einrichtung
+
+Stripe bietet volle Kontrolle über Zahlungen mit globaler Reichweite.
+
+## Konfiguration
+
+```bash
+PAYMENT_PROVIDER="stripe"
+STRIPE_SECRET_KEY="sk_test_xxx"
+STRIPE_PUBLISHABLE_KEY="pk_test_xxx"
+STRIPE_WEBHOOK_SECRET="whsec_xxx"
+```
+
+## Zugangsdaten Erhalten
+
+1. Konto erstellen auf [stripe.com](https://stripe.com)
+2. Gehe zu Developers > API Keys
+3. Öffentliche und geheime Schlüssel kopieren
+4. Webhook-Endpunkt erstellen für `https://ihredomain.com/api/payments/webhook`
+
+## Produkte Erstellen
+
+Im Stripe-Dashboard:
+
+1. Gehe zu Products
+2. Produkte für jeden Plan erstellen
+3. Wiederkehrende Preise hinzufügen (monatlich/jährlich)
+4. Preis-IDs in `src/config/plans.ts` kopieren
+
+## Implementierung
+
+```typescript
+// src/lib/payments/stripe.ts
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+export const stripeProvider: PaymentProvider = {
+  async createCheckout({ priceId, userId, successUrl, cancelUrl }) {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      client_reference_id: userId,
+    });
+
+    return { url: session.url!, sessionId: session.id };
+  },
+
+  async createPortalSession(customerId) {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings/billing`,
+    });
+    return session.url;
+  },
+
+  async handleWebhook(payload, signature) {
+    const event = stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+    return normalizeEvent(event);
+  },
+};
+```
+
+## Testen
+
+Stripe-Testkarten verwenden:
+
+- Erfolgreich: `4242 4242 4242 4242`
+- Ablehnung: `4000 0000 0000 0002`
+- 3D Secure: `4000 0025 0000 3155`
+
+## Webhook-Ereignisse
+
+Diese Ereignisse verarbeiten:
+
+- `checkout.session.completed` - Neues Abonnement
+- `customer.subscription.updated` - Planänderung
+- `customer.subscription.deleted` - Kündigung
+- `invoice.payment_failed` - Fehlgeschlagene Zahlung

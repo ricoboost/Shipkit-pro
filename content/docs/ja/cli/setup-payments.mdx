@@ -1,0 +1,194 @@
+---
+title: 決済セットアップ
+description: Stripe、Lemon Squeezy、またはPolarで決済処理を設定します。
+---
+
+# 決済セットアップ
+
+決済セットアップコマンドは、決済プロバイダーとWebhookエンドポイントの設定を支援します。
+
+## クイックスタート
+
+```bash
+npm run setup:payments
+```
+
+## サポートされているプロバイダー
+
+### Stripe
+
+サブスクリプション対応の業界標準決済処理。
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider stripe
+```
+
+**必須の環境変数：**
+- `STRIPE_SECRET_KEY` - シークレットキー（`sk_test_...`または`sk_live_...`）
+- `STRIPE_PUBLISHABLE_KEY` - 公開キー（`pk_test_...`または`pk_live_...`）
+- `STRIPE_WEBHOOK_SECRET` - Webhook署名シークレット（`whsec_...`）
+
+**オプション：**
+- `STRIPE_PRICE_ID_BASIC` - ベーシックプランの価格ID
+- `STRIPE_PRICE_ID_PRO` - プロプランの価格ID
+- `STRIPE_PRICE_ID_ENTERPRISE` - エンタープライズプランの価格ID
+
+### Lemon Squeezy
+
+自動税金処理付きオールインワン決済。
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider lemonsqueezy
+```
+
+**必須の環境変数：**
+- `LEMONSQUEEZY_API_KEY` - 設定からのAPIキー
+- `LEMONSQUEEZY_STORE_ID` - ストアID
+- `LEMONSQUEEZY_WEBHOOK_SECRET` - Webhook署名シークレット
+
+### Polar
+
+開発者向けオープンソースフレンドリーな決済。
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider polar
+```
+
+**必須の環境変数：**
+- `POLAR_ACCESS_TOKEN` - パーソナルアクセストークン
+- `POLAR_ORGANIZATION_ID` - 組織ID
+- `POLAR_WEBHOOK_SECRET` - Webhook署名シークレット
+
+### 決済なし
+
+決済セットアップを完全にスキップ：
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider none
+```
+
+## Stripeセットアップガイド
+
+### 1. Stripeアカウントの作成
+
+1. [stripe.com](https://stripe.com)でサインアップ
+2. ライブ決済用のアカウント確認を完了
+
+### 2. APIキーの取得
+
+1. **開発者 > APIキー**に移動
+2. **公開キー**と**シークレットキー**をコピー
+3. 開発にはテストキーを使用（`sk_test_...`、`pk_test_...`）
+
+### 3. 製品の作成
+
+1. StripeダッシュボードのD**製品**に移動
+2. 各プラン（ベーシック、プロ、エンタープライズ）の製品を作成
+3. 定期課金価格（月額/年額）を追加
+4. 各プランの**価格ID**をコピー
+
+### 4. Webhookのセットアップ
+
+#### ローカル開発
+
+Stripe CLIを使用してWebhookを転送：
+
+```bash
+# Stripe CLIをインストール
+brew install stripe/stripe-cli/stripe
+
+# Stripeにログイン
+stripe login
+
+# ローカルサーバーにWebhookを転送
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+Webhook署名シークレット（`whsec_...`）を`.env`にコピー。
+
+#### 本番環境
+
+1. **開発者 > Webhook**に移動
+2. エンドポイントを追加：`https://あなたのドメイン.com/api/webhooks/stripe`
+3. イベントを選択：
+   - `checkout.session.completed`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+   - `invoice.payment_succeeded`
+   - `invoice.payment_failed`
+4. 署名シークレットをコピー
+
+### 5. クイック製品作成
+
+Stripe CLIでテスト製品を作成：
+
+```bash
+# ベーシックプランを作成
+stripe products create \
+  --name="ベーシックプラン" \
+  --default-price-data.unit-amount=999 \
+  --default-price-data.currency=usd \
+  --default-price-data.recurring.interval=month
+
+# プロプランを作成
+stripe products create \
+  --name="プロプラン" \
+  --default-price-data.unit-amount=2999 \
+  --default-price-data.currency=usd \
+  --default-price-data.recurring.interval=month
+```
+
+## セットアップの動作
+
+1. **プロバイダーを選択** - Stripe、Lemon Squeezy、Polar、またはなしを選択
+2. **`.env`を更新** - `PAYMENTS_PROVIDER`変数を設定
+3. **資格情報を設定** - APIキーの設定を支援
+4. **WebhookURLを表示** - Webhook設定用のエンドポイントを提供
+
+## プロバイダーの切り替え
+
+環境変数`PAYMENTS_PROVIDER`がアクティブなプロバイダーを制御：
+
+```bash
+PAYMENTS_PROVIDER="stripe"  # または "lemonsqueezy" または "polar"
+```
+
+## 決済のテスト
+
+### Stripeテストカード
+
+| カード番号 | 説明 |
+|------------|------|
+| `4242 4242 4242 4242` | 決済成功 |
+| `4000 0000 0000 3220` | 3Dセキュア認証 |
+| `4000 0000 0000 9995` | 拒否 |
+
+任意の将来の有効期限日と任意の3桁のCVCを使用。
+
+### Webhookのテスト
+
+Stripe CLI実行中に、テストイベントをトリガー：
+
+```bash
+stripe trigger checkout.session.completed
+stripe trigger customer.subscription.created
+```
+
+## トラブルシューティング
+
+### 「Webhook署名検証に失敗」
+
+`STRIPE_WEBHOOK_SECRET`が以下と一致することを確認：
+- Stripe CLI出力（ローカル開発）
+- Webhookエンドポイント設定（本番環境）
+
+### 「価格が見つからない」
+
+`.env`の価格IDがStripeダッシュボードのIDと一致することを確認。
+
+### 「無効なAPIキー」
+
+正しいキータイプを使用していることを確認：
+- 開発用テストキー（`sk_test_...`）
+- 本番用ライブキー（`sk_live_...`）

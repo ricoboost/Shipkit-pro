@@ -1,0 +1,74 @@
+---
+title: Admin Dashboard
+description: Built-in admin panel for managing your SaaS.
+---
+
+# Admin Dashboard
+
+ShipKit includes a comprehensive admin dashboard at `/admin`.
+
+## Features
+
+- User management
+- Subscription analytics
+- Revenue tracking
+- System settings
+
+## Access Control
+
+Only users with `role: ADMIN` can access the admin dashboard.
+
+## Pages
+
+### Overview (`/admin`)
+
+- Total users
+- Active subscriptions
+- Monthly revenue
+- Recent signups
+
+### Users (`/admin/users`)
+
+- List all users
+- Search and filter
+- Edit user details
+- Manage roles
+
+### Analytics (`/admin/analytics`)
+
+- User growth charts
+- Revenue trends
+- Conversion rates
+- Churn analysis
+
+### Subscriptions (`/admin/subscriptions`)
+
+- Active subscriptions
+- Plan distribution
+- MRR tracking
+- Cancellations
+
+## Usage
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// Get dashboard stats
+const stats = await admin.getStats();
+
+// List users with pagination
+const users = await admin.getUsers({ page: 1, limit: 20 });
+
+// Update user
+await admin.updateUser(userId, { role: 'ADMIN' });
+```
+
+## Components
+
+```tsx
+import { AdminStats } from '@/components/admin/stats';
+import { UsersTable } from '@/components/admin/users-table';
+
+<AdminStats />
+<UsersTable users={users} />
+```

@@ -1,0 +1,231 @@
+---
+title: Configuração de Provedor de IA
+description: Configure a integração de IA/LLM com OpenAI, Anthropic, Google AI ou OpenRouter.
+---
+
+# Configuração de Provedor de IA
+
+O comando de configuração de IA ajuda você a configurar seu provedor de IA/LLM para os recursos de IA do ShipKit.
+
+## Início Rápido
+
+```bash
+npm run setup:ai
+```
+
+## Provedores Suportados
+
+### OpenAI
+
+Modelos GPT-4, GPT-3.5 e de embeddings.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider openai
+```
+
+**Obrigatório:** `OPENAI_API_KEY`
+
+**Modelos disponíveis:**
+- `gpt-4o` - Mais capaz, multimodal
+- `gpt-4o-mini` - Rápido e acessível
+- `gpt-4-turbo` - Carro-chefe da geração anterior
+- `gpt-3.5-turbo` - Rápido, bom para tarefas simples
+
+**Obter chave API:** [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+
+### Anthropic
+
+Claude 3.5 Sonnet, Claude 3 Opus e outros modelos Claude.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider anthropic
+```
+
+**Obrigatório:** `ANTHROPIC_API_KEY`
+
+**Modelos disponíveis:**
+- `claude-3-5-sonnet-20241022` - Melhor equilíbrio de velocidade e capacidade
+- `claude-3-opus-20240229` - Mais capaz para tarefas complexas
+- `claude-3-haiku-20240307` - Mais rápido e acessível
+
+**Obter chave API:** [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+
+### Google AI (Gemini)
+
+Gemini Pro, Gemini Flash e outros modelos do Google.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider google
+```
+
+**Obrigatório:** `GOOGLE_GENERATIVE_AI_API_KEY`
+
+**Modelos disponíveis:**
+- `gemini-1.5-pro` - Mais capaz
+- `gemini-1.5-flash` - Rápido e eficiente
+- `gemini-pro` - Geração anterior
+
+**Obter chave API:** [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+
+### OpenRouter
+
+Acesso a mais de 100 modelos através de uma API.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider openrouter
+```
+
+**Obrigatório:** `OPENROUTER_API_KEY`
+
+**Modelos disponíveis:**
+- Todos os modelos da OpenAI
+- Todos os modelos da Anthropic
+- Modelos Meta Llama
+- Modelos Mistral
+- E muitos mais
+
+**Obter chave API:** [openrouter.ai/keys](https://openrouter.ai/keys)
+
+## O Que a Configuração Faz
+
+1. **Solicita o provedor** - Selecione seu provedor de IA
+2. **Atualiza `.env`** - Define a variável `AI_PROVIDER`
+3. **Configura a chave API** - Ajuda a definir a chave apropriada
+4. **Valida o formato** - Verifica o formato da chave API
+5. **Mostra modelos disponíveis** - Lista os modelos que você pode usar
+
+## Usar IA na Sua Aplicação
+
+Após a configuração, você pode usar o SDK de IA em toda sua aplicação:
+
+### Conclusão de Chat Básica
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const response = await ai.chat({
+  model: 'gpt-4o',
+  messages: [
+    { role: 'system', content: 'Você é um assistente útil.' },
+    { role: 'user', content: 'Olá!' }
+  ],
+});
+
+console.log(response.content);
+```
+
+### Respostas em Streaming
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const stream = await ai.chatStream({
+  model: 'claude-3-5-sonnet-20241022',
+  messages: [
+    { role: 'user', content: 'Escreva uma história curta sobre um robô.' }
+  ],
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk);
+}
+```
+
+### Embeddings de Texto
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const embedding = await ai.embed({
+  model: 'text-embedding-3-small',
+  input: 'A rápida raposa marrom pula sobre o cachorro preguiçoso.',
+});
+
+console.log(embedding.vector);
+```
+
+## Testar Sua Configuração
+
+Visite o AI Playground em `/ai-playground` para testar sua configuração:
+
+1. Selecione um modelo no menu suspenso
+2. Digite uma mensagem
+3. Veja a resposta da IA em tempo real
+
+## Referência de Variáveis de Ambiente
+
+```bash
+# Seleção de provedor de IA
+AI_PROVIDER="openai"  # ou "anthropic", "google", "openrouter"
+
+# OpenAI
+OPENAI_API_KEY="sk-..."
+
+# Anthropic
+ANTHROPIC_API_KEY="sk-ant-..."
+
+# Google AI
+GOOGLE_GENERATIVE_AI_API_KEY="..."
+
+# OpenRouter
+OPENROUTER_API_KEY="sk-or-..."
+```
+
+## Trocar de Provedor
+
+Para trocar entre provedores de IA:
+
+1. Execute o comando de configuração:
+   ```bash
+   npm run setup:ai
+   ```
+
+2. Selecione seu novo provedor
+
+3. O código usa automaticamente o provedor configurado:
+   ```typescript
+   // Isso funciona com qualquer provedor
+   const response = await ai.chat({
+     model: 'gpt-4o', // ou claude, gemini, etc.
+     messages: [...]
+   });
+   ```
+
+## Considerações de Custo
+
+| Provedor | Modelo de Preços |
+|----------|------------------|
+| OpenAI | Por token (entrada/saída) |
+| Anthropic | Por token (entrada/saída) |
+| Google AI | Tier gratuito disponível, depois por token |
+| OpenRouter | Pague por uso, varia por modelo |
+
+**Dicas para gestão de custos:**
+- Use modelos menores para tarefas simples
+- Implemente cache para consultas repetidas
+- Defina `maxTokens` para limitar o tamanho da resposta
+- Use streaming para melhor UX sem custo extra
+
+## Solução de Problemas
+
+### "Chave API inválida"
+
+Verifique o formato da sua chave API:
+- OpenAI: Começa com `sk-`
+- Anthropic: Começa com `sk-ant-`
+- OpenRouter: Começa com `sk-or-`
+
+### "Modelo não encontrado"
+
+Verifique se o nome do modelo corresponde exatamente. Nomes de modelo são case-sensitive.
+
+### "Limite de taxa excedido"
+
+Você atingiu o limite de taxa da API. Soluções:
+- Espere e tente novamente
+- Faça upgrade do seu plano de API
+- Implemente backoff exponencial
+
+### "Cota insuficiente"
+
+Adicione informações de faturamento ou créditos à sua conta do provedor de IA.

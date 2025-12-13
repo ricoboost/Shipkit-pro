@@ -1,0 +1,81 @@
+---
+title: AI API
+description: API reference for AI endpoints.
+---
+
+# AI API
+
+## Endpoints
+
+### Chat Completion
+
+Generate AI chat responses with streaming support.
+
+```http
+POST /api/ai/chat
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "messages": [
+    { "role": "system", "content": "You are a helpful assistant." },
+    { "role": "user", "content": "Hello!" }
+  ],
+  "model": "gpt-4-turbo",
+  "stream": true
+}
+```
+
+**Response (non-streaming):**
+
+```json
+{
+  "content": "Hello! How can I help you today?",
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 10,
+    "total_tokens": 30
+  }
+}
+```
+
+**Response (streaming):**
+
+Server-Sent Events stream:
+
+```
+data: {"content": "Hello"}
+data: {"content": "!"}
+data: {"content": " How"}
+data: {"content": " can"}
+data: [DONE]
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| messages | array | Conversation messages |
+| model | string | Model ID (optional) |
+| stream | boolean | Enable streaming |
+| temperature | number | Randomness (0-2) |
+| maxTokens | number | Max response length |
+
+## Available Models
+
+| Model | Provider |
+|-------|----------|
+| gpt-4-turbo | OpenAI |
+| gpt-3.5-turbo | OpenAI |
+| claude-3-opus | Anthropic |
+| claude-3-sonnet | Anthropic |
+| gemini-pro | Google |
+
+## Error Codes
+
+| Code | Description |
+|------|-------------|
+| 401 | Unauthorized |
+| 402 | Insufficient credits |
+| 429 | Rate limited |
+| 500 | AI provider error |

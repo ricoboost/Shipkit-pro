@@ -1,0 +1,108 @@
+---
+title: Supabase Auth
+description: Configura la Autenticación de Supabase en ShipKit.
+---
+
+# Configuración de Supabase Auth
+
+Supabase proporciona autenticación integrada con su base de datos PostgreSQL.
+
+## Configuración
+
+```bash
+AUTH_PROVIDER="supabase"
+
+NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+```
+
+## Obtener Credenciales
+
+1. Crea un proyecto en [supabase.com](https://supabase.com)
+2. Ve a Settings > API
+3. Copia la URL y las claves anon/service
+
+## Configuración de OAuth
+
+Configura OAuth en el Panel de Supabase:
+
+1. Ve a Authentication > Providers
+2. Habilita los proveedores deseados (Google, GitHub, etc.)
+3. Agrega el ID de cliente y el secreto de cada proveedor
+4. La URL de devolución de llamada es configurada automáticamente por Supabase
+
+## Implementación
+
+```typescript
+// src/lib/auth/supabase.ts
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+
+export function createClient() {
+  const cookieStore = cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name, value, options) {
+          cookieStore.set({ name, value, ...options });
+        },
+        remove(name, options) {
+          cookieStore.set({ name, value: '', ...options });
+        },
+      },
+    }
+  );
+}
+```
+
+## Iniciar Sesión
+
+```typescript
+const supabase = createClient();
+
+// Email/Password
+const { data, error } = await supabase.auth.signInWithPassword({
+  email: 'user@example.com',
+  password: 'password',
+});
+
+// OAuth
+const { data, error } = await supabase.auth.signInWithOAuth({
+  provider: 'google',
+  options: {
+    redirectTo: `${origin}/auth/callback`,
+  },
+});
+
+// Magic Link
+const { data, error } = await supabase.auth.signInWithOtp({
+  email: 'user@example.com',
+});
+```
+
+## Obtener Sesión
+
+```typescript
+const supabase = createClient();
+const { data: { session } } = await supabase.auth.getSession();
+```
+
+## Seguridad a Nivel de Fila
+
+Supabase usa RLS para la protección de datos:
+
+```sql
+-- Enable RLS
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+
+-- Users can only see their own posts
+CREATE POLICY "Users can view own posts"
+ON posts FOR SELECT
+USING (auth.uid() = user_id);
+```

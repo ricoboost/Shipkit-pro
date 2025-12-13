@@ -1,0 +1,284 @@
+---
+title: Section Dividers
+description: Visual separators between page sections with multiple shape variants and animations
+---
+
+# Section Dividers
+
+Section dividers create visual separation between content sections, adding polish and flow to your landing pages. ShipKit includes 4 divider components with multiple shape options.
+
+## Available Components
+
+| Component | Description |
+|-----------|-------------|
+| `SectionDivider` | SVG shape dividers (wave, curve, angle, zigzag, triangle, rounded) |
+| `GradientDivider` | Smooth color transition dividers |
+| `AnimatedDivider` | Animated wave with layered motion |
+| `LineDivider` | Simple horizontal line with optional text |
+
+---
+
+## SectionDivider
+
+SVG-based dividers with 6 shape options.
+
+### Preview
+
+<ComponentPreview title="Section Divider" background="muted">
+  <SectionDividerAllShapesPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { SectionDivider } from '@/components/marketing/dividers/section-divider';
+
+// Basic wave divider
+<SectionDivider shape="wave" />
+
+// Curved divider with custom color
+<SectionDivider shape="curve" colorScheme="primary" />
+
+// Flipped angle divider (rotated 180deg)
+<SectionDivider shape="angle" flip />
+
+// Large zigzag divider
+<SectionDivider shape="zigzag" size="lg" />
+```
+
+### Shape Options
+
+| Shape | Description |
+|-------|-------------|
+| `wave` | Smooth flowing wave (default) |
+| `curve` | Single smooth curve |
+| `angle` | Diagonal line |
+| `zigzag` | Repeating zigzag pattern |
+| `triangle` | Centered triangle peak |
+| `rounded` | Soft rounded bump |
+
+### Props
+
+```typescript
+interface SectionDividerProps {
+  shape?: 'wave' | 'curve' | 'angle' | 'zigzag' | 'triangle' | 'rounded';
+  colorScheme?: 'primary' | 'secondary' | 'accent' | 'muted' | 'destructive' | 'background' | 'foreground';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  flip?: boolean;      // Rotate 180 degrees (top-to-bottom)
+  flipX?: boolean;     // Mirror horizontally
+  className?: string;
+}
+```
+
+### Examples
+
+```tsx
+// Transition from hero to features
+<HeroCentered {...heroProps} />
+<SectionDivider shape="wave" colorScheme="secondary" />
+<FeaturesGrid {...featuresProps} className="bg-secondary/10" />
+
+// Bottom of colored section
+<div className="bg-primary text-primary-foreground">
+  <CTASimple {...ctaProps} />
+  <SectionDivider shape="curve" colorScheme="background" />
+</div>
+```
+
+---
+
+## GradientDivider
+
+Smooth color transitions between sections.
+
+### Preview
+
+<ComponentPreview title="Gradient Divider" background="muted">
+  <GradientDividerPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { GradientDivider } from '@/components/marketing/dividers/section-divider';
+
+// Fade to background
+<GradientDivider to="hsl(var(--background))" />
+
+// Custom gradient
+<GradientDivider
+  from="hsl(var(--primary))"
+  to="hsl(var(--secondary))"
+  size="lg"
+/>
+
+// Fade from top
+<GradientDivider direction="top" />
+```
+
+### Props
+
+```typescript
+interface GradientDividerProps {
+  from?: string;           // Start color (default: transparent)
+  to?: string;             // End color (default: background)
+  direction?: 'top' | 'bottom';  // Gradient direction
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
+}
+```
+
+---
+
+## AnimatedDivider
+
+Layered animated waves for dynamic visual interest.
+
+### Preview
+
+<ComponentPreview title="Animated Divider" background="muted">
+  <AnimatedDividerPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { AnimatedDivider } from '@/components/marketing/dividers/section-divider';
+
+// Medium speed animation
+<AnimatedDivider />
+
+// Slow relaxing waves
+<AnimatedDivider speed="slow" colorScheme="primary" />
+
+// Fast energetic waves
+<AnimatedDivider speed="fast" size="lg" />
+```
+
+### Props
+
+```typescript
+interface AnimatedDividerProps {
+  speed?: 'slow' | 'medium' | 'fast';  // Animation speed
+  colorScheme?: ColorScheme;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
+}
+```
+
+### Speed Options
+
+| Speed | Duration |
+|-------|----------|
+| `slow` | 8 seconds |
+| `medium` | 5 seconds (default) |
+| `fast` | 3 seconds |
+
+---
+
+## LineDivider
+
+Simple horizontal line, optionally with centered text.
+
+### Preview
+
+<ComponentPreview title="Line Divider" background="muted">
+  <LineDividerPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { LineDivider } from '@/components/marketing/dividers/section-divider';
+
+// Simple line
+<LineDivider />
+
+// Line with text
+<LineDivider text="or continue with" />
+
+// Styled line
+<LineDivider colorScheme="primary" size="md" />
+```
+
+### Props
+
+```typescript
+interface LineDividerProps {
+  text?: string;           // Optional centered text
+  colorScheme?: ColorScheme;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}
+```
+
+---
+
+## Size Reference
+
+| Size | Height |
+|------|--------|
+| `sm` | 32px (2rem) |
+| `md` | 64px (4rem) - default |
+| `lg` | 96px (6rem) |
+| `xl` | 128px (8rem) |
+
+---
+
+## Color Schemes
+
+All dividers support the standard color schemes:
+
+```tsx
+<SectionDivider colorScheme="primary" />     // Primary brand color
+<SectionDivider colorScheme="secondary" />   // Secondary color
+<SectionDivider colorScheme="accent" />      // Accent color
+<SectionDivider colorScheme="muted" />       // Muted/subtle
+<SectionDivider colorScheme="destructive" /> // Warning/danger
+<SectionDivider colorScheme="background" />  // Page background (default)
+<SectionDivider colorScheme="foreground" />  // Subtle foreground tint
+```
+
+---
+
+## Common Patterns
+
+### Hero to Content Transition
+
+```tsx
+<section className="bg-gradient-to-b from-primary/10 to-background">
+  <HeroCentered {...heroProps} />
+</section>
+<SectionDivider shape="wave" size="lg" />
+<section>
+  <FeaturesGrid {...featuresProps} />
+</section>
+```
+
+### Colored Section Sandwich
+
+```tsx
+<SectionDivider shape="curve" colorScheme="primary" flip />
+<section className="bg-primary text-primary-foreground py-20">
+  <CTASimple {...ctaProps} />
+</section>
+<SectionDivider shape="curve" colorScheme="primary" />
+```
+
+### Footer Transition
+
+```tsx
+<section className="pb-0">
+  <FaqAccordion {...faqProps} />
+</section>
+<SectionDivider shape="angle" colorScheme="muted" size="sm" />
+<footer className="bg-muted">
+  <Footer />
+</footer>
+```
+
+---
+
+## Accessibility
+
+All dividers include `aria-hidden="true"` as they are decorative elements that don't convey content to screen readers.

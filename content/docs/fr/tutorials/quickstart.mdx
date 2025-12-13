@@ -1,0 +1,96 @@
+---
+title: Créez Votre Premier SaaS en 30 Minutes
+description: Un guide complet étape par étape pour créer une application SaaS fonctionnelle avec authentification, paiements et tableau de bord utilisateur.
+---
+
+# Créez Votre Premier SaaS en 30 Minutes
+
+Dans ce tutoriel, vous allez créer une application SaaS entièrement fonctionnelle à partir de zéro. À la fin, vous aurez:
+
+- Authentification des utilisateurs (inscription, connexion, vérification par email)
+- Facturation par abonnement avec Stripe
+- Tableau de bord utilisateur avec gestion de compte
+- Panneau d'administration pour la supervision des utilisateurs
+
+## Prérequis
+
+Avant de commencer, assurez-vous d'avoir:
+
+- **Node.js 20+** installé ([télécharger](https://nodejs.org/))
+- Base de données **PostgreSQL** (locale ou cloud comme [Neon](https://neon.tech), [Supabase](https://supabase.com))
+- **Compte Stripe** en mode test ([inscription](https://stripe.com))
+
+## Étape 1: Cloner et Installer
+
+Premièrement, clonez ShipKit et installez les dépendances:
+
+```bash
+git clone https://github.com/your-org/shipkit mon-saas
+cd mon-saas
+npm install
+```
+
+## Étape 2: Exécuter l'Assistant de Configuration
+
+ShipKit inclut un assistant de configuration interactif qui configure tout pour vous:
+
+```bash
+npm run setup
+```
+
+L'assistant vous guidera à travers:
+
+1. **Variables d'Environnement** - Configuration de base de l'application
+2. **Connexion Base de Données** - Configuration PostgreSQL
+3. **Fournisseur d'Authentification** - Nous utiliserons NextAuth pour ce tutoriel
+4. **Fournisseur de Paiement** - Configuration Stripe
+
+## Étape 3: Configurer les Produits Stripe
+
+Créez vos produits d'abonnement dans Stripe:
+
+1. Allez au [Tableau de bord Stripe](https://dashboard.stripe.com/test/products)
+2. Cliquez sur "Ajouter Produit"
+3. Créez deux produits:
+
+**Plan Gratuit:**
+- Nom: Gratuit
+- Prix: 0€/mois
+
+**Plan Pro:**
+- Nom: Pro
+- Prix: 29€/mois
+- Copiez l'ID du Prix (commence par `price_`)
+
+## Étape 4: Initialiser la Base de Données
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+## Étape 5: Démarrer le Serveur de Développement
+
+```bash
+npm run dev
+```
+
+Votre application fonctionne maintenant sur [http://localhost:3000](http://localhost:3000)!
+
+## Étape 6: Tester le Flux Complet
+
+1. Créez un compte sur `http://localhost:3000/signup`
+2. Vérifiez votre email
+3. Passez au plan Pro
+4. Utilisez la carte de test Stripe: `4242 4242 4242 4242`
+
+## Prochaines Étapes
+
+<Cards>
+  <Card title="Ajouter des Fonctionnalités IA" href="/docs/tutorials/ai-saas">
+    Intégrez des capacités IA avec facturation basée sur les crédits.
+  </Card>
+  <Card title="Déployer en Production" href="/docs/tutorials/deploy-production">
+    Lancez votre app sur Vercel, Railway ou Docker.
+  </Card>
+</Cards>

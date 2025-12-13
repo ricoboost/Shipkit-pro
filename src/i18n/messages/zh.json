@@ -1,0 +1,1345 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "发生错误",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "search": "搜索",
+    "filter": "筛选",
+    "back": "返回",
+    "next": "下一步",
+    "previous": "上一步",
+    "submit": "提交",
+    "confirm": "确认",
+    "close": "关闭"
+  },
+  "auth": {
+    "signIn": "登录",
+    "signUp": "注册",
+    "signOut": "退出",
+    "email": "邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "name": "姓名",
+    "forgotPassword": "忘记密码？",
+    "noAccount": "还没有账户？",
+    "hasAccount": "已有账户？",
+    "createAccount": "创建账户",
+    "orContinueWith": "或使用以下方式继续",
+    "invalidCredentials": "邮箱或密码无效",
+    "emailRequired": "邮箱为必填项",
+    "passwordRequired": "密码为必填项",
+    "passwordMinLength": "密码至少需要8个字符",
+    "passwordsMatch": "密码必须匹配",
+    "verifyEmail": "验证您的邮箱",
+    "verifyEmailSent": "我们已向您的邮箱发送了验证链接",
+    "resetPassword": "重置密码",
+    "resetPasswordSent": "重置链接已发送至您的邮箱",
+    "newPassword": "新密码",
+    "referralCode": "推荐码（可选）",
+    "twoFactor": {
+      "title": "两步验证",
+      "description": "为您的账户添加额外的安全层",
+      "enabled": "两步验证已启用",
+      "disabled": "两步验证已禁用",
+      "enable": "启用两步验证",
+      "disable": "禁用两步验证",
+      "setup": {
+        "title": "设置两步验证",
+        "step1": "安装验证器应用",
+        "step1Desc": "下载 Google Authenticator、Authy 或其他 TOTP 兼容应用",
+        "step2": "扫描二维码",
+        "step2Desc": "使用验证器应用扫描此二维码",
+        "step3": "输入验证码",
+        "step3Desc": "输入验证器应用中的6位数字代码",
+        "manualEntry": "无法扫描？手动输入此代码：",
+        "backupCodes": "备用代码",
+        "backupCodesDesc": "将这些代码保存在安全的地方。每个代码只能使用一次。",
+        "backupCodesWarning": "这些代码不会再次显示！",
+        "verify": "验证并启用",
+        "verifying": "验证中..."
+      },
+      "verify": {
+        "title": "输入验证码",
+        "description": "输入验证器应用中的6位数字代码",
+        "code": "验证码",
+        "codePlaceholder": "000000",
+        "useBackupCode": "使用备用代码",
+        "useAuthenticator": "使用验证器应用",
+        "backupCode": "备用代码",
+        "backupCodePlaceholder": "输入备用代码",
+        "submit": "验证",
+        "submitting": "验证中...",
+        "invalidCode": "验证码无效",
+        "invalidBackupCode": "备用代码无效"
+      },
+      "disable": {
+        "title": "禁用两步验证",
+        "description": "输入验证码以禁用两步验证",
+        "warning": "这将降低您账户的安全性",
+        "confirm": "禁用两步验证",
+        "confirming": "禁用中..."
+      },
+      "success": {
+        "enabled": "两步验证已启用",
+        "disabled": "两步验证已禁用"
+      },
+      "error": {
+        "setupFailed": "设置两步验证失败",
+        "verifyFailed": "验证码验证失败",
+        "disableFailed": "禁用两步验证失败"
+      }
+    }
+  },
+  "nav": {
+    "home": "首页",
+    "features": "功能",
+    "pricing": "定价",
+    "docs": "文档",
+    "blog": "博客",
+    "dashboard": "仪表板",
+    "settings": "设置",
+    "profile": "个人资料",
+    "billing": "账单",
+    "team": "团队",
+    "admin": "管理"
+  },
+  "landing": {
+    "hero": {
+      "title": "更快构建您的SaaS",
+      "subtitle": "现代Web应用程序的终极AI原生模板",
+      "cta": "开始使用",
+      "secondaryCta": "查看演示"
+    },
+    "features": {
+      "title": "您所需要的一切",
+      "subtitle": "使用最佳工具和实践构建",
+      "auth": {
+        "title": "身份验证",
+        "description": "多种认证提供商，支持OAuth、魔法链接和凭证"
+      },
+      "payments": {
+        "title": "支付",
+        "description": "Stripe、LemonSqueezy或Polar - 只需一个环境变量即可切换"
+      },
+      "ai": {
+        "title": "AI集成",
+        "description": "OpenRouter和Vercel AI SDK，基于积分使用"
+      },
+      "teams": {
+        "title": "组织",
+        "description": "多租户支持，包含团队、角色和权限"
+      },
+      "security": {
+        "title": "企业级安全",
+        "description": "两步验证、加密密钥和安全会话"
+      },
+      "testing": {
+        "title": "测试套件",
+        "description": "Vitest 单元测试和 Playwright 端到端测试"
+      },
+      "cicd": {
+        "title": "CI/CD 流水线",
+        "description": "GitHub Actions 自动化测试、代码检查和部署"
+      },
+      "monitoring": {
+        "title": "错误监控",
+        "description": "Sentry 集成，支持会话回放和性能追踪"
+      },
+      "docker": {
+        "title": "Docker 就绪",
+        "description": "生产就绪的 Docker 配置，支持多阶段构建"
+      },
+      "seo": {
+        "title": "SEO 优化",
+        "description": "动态站点地图、robots.txt 和搜索引擎元标签"
+      }
+    },
+    "pricing": {
+      "title": "简单透明的定价",
+      "subtitle": "选择适合您的方案",
+      "monthly": "月付",
+      "yearly": "年付",
+      "popular": "最受欢迎",
+      "perMonth": "/月",
+      "getStarted": "开始使用"
+    },
+    "testimonials": {
+      "title": "深受开发者喜爱",
+      "subtitle": "看看其他人怎么说"
+    },
+    "cta": {
+      "title": "准备好发布了吗？",
+      "subtitle": "今天就开始构建您的SaaS",
+      "button": "获取ShipKit"
+    }
+  },
+  "dashboard": {
+    "title": "仪表板",
+    "welcome": "欢迎回来",
+    "welcomeBack": "欢迎回来，{name}！",
+    "there": "您",
+    "overview": "概览",
+    "accountOverview": "以下是您账户今天的情况。",
+    "stats": {
+      "totalUsers": "总用户数",
+      "revenue": "收入",
+      "activeSubscriptions": "活跃订阅",
+      "creditsUsed": "已用积分",
+      "creditsRemaining": "剩余积分",
+      "aiRequests": "AI请求",
+      "teamMembers": "团队成员",
+      "currentPlan": "当前计划"
+    },
+    "fromLastMonth": "较上月",
+    "quickActions": "快捷操作",
+    "actions": {
+      "aiPlayground": "AI演练场",
+      "aiPlaygroundDesc": "测试AI模型和提示词",
+      "documentation": "文档",
+      "documentationDesc": "了解如何使用ShipKit",
+      "settings": "设置",
+      "settingsDesc": "管理您的账户",
+      "getHelp": "获取帮助",
+      "getHelpDesc": "联系支持"
+    },
+    "goTo": "前往{page}",
+    "recentActivity": "最近活动",
+    "recentActivityDesc": "您最近的操作和更新",
+    "noRecentActivity": "暂无最近活动",
+    "startUsing": "开始使用ShipKit，在此查看您的活动",
+    "tryAiPlayground": "试用AI演练场"
+  },
+  "settings": {
+    "title": "设置",
+    "description": "管理您的账户设置和偏好",
+    "manage": "管理{section}",
+    "sections": {
+      "profile": "个人资料",
+      "profileDesc": "管理您的个人信息",
+      "billing": "账单",
+      "billingDesc": "管理您的订阅和支付方式",
+      "apiKeys": "API密钥",
+      "apiKeysDesc": "管理您的API密钥以进行外部集成",
+      "security": "安全",
+      "securityDesc": "管理您的密码和安全设置"
+    },
+    "security": {
+      "title": "安全",
+      "description": "管理您的密码和安全设置",
+      "password": {
+        "title": "密码",
+        "description": "更改密码以保护您的账户安全",
+        "current": "当前密码",
+        "new": "新密码",
+        "confirm": "确认新密码",
+        "update": "更新密码",
+        "updating": "更新中...",
+        "updated": "密码更新成功",
+        "error": "更新密码失败",
+        "mismatch": "密码不匹配",
+        "requirements": "密码至少需要8个字符"
+      },
+      "twoFactor": {
+        "title": "两步验证",
+        "description": "使用验证器应用为您的账户添加额外的安全层",
+        "status": "状态",
+        "enabled": "已启用",
+        "disabled": "已禁用",
+        "enable": "启用两步验证",
+        "disable": "禁用两步验证",
+        "manage": "管理两步验证"
+      },
+      "sessions": {
+        "title": "活跃会话",
+        "description": "管理您在所有设备上的活跃会话",
+        "current": "当前会话",
+        "lastActive": "最后活跃 {time}",
+        "revoke": "撤销",
+        "revokeAll": "撤销所有其他会话",
+        "revokeSuccess": "会话已撤销",
+        "revokeAllSuccess": "所有其他会话已撤销"
+      },
+      "activityLog": {
+        "title": "安全活动",
+        "description": "您账户的近期安全事件",
+        "loginSuccess": "登录成功",
+        "loginFailed": "登录失败",
+        "passwordChanged": "密码已更改",
+        "twoFactorEnabled": "两步验证已启用",
+        "twoFactorDisabled": "两步验证已禁用",
+        "noActivity": "无近期安全活动"
+      }
+    },
+    "notifications": {
+      "title": "通知",
+      "description": "选择您想要接收的通知",
+      "email": "邮件通知",
+      "emailDesc": "接收有关您账户的邮件更新",
+      "marketing": "营销邮件",
+      "marketingDesc": "接收有关新功能和优惠的邮件",
+      "security": "安全警报",
+      "securityDesc": "接收有关安全事件的通知",
+      "updates": "产品更新"
+    },
+    "dangerZone": {
+      "title": "危险区域",
+      "description": "不可逆转的破坏性操作",
+      "deleteAccount": "删除账户",
+      "deleteAccountDesc": "永久删除您的账户和所有数据",
+      "deleteButton": "删除账户"
+    },
+    "profile": {
+      "title": "个人资料",
+      "description": "管理您的个人信息",
+      "avatar": "头像",
+      "avatarDesc": "点击头像从文件中上传自定义头像。",
+      "changeAvatar": "更改头像",
+      "avatarFormats": "JPG、GIF或PNG格式，最大1MB。",
+      "details": "个人资料详情",
+      "detailsDesc": "更新您的个人信息",
+      "displayName": "显示名称",
+      "fullName": "全名",
+      "namePlaceholder": "张三",
+      "email": "邮箱",
+      "emailPlaceholder": "zhang@example.com",
+      "emailDisabled": "邮箱不能在此处更改",
+      "bio": "简介",
+      "bioPlaceholder": "介绍一下您自己",
+      "saveChanges": "保存更改",
+      "saved": "个人资料更新成功",
+      "updateSuccess": "个人资料更新成功",
+      "updateError": "更新个人资料失败"
+    },
+    "account": {
+      "title": "账户",
+      "description": "管理您的账户设置",
+      "email": "邮箱地址",
+      "changeEmail": "更改邮箱",
+      "password": "密码",
+      "changePassword": "更改密码",
+      "deleteAccount": "删除账户",
+      "deleteWarning": "此操作无法撤销"
+    },
+    "billing": {
+      "title": "账单",
+      "description": "管理您的订阅和支付方式",
+      "currentPlan": "当前计划",
+      "currentPlanDesc": "您当前使用的是{plan}计划",
+      "status": {
+        "active": "活跃",
+        "canceled": "已取消",
+        "past_due": "逾期",
+        "trialing": "试用中"
+      },
+      "changePlan": "更改计划",
+      "cancel": "取消",
+      "nextBilling": "下次计费日期：{date}",
+      "creditsUsage": "积分使用情况",
+      "creditsUsageDesc": "本计费周期内您的AI积分使用情况",
+      "creditsUsed": "已使用{used} / {total}积分",
+      "buyMoreCredits": "购买更多积分",
+      "viewUsageHistory": "查看使用历史",
+      "paymentMethod": "支付方式",
+      "paymentMethodDesc": "管理您的支付方式",
+      "expires": "到期日期{date}",
+      "update": "更新",
+      "updatePayment": "更新支付方式",
+      "billingHistory": "账单历史",
+      "billingHistoryDesc": "下载您过去的发票",
+      "invoiceStatus": {
+        "paid": "已支付",
+        "pending": "待处理",
+        "failed": "失败"
+      },
+      "viewAllInvoices": "查看所有发票",
+      "viewInvoices": "查看发票",
+      "cancelSubscription": "取消订阅",
+      "upgrade": "升级计划",
+      "usage": "使用情况",
+      "credits": "剩余积分"
+    },
+    "apiKeys": {
+      "title": "API密钥",
+      "description": "管理您的API密钥以进行外部集成",
+      "createNewKey": "创建新密钥",
+      "createApiKey": "创建API密钥",
+      "createKeyDesc": "为您的应用程序创建新的API密钥。",
+      "keyCreatedDesc": "您的API密钥已创建。现在复制它 - 您将无法再次看到它。",
+      "copyApiKey": "复制API密钥",
+      "keyName": "密钥名称",
+      "keyNamePlaceholder": "例如：生产环境API密钥",
+      "done": "完成",
+      "cancel": "取消",
+      "createKey": "创建密钥",
+      "yourApiKeys": "您的API密钥",
+      "apiKeysDesc": "这些密钥允许通过API访问您的账户",
+      "noApiKeys": "无API密钥",
+      "createFirstKey": "创建您的第一个API密钥以开始使用",
+      "neverUsed": "从未使用",
+      "created": "创建于{date}",
+      "lastUsed": "最后使用于{date}",
+      "deleteApiKey": "删除API密钥",
+      "deleteKeyDesc": "您确定要删除「{name}」吗？此操作无法撤销，使用此密钥的任何应用程序都将停止工作。",
+      "delete": "删除",
+      "copied": "已复制到剪贴板",
+      "enterKeyName": "请输入密钥名称",
+      "keyCreated": "API密钥已创建",
+      "createError": "创建API密钥失败",
+      "keyDeleted": "API密钥已删除",
+      "deleteError": "删除API密钥失败",
+      "apiUsage": "API使用",
+      "apiUsageDesc": "如何使用您的API密钥",
+      "includeInHeaders": "在请求头中包含：",
+      "exampleCurl": "cURL请求示例："
+    },
+    "team": {
+      "title": "团队",
+      "description": "管理您的团队成员",
+      "members": "团队成员",
+      "inviteMember": "邀请成员",
+      "role": "角色",
+      "owner": "所有者",
+      "admin": "管理员",
+      "member": "成员",
+      "pending": "待处理",
+      "remove": "移除",
+      "leave": "离开团队"
+    },
+    "api": {
+      "title": "API密钥",
+      "description": "管理您的API密钥",
+      "create": "创建新密钥",
+      "name": "密钥名称",
+      "key": "API密钥",
+      "created": "创建时间",
+      "lastUsed": "最后使用",
+      "revoke": "撤销"
+    }
+  },
+  "errors": {
+    "notFound": "页面未找到",
+    "notFoundDescription": "您查找的页面不存在",
+    "serverError": "服务器错误",
+    "serverErrorDescription": "我们这边出了点问题",
+    "unauthorized": "未授权",
+    "unauthorizedDescription": "您没有访问此页面的权限",
+    "goHome": "返回首页",
+    "global": {
+      "title": "出错了！",
+      "description": "我们对此带来的不便深表歉意。发生了意外错误。我们的团队已收到通知，正在解决问题。",
+      "tryAgain": "重试",
+      "goHome": "返回首页",
+      "errorId": "错误ID: {digest}"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "overview": "概览",
+      "ai": "AI",
+      "team": "团队",
+      "settings": "设置",
+      "admin": "管理员"
+    },
+    "items": {
+      "dashboard": "仪表板",
+      "analytics": "分析",
+      "aiPlayground": "AI演练场",
+      "usage": "使用情况",
+      "team": "团队",
+      "profile": "个人资料",
+      "billing": "账单",
+      "apiKeys": "API密钥",
+      "settings": "设置",
+      "adminPanel": "管理面板",
+      "users": "用户",
+      "security": "安全"
+    }
+  },
+  "footer": {
+    "product": "产品",
+    "company": "公司",
+    "legal": "法律",
+    "social": "社交",
+    "copyright": "版权所有"
+  },
+  "admin": {
+    "sidebar": {
+      "admin": "管理",
+      "overview": "概览",
+      "users": "用户",
+      "organizations": "组织",
+      "subscriptions": "订阅",
+      "waitlist": "等待列表",
+      "pageBuilder": "页面构建器",
+      "analytics": "分析",
+      "themeBuilder": "主题构建器",
+      "settings": "设置",
+      "exitAdmin": "退出管理"
+    },
+    "settings": {
+      "title": "设置",
+      "description": "管理功能标志、站点设置和提供商配置",
+      "featureFlags": {
+        "title": "功能标志",
+        "description": "在整个应用程序中开启或关闭功能",
+        "waitlistMode": "等待列表模式",
+        "waitlistModeDesc": "为新注册启用等待列表模式",
+        "maintenanceMode": "维护模式",
+        "maintenanceModeDesc": "将站点置于维护模式"
+      },
+      "siteSettings": {
+        "title": "站点设置",
+        "description": "配置站点名称、URL和描述",
+        "siteName": "站点名称",
+        "siteUrl": "站点URL",
+        "siteDescription": "站点描述"
+      },
+      "language": {
+        "title": "语言设置",
+        "description": "配置默认语言并管理可用语言",
+        "defaultLanguage": "默认语言",
+        "defaultLanguageDesc": "未设置偏好时使用的语言",
+        "yourLanguage": "您的语言",
+        "yourLanguageDesc": "更改您当前的语言偏好",
+        "availableLanguages": "可用语言",
+        "availableLanguagesDesc": "为您的应用程序配置的语言"
+      },
+      "providers": {
+        "title": "提供商配置",
+        "description": "选择认证、支付和AI的提供商"
+      }
+    },
+    "overview": {
+      "title": "仪表板",
+      "description": "应用程序指标和活动概览",
+      "totalUsers": "总用户数",
+      "thisWeek": "本周",
+      "activeSubscriptions": "活跃订阅",
+      "trialing": "试用中",
+      "monthlyRevenue": "月收入",
+      "fromLastMonth": "与上月相比",
+      "aiRequests": "AI请求",
+      "tokensUsed": "已用令牌",
+      "recentSignups": "最近注册",
+      "viewAll": "查看全部",
+      "anonymous": "匿名",
+      "noRecentSignups": "没有最近的注册",
+      "recentSubscriptionChanges": "最近的订阅变更",
+      "noRecentChanges": "没有最近的变更",
+      "recentAIUsage": "最近的AI使用",
+      "latestAIRequests": "所有用户的最新AI请求",
+      "tokens": "令牌",
+      "credits": "积分",
+      "noRecentAIUsage": "没有最近的AI使用"
+    },
+    "users": {
+      "title": "用户",
+      "description": "管理用户账户和权限",
+      "searchPlaceholder": "按邮箱或姓名搜索用户...",
+      "allRoles": "所有角色",
+      "allStatus": "所有状态",
+      "allPlans": "所有套餐",
+      "noUsersFound": "未找到用户",
+      "showing": "显示 {start}-{end}，共 {total} 条",
+      "previous": "上一页",
+      "next": "下一页",
+      "user": "用户",
+      "status": "状态",
+      "plan": "套餐",
+      "credits": "积分",
+      "aiUsage": "AI使用量",
+      "role": "角色",
+      "joined": "注册时间",
+      "view": "查看",
+      "usersCount": "用户 ({count})",
+      "manageAccounts": "管理用户账户",
+      "selected": "已选择 {count} 项",
+      "bulkActions": "批量操作",
+      "activateSelected": "激活所选",
+      "suspendSelected": "暂停所选",
+      "banSelected": "封禁所选",
+      "exportSelected": "导出所选 (CSV)",
+      "anonymous": "匿名",
+      "apply": "应用",
+      "clear": "清除",
+      "active": "活跃",
+      "suspended": "已暂停",
+      "banned": "已封禁",
+      "admin": "管理员",
+      "free": "免费",
+      "starter": "入门",
+      "pro": "专业",
+      "enterprise": "企业",
+      "banSelectedUsers": "封禁所选用户",
+      "suspendSelectedUsers": "暂停所选用户",
+      "activateSelectedUsers": "激活所选用户",
+      "banDescription": "这将永久封禁 {count} 个用户。他们将无法登录。",
+      "suspendDescription": "这将暂时暂停 {count} 个用户。可以稍后重新激活。",
+      "activateDescription": "这将重新激活 {count} 个用户，恢复其访问权限。",
+      "cancel": "取消",
+      "processing": "处理中...",
+      "confirmActivate": "确认激活",
+      "confirmSuspend": "确认暂停",
+      "confirmBan": "确认封禁"
+    },
+    "organizations": {
+      "title": "组织",
+      "description": "管理组织、成员和订阅",
+      "searchPlaceholder": "搜索组织...",
+      "allPlans": "所有套餐",
+      "noOrganizationsFound": "未找到组织"
+    },
+    "subscriptions": {
+      "title": "订阅",
+      "description": "查看和管理客户订阅",
+      "subscriptionsCount": "订阅 ({count})",
+      "manageSubscriptions": "管理客户订阅",
+      "customer": "客户",
+      "plan": "套餐",
+      "status": "状态",
+      "provider": "提供商",
+      "currentPeriod": "当前周期",
+      "created": "创建时间",
+      "manage": "管理",
+      "noSubscriptions": "未找到订阅",
+      "allStatus": "所有状态",
+      "active": "活跃",
+      "trialing": "试用中",
+      "pastDue": "逾期",
+      "canceled": "已取消",
+      "allPlans": "所有套餐",
+      "starter": "入门",
+      "pro": "专业",
+      "enterprise": "企业",
+      "anonymous": "匿名",
+      "showing": "显示 {start}-{end}，共 {total} 条",
+      "previous": "上一页",
+      "next": "下一页"
+    },
+    "waitlist": {
+      "title": "等待列表",
+      "description": "管理通讯订阅者和等待列表注册",
+      "totalSubscribers": "总订阅者",
+      "confirmed": "已确认",
+      "pending": "待处理",
+      "unsubscribed": "已取消订阅",
+      "thisWeek": "本周",
+      "searchPlaceholder": "搜索订阅者...",
+      "allStatus": "所有状态",
+      "allSources": "所有来源",
+      "allTags": "所有标签"
+    },
+    "analytics": {
+      "title": "分析",
+      "description": "使用指标和业务洞察",
+      "aiUsage": "AI使用",
+      "apiUsageStats": "API使用统计",
+      "totalRequests": "总请求数",
+      "totalTokens": "总令牌数",
+      "creditsUsed": "已用积分",
+      "topAIModels": "热门AI模型",
+      "topModelsDesc": "过去30天最常用的模型",
+      "requests": "请求",
+      "noData": "暂无数据",
+      "newsletter": "通讯",
+      "subscriberStats": "订阅者统计",
+      "totalSubscribers": "总订阅者",
+      "confirmed": "已确认",
+      "unconfirmed": "未确认",
+      "newThisWeek": "本周新增",
+      "bySource": "按来源",
+      "userGrowth": "用户增长",
+      "userAcquisition": "用户获取指标",
+      "totalUsers": "总用户数",
+      "newThisMonth": "本月新增",
+      "conversionRate": "转化率",
+      "revenue": "收入",
+      "monthlyRecurring": "月经常性收入",
+      "mrr": "MRR",
+      "lastMonth": "上月",
+      "growth": "增长",
+      "activeSubscriptionsByPlan": "按套餐划分的活跃订阅",
+      "active": "活跃",
+      "trialing": "试用中"
+    },
+    "theme": {
+      "title": "主题构建器",
+      "description": "自定义应用程序的视觉外观",
+      "copy": "复制",
+      "copied": "已复制！",
+      "export": "导出",
+      "reset": "重置",
+      "saveTheme": "保存主题",
+      "saving": "保存中...",
+      "unsavedChanges": "您有未保存的更改。点击「保存主题」以全局应用。",
+      "presets": "预设",
+      "themeInfo": "主题信息",
+      "themeName": "主题名称",
+      "editingMode": "编辑模式",
+      "light": "浅色",
+      "dark": "深色",
+      "customize": "自定义",
+      "fineTuneColors": "为模式微调颜色和样式",
+      "mode": "模式",
+      "colors": "颜色",
+      "borderRadius": "圆角",
+      "brandColors": "品牌颜色",
+      "primary": "主色",
+      "primaryDesc": "按钮和链接的主要颜色",
+      "secondary": "次色",
+      "secondaryDesc": "不太突出元素的辅助颜色",
+      "accent": "强调色",
+      "accentDesc": "特殊元素的高亮颜色",
+      "semanticColors": "语义颜色",
+      "destructive": "危险",
+      "destructiveDesc": "错误和危险操作的颜色",
+      "muted": "柔和",
+      "mutedDesc": "非活动元素的微妙背景",
+      "surfaceColors": "表面颜色",
+      "background": "背景",
+      "backgroundDesc": "主页面背景",
+      "foreground": "前景",
+      "foregroundDesc": "主文本颜色",
+      "card": "卡片",
+      "cardDesc": "卡片和面板背景",
+      "popover": "弹出框",
+      "popoverDesc": "下拉菜单和弹出框背景",
+      "uiColors": "UI颜色",
+      "border": "边框",
+      "borderDesc": "输入框和分隔线的边框颜色",
+      "input": "输入框",
+      "inputDesc": "输入字段的边框颜色",
+      "ring": "环",
+      "ringDesc": "焦点环颜色",
+      "radiusSharp": "锐利",
+      "radiusSubtle": "微妙",
+      "radiusMedium": "中等",
+      "radiusRounded": "圆润",
+      "radiusFull": "完全",
+      "livePreview": "实时预览",
+      "livePreviewDesc": "查看主题在真实组件中的效果",
+      "buttons": "按钮",
+      "badges": "徽章",
+      "formElements": "表单元素",
+      "textInput": "文本输入",
+      "toggleSwitch": "开关",
+      "alerts": "警报",
+      "alertMessage": "这是一条信息性警报消息。",
+      "cards": "卡片",
+      "defaultCard": "默认卡片",
+      "defaultCardDesc": "带默认背景的标准卡片。",
+      "primaryCard": "主色卡片",
+      "primaryCardDesc": "带主色背景的卡片。",
+      "mutedCard": "柔和卡片",
+      "mutedCardDesc": "带柔和背景的卡片。",
+      "themeSaved": "主题保存成功！",
+      "themeSaveFailed": "保存主题失败",
+      "themeReset": "主题已重置为默认值",
+      "themeResetFailed": "重置主题失败",
+      "themeExported": "主题已导出！",
+      "cssCopied": "CSS已复制到剪贴板！"
+    },
+    "common": {
+      "loading": "加载中...",
+      "search": "搜索",
+      "filter": "筛选",
+      "actions": "操作",
+      "edit": "编辑",
+      "delete": "删除",
+      "save": "保存",
+      "cancel": "取消",
+      "confirm": "确认",
+      "showing": "显示",
+      "of": "共",
+      "previous": "上一页",
+      "next": "下一页",
+      "noResults": "未找到结果",
+      "anonymous": "匿名"
+    }
+  },
+  "home": {
+    "nav": {
+      "docs": "文档",
+      "dashboard": "控制台"
+    },
+    "welcome": {
+      "badge": "设置完成",
+      "title": "欢迎使用 ShipKit",
+      "titlePrefix": "欢迎使用",
+      "titleWithName": "欢迎，{name}！",
+      "description": "一切就绪，准备创造精彩。使用您喜爱的 AI 助手编程，或探索文档开始您的旅程。"
+    },
+    "bento": {
+      "quickActions": {
+        "title": "快速操作",
+        "dashboard": {
+          "title": "控制台",
+          "description": "查看应用程序指标和活动"
+        },
+        "docs": {
+          "title": "文档",
+          "description": "了解如何自定义和扩展 ShipKit"
+        },
+        "settings": {
+          "title": "设置",
+          "description": "配置您的账户和偏好"
+        },
+        "adminPanel": {
+          "title": "管理面板",
+          "description": "管理用户、设置和系统配置"
+        },
+        "themeBuilder": {
+          "title": "主题构建器",
+          "description": "自定义应用的颜色和样式"
+        },
+        "waitlistBuilder": {
+          "title": "等待列表构建器",
+          "description": "创建和管理等待列表页面"
+        }
+      },
+      "features": {
+        "title": "包含的功能",
+        "auth": {
+          "title": "多提供商认证",
+          "description": "灵活的多提供商认证方案",
+          "h1": "NextAuth、Supabase 或 Better Auth",
+          "h2": "OAuth、魔法链接、凭证",
+          "h3": "内置 TOTP 双因素认证"
+        },
+        "payments": {
+          "title": "灵活支付",
+          "description": "使用您喜欢的提供商接受付款",
+          "h1": "Stripe、LemonSqueezy 或 Polar",
+          "h2": "订阅和一次性付款",
+          "h3": "基于使用量的积分系统"
+        },
+        "ai": {
+          "title": "AI 集成",
+          "description": "即用型 AI 功能",
+          "h1": "OpenRouter + Vercel AI SDK",
+          "h2": "基于积分的使用量追踪"
+        },
+        "teams": {
+          "title": "组织",
+          "description": "多租户架构",
+          "h1": "带角色和权限的团队",
+          "h2": "成员邀请"
+        },
+        "database": {
+          "title": "数据库就绪",
+          "description": "生产就绪的数据库配置",
+          "h1": "内置 Prisma ORM",
+          "h2": "Supabase、Neon 或 PlanetScale"
+        },
+        "i18n": {
+          "title": "国际化",
+          "description": "开箱即用的全球化支持",
+          "h1": "内置 7 种语言",
+          "h2": "轻松添加更多"
+        },
+        "theming": {
+          "title": "可视化主题",
+          "description": "可定制的设计系统",
+          "h1": "内置主题构建器",
+          "h2": "shadcn/ui 组件"
+        },
+        "api": {
+          "title": "API 路由",
+          "description": "安全的 API 基础设施",
+          "h1": "带速率限制的 RESTful API",
+          "h2": "API 密钥管理"
+        },
+        "security": {
+          "title": "企业级安全",
+          "description": "内置安全最佳实践",
+          "h1": "双因素认证",
+          "h2": "加密的密钥和会话"
+        },
+        "testing": {
+          "title": "测试套件",
+          "description": "完整的测试配置",
+          "h1": "Vitest 单元测试",
+          "h2": "Playwright 端到端测试"
+        },
+        "cicd": {
+          "title": "CI/CD 流水线",
+          "description": "自动化部署就绪",
+          "h1": "GitHub Actions 工作流",
+          "h2": "自动测试和代码检查"
+        },
+        "monitoring": {
+          "title": "错误监控",
+          "description": "追踪生产环境问题",
+          "h1": "Sentry 集成",
+          "h2": "会话回放和性能监控"
+        },
+        "docker": {
+          "title": "Docker 就绪",
+          "description": "使用容器部署到任何地方",
+          "h1": "生产环境 Dockerfile",
+          "h2": "多阶段构建"
+        },
+        "seo": {
+          "title": "SEO 优化",
+          "description": "搜索引擎就绪",
+          "h1": "动态站点地图和 robots.txt",
+          "h2": "元标签管理"
+        },
+        "email": {
+          "title": "邮件系统",
+          "description": "事务性邮件就绪",
+          "h1": "React Email 模板",
+          "h2": "Resend 集成"
+        },
+        "analytics": {
+          "title": "分析仪表板",
+          "description": "了解您的用户",
+          "h1": "内置管理分析",
+          "h2": "用户和收入指标"
+        }
+      },
+      "gettingStarted": {
+        "title": "准备好自定义了吗？",
+        "description": "查看文档，了解如何根据您的需求自定义 ShipKit。",
+        "viewDocs": "查看文档",
+        "viewSource": "源代码"
+      }
+    },
+    "footer": {
+      "tagline": "ShipKit - 更快地发布您的 SaaS"
+    }
+  },
+  "onboarding": {
+    "meta": {
+      "title": "设置 - ShipKit",
+      "description": "配置您的 ShipKit 应用程序"
+    },
+    "sidebar": {
+      "setup": "设置",
+      "complete": "完成",
+      "step": "步骤",
+      "of": "/",
+      "completed": "已完成"
+    },
+    "navigation": {
+      "back": "返回",
+      "next": "继续",
+      "finish": "完成设置",
+      "skip": "跳过",
+      "stepOf": "第 {current} 步，共 {total} 步"
+    },
+    "steps": {
+      "env": "环境",
+      "envDesc": "配置 .env 文件",
+      "database": "数据库",
+      "databaseDesc": "连接数据库",
+      "auth": "认证",
+      "authDesc": "设置认证",
+      "payments": "支付",
+      "paymentsDesc": "配置支付",
+      "admin": "管理员",
+      "adminDesc": "创建管理员用户"
+    },
+    "env": {
+      "badge": "环境",
+      "title": "环境设置",
+      "description": "配置您的环境变量以开始使用。",
+      "status": {
+        "checking": "正在检查环境...",
+        "checkingDesc": "正在验证您的 .env.local 文件",
+        "valid": "环境已配置",
+        "validDesc": "所有必需的环境变量已设置。",
+        "missing": "配置缺失",
+        "missingDesc": "缺少一些必需的环境变量。"
+      },
+      "missing": {
+        "title": "缺失的变量"
+      },
+      "configured": {
+        "title": "已配置"
+      },
+      "template": {
+        "title": "环境模板",
+        "copy": "复制模板",
+        "copied": "已复制！",
+        "instruction": "将此模板复制到您的 .env.local 文件并填写值。"
+      },
+      "providers": {
+        "title": "获取数据库",
+        "getDb": "开始"
+      },
+      "refresh": "重新检查",
+      "help": {
+        "title": "需要帮助？",
+        "description": "查看文档获取详细的设置说明。"
+      }
+    },
+    "database": {
+      "badge": "数据库",
+      "title": "数据库连接",
+      "description": "连接到您的数据库以存储应用程序数据。",
+      "status": {
+        "checking": "正在测试连接...",
+        "checkingDesc": "正在尝试连接到您的数据库",
+        "connected": "数据库已连接",
+        "connectedDesc": "成功连接到您的数据库。",
+        "notConnected": "连接失败",
+        "notConnectedDesc": "无法连接到您的数据库。"
+      },
+      "testConnection": "测试连接",
+      "troubleshooting": {
+        "title": "故障排除"
+      },
+      "migration": {
+        "title": "运行迁移",
+        "description": "将您的架构推送到数据库以创建所需的表。"
+      },
+      "docs": "文档",
+      "docsDesc": "了解更多关于数据库配置",
+      "success": {
+        "title": "数据库就绪",
+        "description": "您的数据库已连接并准备好使用。"
+      }
+    },
+    "auth": {
+      "badge": "认证",
+      "title": "认证设置",
+      "description": "配置认证以保护您的应用程序。",
+      "status": {
+        "checking": "正在检查认证配置...",
+        "checkingDesc": "正在验证认证设置",
+        "configured": "认证已配置",
+        "configuredDesc": "认证已正确配置。",
+        "notConfigured": "认证未配置",
+        "notConfiguredDesc": "认证需要 AUTH_SECRET。"
+      },
+      "refresh": "重新检查",
+      "methods": {
+        "title": "认证方法",
+        "email": {
+          "title": "邮箱和密码",
+          "desc": "传统的邮箱和密码认证"
+        },
+        "2fa": {
+          "title": "双因素认证",
+          "desc": "基于 TOTP 的双因素认证"
+        },
+        "available": "可用",
+        "builtin": "内置"
+      },
+      "oauth": {
+        "title": "OAuth 提供商",
+        "configured": "已配置",
+        "notConfigured": "未配置",
+        "optional": "OAuth 提供商是可选的。配置它们以启用社交登录。"
+      },
+      "info": {
+        "title": "安全提示",
+        "description": "使用以下命令生成安全的 AUTH_SECRET：openssl rand -base64 32"
+      }
+    },
+    "payments": {
+      "badge": "支付",
+      "optional": "可选",
+      "title": "支付配置",
+      "description": "设置支付处理以接受客户付款。",
+      "skip": {
+        "title": "暂时跳过",
+        "description": "您可以稍后在设置页面配置支付。",
+        "button": "跳过"
+      },
+      "providers": {
+        "title": "支付提供商",
+        "configured": "已配置",
+        "required": "必需的环境变量",
+        "getKeys": "获取 API 密钥"
+      },
+      "refresh": "重新检查",
+      "warning": {
+        "title": "测试模式",
+        "description": "开发期间使用测试 API 密钥。生产环境请切换到正式密钥。"
+      },
+      "status": {
+        "ready": "支付就绪",
+        "readyDesc": "已配置 {count} 个支付提供商",
+        "notConfigured": "无支付提供商",
+        "notConfiguredDesc": "请至少配置一个提供商以接受付款。"
+      }
+    },
+    "admin": {
+      "badge": "管理员设置",
+      "title": "创建管理员账户",
+      "description": "创建第一个管理员用户来管理您的应用程序。",
+      "form": {
+        "name": "姓名",
+        "namePlaceholder": "张三",
+        "email": "邮箱",
+        "emailPlaceholder": "admin@example.com",
+        "password": "密码",
+        "passwordPlaceholder": "创建一个强密码",
+        "confirmPassword": "确认密码",
+        "confirmPasswordPlaceholder": "确认您的密码",
+        "submit": "创建管理员账户",
+        "creating": "正在创建账户..."
+      },
+      "password": {
+        "weak": "弱",
+        "medium": "中",
+        "strong": "强"
+      },
+      "errors": {
+        "nameTooShort": "姓名至少需要 2 个字符",
+        "invalidEmail": "请输入有效的邮箱地址",
+        "passwordTooShort": "密码至少需要 6 个字符",
+        "passwordMismatch": "密码不匹配",
+        "general": "创建管理员账户失败。请重试。"
+      },
+      "success": {
+        "title": "管理员账户已创建！",
+        "description": "您的管理员账户已成功创建。",
+        "redirecting": "正在跳转到首页..."
+      },
+      "info": {
+        "title": "第一个管理员",
+        "description": "此账户将拥有对您应用程序的完全管理访问权限。"
+      }
+    }
+  },
+  "tour": {
+    "meta": {
+      "title": "产品导览 - ShipKit",
+      "description": "通过互动导览探索 ShipKit 功能"
+    },
+    "sidebar": {
+      "productTour": "产品导览",
+      "complete": "已完成",
+      "step": "步骤",
+      "of": "/",
+      "visited": "已访问"
+    },
+    "navigation": {
+      "back": "返回",
+      "next": "继续",
+      "finish": "开始使用",
+      "stepOf": "步骤 {current} / {total}",
+      "goToStep": "跳转到步骤"
+    },
+    "steps": {
+      "welcome": "欢迎",
+      "welcomeDesc": "了解 ShipKit",
+      "database": "数据库",
+      "databaseDesc": "选择数据库",
+      "auth": "身份验证",
+      "authDesc": "保护您的应用",
+      "payments": "支付",
+      "paymentsDesc": "接受付款",
+      "launch": "发布",
+      "launchDesc": "部署您的应用"
+    },
+    "welcome": {
+      "badge": "欢迎",
+      "title": "欢迎使用 ShipKit",
+      "description": "终极 Next.js SaaS 模板。几天内构建并发布产品，而非数月。",
+      "features": {
+        "fast": {
+          "title": "极速",
+          "description": "基于 Next.js 16 和 Turbopack 构建，实现超快开发"
+        },
+        "secure": {
+          "title": "默认安全",
+          "description": "内置双因素认证、加密会话和企业级安全"
+        },
+        "deploy": {
+          "title": "随处部署",
+          "description": "一键部署到 Vercel，或使用 Docker 部署到任何平台"
+        }
+      },
+      "whatYouLearn": {
+        "title": "您将探索的内容",
+        "database": "连接数据库（Supabase、Neon、PlanetScale）",
+        "auth": "配置多提供商身份验证",
+        "payments": "使用 Stripe、LemonSqueezy 或 Polar 接受付款",
+        "launch": "部署应用并开始构建"
+      },
+      "help": {
+        "title": "需要帮助？",
+        "description": "查看文档或加入我们的 Discord 社区获取支持。"
+      }
+    },
+    "database": {
+      "badge": "步骤 2 / 5",
+      "title": "连接数据库",
+      "description": "选择适合您需求的数据库提供商。所有选项均完全支持 Prisma ORM。",
+      "recommended": "推荐",
+      "providers": {
+        "supabase": {
+          "features": {
+            "postgres": "PostgreSQL",
+            "realtime": "实时",
+            "auth": "内置认证"
+          }
+        },
+        "neon": {
+          "features": {
+            "serverless": "无服务器",
+            "branching": "分支",
+            "scaling": "自动扩缩"
+          }
+        },
+        "planetscale": {
+          "features": {
+            "mysql": "MySQL",
+            "branching": "分支",
+            "vitess": "Vitess"
+          }
+        }
+      },
+      "nextSteps": {
+        "title": "后续步骤",
+        "step1": "创建 {provider} 账户和项目",
+        "step2": "复制连接字符串",
+        "step3": "添加到 .env.local 文件"
+      },
+      "envPreview": "预览"
+    },
+    "auth": {
+      "badge": "步骤 3 / 5",
+      "title": "设置身份验证",
+      "description": "选择身份验证提供商。所有选项均支持 OAuth、魔法链接等。",
+      "providers": {
+        "nextauth": {
+          "features": {
+            "oauth": "OAuth",
+            "credentials": "凭据",
+            "jwt": "JWT 会话"
+          }
+        },
+        "supabase": {
+          "features": {
+            "magic_link": "魔法链接",
+            "oauth": "OAuth",
+            "mfa": "多因素认证"
+          }
+        },
+        "betterauth": {
+          "features": {
+            "passkeys": "通行密钥",
+            "oauth": "OAuth",
+            "session": "会话"
+          }
+        }
+      },
+      "oauthProviders": {
+        "title": "支持的 OAuth 提供商",
+        "more": "更多 10 个"
+      },
+      "twoFactor": {
+        "title": "内置双因素认证",
+        "description": "ShipKit 内置支持 TOTP 的双因素认证，增强安全性。"
+      },
+      "envPreview": "预览"
+    },
+    "payments": {
+      "badge": "步骤 4 / 5",
+      "title": "接受付款",
+      "description": "选择支付提供商。只需一个环境变量即可切换提供商。",
+      "providers": {
+        "stripe": {
+          "features": {
+            "subscriptions": "订阅",
+            "one_time": "一次性付款",
+            "webhooks": "Webhook"
+          }
+        },
+        "lemonsqueezy": {
+          "features": {
+            "subscriptions": "订阅",
+            "licenses": "许可证",
+            "taxes": "税务处理"
+          }
+        },
+        "polar": {
+          "features": {
+            "subscriptions": "订阅",
+            "donations": "捐赠",
+            "github": "GitHub 集成"
+          }
+        }
+      },
+      "pricingFeatures": {
+        "title": "内置定价功能",
+        "subscriptions": {
+          "title": "订阅",
+          "description": "带计划管理的周期性计费"
+        },
+        "credits": {
+          "title": "使用积分",
+          "description": "按使用付费的 AI 积分系统"
+        },
+        "webhooks": {
+          "title": "Webhook",
+          "description": "订阅自动同步"
+        }
+      },
+      "nextSteps": {
+        "title": "后续步骤",
+        "step1": "创建 {provider} 账户",
+        "step2": "配置产品和价格",
+        "step3": "将 API 密钥添加到 .env.local"
+      },
+      "envPreview": "预览"
+    },
+    "launch": {
+      "badge": "步骤 5 / 5",
+      "title": "准备发布！",
+      "description": "恭喜！您已探索所有核心功能。现在是构建精彩应用的时候了。",
+      "celebration": {
+        "title": "恭喜！",
+        "description": "您已完成产品导览。现在可以开始构建您的 SaaS 了。"
+      },
+      "checklist": {
+        "title": "设置完成",
+        "database": "已了解数据库配置",
+        "auth": "已探索身份验证选项",
+        "payments": "已查看支付集成",
+        "ready": "准备发布！"
+      },
+      "terminal": {
+        "title": "开始开发",
+        "copy": "复制"
+      },
+      "deploy": {
+        "vercel": "部署到 Vercel",
+        "github": "在 GitHub 查看"
+      },
+      "cta": {
+        "title": "准备开始构建？",
+        "description": "使用 ShipKit 立即开始构建您的 SaaS。",
+        "getStarted": "开始使用",
+        "readDocs": "阅读文档"
+      }
+    }
+  },
+  "maintenance": {
+    "title": "维护中",
+    "description": "我们正在进行计划维护以提升您的体验。",
+    "checkBack": "请稍后再来。我们很快就会恢复。",
+    "backToHome": "返回首页"
+  },
+  "joinWaitlist": {
+    "title": "加入等待名单",
+    "description": "我们目前仅接受邀请用户。加入等待名单以便在开放时收到通知。",
+    "emailPlaceholder": "输入您的邮箱",
+    "joinButton": "加入名单",
+    "submitting": "加入中...",
+    "invalidEmail": "请输入有效的邮箱地址",
+    "successTitle": "您已加入名单！",
+    "successDescription": "当有空位时我们会通知您。感谢您的关注！",
+    "errorMessage": "出现问题，请重试。",
+    "backToHome": "返回首页"
+  }
+}

@@ -1,0 +1,145 @@
+---
+title: Troubleshooting
+description: Common issues and solutions for ShipKit applications.
+---
+
+# Troubleshooting
+
+Find solutions to common issues when developing with ShipKit.
+
+---
+
+## Quick Diagnosis
+
+### Is your dev server running?
+
+```bash
+npm run dev
+```
+
+If it fails, try:
+
+```bash
+rm -rf node_modules .next
+npm install
+npm run dev
+```
+
+### Check for TypeScript errors
+
+```bash
+npm run typecheck
+```
+
+### Check environment variables
+
+```bash
+# Print loaded env vars (careful with secrets!)
+node -e "console.log(Object.keys(process.env).filter(k => k.startsWith('NEXT_')))"
+```
+
+---
+
+## Common Issues
+
+<Cards>
+  <Card title="Build & Type Errors" href="/docs/troubleshooting/common-errors">
+    TypeScript errors, build failures, and module issues.
+  </Card>
+  <Card title="Authentication Issues" href="/docs/troubleshooting/auth-issues">
+    OAuth failures, session problems, and login issues.
+  </Card>
+  <Card title="Payment Issues" href="/docs/troubleshooting/payment-issues">
+    Webhook failures, subscription sync, and checkout problems.
+  </Card>
+  <Card title="Deployment Issues" href="/docs/troubleshooting/deployment-issues">
+    Vercel, Railway, and Docker deployment problems.
+  </Card>
+  <Card title="Database Issues" href="/docs/troubleshooting/database-issues">
+    Connection errors, migrations, and Prisma problems.
+  </Card>
+</Cards>
+
+---
+
+## Emergency Fixes
+
+### App won't start
+
+```bash
+# Nuclear option - reset everything
+rm -rf node_modules .next prisma/migrations
+npm install
+npx prisma generate
+npx prisma db push
+npm run dev
+```
+
+### Database out of sync
+
+```bash
+# Reset database (DESTROYS DATA)
+npx prisma db push --force-reset
+
+# Or create fresh migration
+npx prisma migrate dev --name fix_schema
+```
+
+### Environment not loading
+
+```bash
+# Check .env exists and is valid
+cat .env | head -5
+
+# Restart dev server (required after .env changes)
+npm run dev
+```
+
+---
+
+## Getting Help
+
+### 1. Check the logs
+
+```bash
+# Next.js logs
+npm run dev 2>&1 | tee dev.log
+
+# Prisma logs
+DEBUG="prisma:*" npm run dev
+```
+
+### 2. Search existing issues
+
+Check [GitHub Issues](https://github.com/your-org/shipkit/issues) for similar problems.
+
+### 3. Ask for help
+
+When asking for help, include:
+
+- [ ] Error message (full stack trace)
+- [ ] Steps to reproduce
+- [ ] Node.js version (`node -v`)
+- [ ] Package versions (`npm list`)
+- [ ] Operating system
+- [ ] Relevant config files
+
+---
+
+## Debug Mode
+
+Enable verbose logging:
+
+```bash
+# .env
+DEBUG=shipkit:*
+LOG_LEVEL=debug
+```
+
+```typescript
+// In your code
+import debug from 'debug';
+const log = debug('shipkit:auth');
+
+log('Processing authentication', { userId, provider });
+```

@@ -1,0 +1,142 @@
+---
+title: 维护模式
+description: 在更新或维护期间临时阻止公共访问。
+---
+
+# 维护模式
+
+ShipKit 包含维护模式功能，允许您在进行更新、部署或关键维护任务时临时阻止对应用程序的访问。
+
+## 概述
+
+启用维护模式时：
+
+- 所有非管理员用户将被重定向到维护页面
+- 管理员仍可访问整个应用程序
+- API 路由对内部操作保持可访问
+- 可通过环境变量进行紧急绕过
+
+## 启用维护模式
+
+### 通过管理面板
+
+1. 转到 **Admin** > **设置** > **Feature Flags**
+2. 开启 **维护模式**
+3. 所有非管理员访问者将立即看到维护页面
+
+### 通过 API
+
+```typescript
+// 启用维护模式
+const response = await fetch('/api/admin/settings/flags', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ maintenanceMode: true }),
+});
+```
+
+### 通过数据库
+
+```typescript
+import { db } from '@/lib/db';
+
+await db.appConfig.upsert({
+  where: { id: 'default' },
+  update: { maintenanceMode: true },
+  create: { id: 'default', maintenanceMode: true },
+});
+```
+
+## 工作原理
+
+### 中间件执行
+
+中间件在每个请求中检查维护模式：
+
+```typescript
+// src/middleware.ts
+if (flags.maintenanceMode && !isAdmin) {
+  if (!shouldBypassMaintenance(pathname)) {
+    return NextResponse.redirect(new URL('/maintenance', request.url));
+  }
+}
+```
+
+### 绕过路径
+
+这些路径在维护期间始终可访问：
+
+- `/maintenance` - 维护页面本身
+- `/login` - 认证页面（以便管理员可以登录）
+- `/api/auth/*` - 认证 API 路由
+- `/onboarding` - 初始设置（如果没有管理员存在）
+
+### 管理员检测
+
+管理员状态通过用户登录时设置的 Cookie（`shipkit-is-admin`）确定。
+
+## 紧急恢复
+
+如果您意外启用了维护模式且无法访问管理面板：
+
+### 选项 1：通过环境变量绕过
+
+添加到您的 `.env` 文件：
+
+```bash
+BYPASS_MAINTENANCE=true
+```
+
+### 选项 2：直接更新数据库
+
+```bash
+npx prisma db execute --stdin <<< "UPDATE app_config SET \"maintenanceMode\" = false WHERE id = 'default';"
+```
+
+### 选项 3：Prisma Studio
+
+```bash
+npx prisma studio
+```
+
+导航到 `AppConfig` 并将 `maintenanceMode` 设置为 `false`。
+
+## 自定义维护页面
+
+### 页面位置
+
+```
+src/app/[locale]/maintenance/page.tsx
+```
+
+### 翻译
+
+维护页面文本通过 `maintenance` 命名空间翻译：
+
+```json
+{
+  "maintenance": {
+    "title": "维护中",
+    "description": "我们正在进行计划维护。",
+    "checkBack": "请稍后再来。",
+    "backToHome": "返回首页"
+  }
+}
+```
+
+## 最佳实践
+
+1. **提前通知用户** - 宣布计划的维护
+2. **保持维护时间短** - 最小化用户中断
+3. **先测试管理员访问** - 验证您可以作为管理员登录
+4. **准备恢复计划** - 了解如何使用 `BYPASS_MAINTENANCE`
+5. **先在测试环境使用** - 在生产环境前在测试环境测试维护模式
+
+## 比较：维护模式 vs 等待列表模式
+
+| 功能 | 维护模式 | 等待列表模式 |
+|------|---------|-------------|
+| 阻止现有用户 | 是 | 否 |
+| 阻止新注册 | 是 | 是 |
+| 管理员绕过 | 是 | 是 |
+| 用例 | 更新、紧急情况 | 预发布、受控访问 |

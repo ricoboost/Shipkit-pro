@@ -1,0 +1,105 @@
+---
+title: Zahlungs-API
+description: API-Referenz für Zahlungs-Endpunkte.
+---
+
+# Zahlungs-API
+
+## Endpunkte
+
+### Checkout Erstellen
+
+Eine Checkout-Sitzung für das Abonnement erstellen.
+
+```http
+POST /api/payments/checkout
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "priceId": "price_xxx",
+  "successUrl": "/dashboard?success=true",
+  "cancelUrl": "/pricing"
+}
+```
+
+**Antwort:**
+
+```json
+{
+  "url": "https://checkout.stripe.com/...",
+  "sessionId": "cs_xxx"
+}
+```
+
+### Kundenportal
+
+URL zum Kundenportal für Abrechnung erhalten.
+
+```http
+POST /api/payments/portal
+Authorization: Bearer <token>
+```
+
+**Antwort:**
+
+```json
+{
+  "url": "https://billing.stripe.com/..."
+}
+```
+
+### Webhook
+
+Webhooks des Zahlungsanbieters verarbeiten.
+
+```http
+POST /api/payments/webhook
+```
+
+## Guthaben-API
+
+### Guthaben Abrufen
+
+```http
+GET /api/credits/balance
+Authorization: Bearer <token>
+```
+
+**Antwort:**
+
+```json
+{
+  "balance": 100
+}
+```
+
+### Verlauf Abrufen
+
+```http
+GET /api/credits/history
+Authorization: Bearer <token>
+```
+
+**Antwort:**
+
+```json
+{
+  "transactions": [
+    {
+      "id": "cuid",
+      "amount": -10,
+      "reason": "AI generation",
+      "createdAt": "2024-01-15T10:00:00Z"
+    }
+  ]
+}
+```
+
+## Fehlercodes
+
+| Code | Beschreibung |
+|------|-------------|
+| 401 | Nicht autorisiert |
+| 402 | Zahlung erforderlich |
+| 404 | Abonnement nicht gefunden |

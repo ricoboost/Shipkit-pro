@@ -1,0 +1,126 @@
+---
+title: 組織API
+description: 組織管理のAPIリファレンス。
+---
+
+# 組織API
+
+## エンドポイント
+
+### 組織一覧
+
+現在のユーザーのすべての組織を取得します。
+
+```http
+GET /api/organizations
+Authorization: Bearer <token>
+```
+
+**レスポンス:**
+
+```json
+{
+  "organizations": [
+    {
+      "id": "cuid",
+      "name": "My Team",
+      "slug": "my-team",
+      "role": "OWNER"
+    }
+  ]
+}
+```
+
+### 組織作成
+
+```http
+POST /api/organizations
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "My Team",
+  "slug": "my-team"
+}
+```
+
+### 組織取得
+
+```http
+GET /api/organizations/:id
+Authorization: Bearer <token>
+```
+
+### 組織更新
+
+```http
+PATCH /api/organizations/:id
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "Updated Name"
+}
+```
+
+### 組織削除
+
+```http
+DELETE /api/organizations/:id
+Authorization: Bearer <token>
+```
+
+## メンバー
+
+### メンバー一覧
+
+```http
+GET /api/organizations/:id/members
+Authorization: Bearer <token>
+```
+
+### メンバーロール更新
+
+```http
+PATCH /api/organizations/:id/members/:memberId
+Authorization: Bearer <token>
+
+{
+  "role": "ADMIN"
+}
+```
+
+### メンバー削除
+
+```http
+DELETE /api/organizations/:id/members/:memberId
+Authorization: Bearer <token>
+```
+
+## 招待
+
+### 招待送信
+
+```http
+POST /api/organizations/:id/invitations
+Authorization: Bearer <token>
+
+{
+  "email": "user@example.com",
+  "role": "MEMBER"
+}
+```
+
+### 招待受諾
+
+```http
+POST /api/invitations/:token
+```
+
+## ロール
+
+| ロール | 権限 |
+|--------|------|
+| OWNER | フルアクセス、組織を削除可能 |
+| ADMIN | メンバーと設定を管理 |
+| MEMBER | リソースの表示と使用 |

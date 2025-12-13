@@ -1,0 +1,283 @@
+---
+title: Comparison
+description: Components for comparing your product against alternatives and competitors.
+---
+
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Comparison Components
+
+Powerful comparison components that help visitors understand how your product stacks up against alternatives. Show them exactly why they should choose you.
+
+## Components Overview
+
+| Component | Purpose | Best For |
+|-----------|---------|----------|
+| `WithWithout` | Two-column with/without comparison | Lifestyle transformation |
+| `ComparisonTable` | Feature matrix against competitors | Detailed feature comparison |
+
+## With/Without
+
+A side-by-side comparison showing life without your product vs. life with it.
+
+### Preview
+
+<ComponentPreview title="With/Without" background="muted">
+  <WithWithoutPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { WithWithout } from '@/components/marketing/comparison/with-without';
+
+<WithWithout
+  subtitle="The Difference"
+  title="Transform Your Workflow"
+  description="See how ShipKit changes everything about building SaaS."
+  productName="ShipKit"
+  withoutTitle="Without"
+  withTitle="With"
+  withoutItems={[
+    "Spending weeks on boilerplate code",
+    "Piecing together random tutorials",
+    "Debugging authentication issues",
+    "Wrestling with payment integrations",
+    "Building UI components from scratch",
+    "Delayed launches and missed opportunities"
+  ]}
+  withItems={[
+    "Production-ready in hours, not weeks",
+    "Following battle-tested best practices",
+    "Auth that just works out of the box",
+    "Stripe integration pre-configured",
+    "50+ polished, accessible components",
+    "Launch fast and iterate with confidence"
+  ]}
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Section heading |
+| `subtitle` | `string` | - | Small text above title |
+| `description` | `string` | - | Supporting text |
+| `withoutTitle` | `string` | `"Without"` | Left column header |
+| `withTitle` | `string` | `"With"` | Right column header |
+| `withoutItems` | `string[]` | Required | Pain points without product |
+| `withItems` | `string[]` | Required | Benefits with product |
+| `productName` | `string` | - | Your product name |
+| `animated` | `boolean` | `true` | Enable animations |
+| `colorScheme` | `string` | `'primary'` | Color variant |
+
+<Callout type="info">
+Keep items balanced - aim for the same number of items in both columns for visual symmetry.
+</Callout>
+
+## Comparison Table
+
+A detailed feature comparison table with multiple competitors.
+
+### Preview
+
+<ComponentPreview title="Comparison Table" background="muted">
+  <ComparisonTablePreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { ComparisonTable } from '@/components/marketing/comparison/comparison-table';
+
+<ComparisonTable
+  subtitle="How We Compare"
+  title="ShipKit vs. The Competition"
+  description="See how we stack up against other solutions."
+  competitors={[
+    { name: "ShipKit", highlighted: true, badge: "Best Value" },
+    { name: "Build from Scratch" },
+    { name: "Competitor A" },
+    { name: "Competitor B" }
+  ]}
+  features={[
+    {
+      category: "Core Features",
+      name: "Authentication",
+      values: [true, false, true, true]
+    },
+    {
+      category: "Core Features",
+      name: "Payment Integration",
+      values: [true, false, true, false]
+    },
+    {
+      category: "Core Features",
+      name: "Email System",
+      values: [true, false, true, true]
+    },
+    {
+      category: "Components",
+      name: "UI Components",
+      values: ["50+", "0", "20+", "15+"]
+    },
+    {
+      category: "Components",
+      name: "Marketing Sections",
+      values: ["30+", "0", "10", "8"]
+    },
+    {
+      category: "Support",
+      name: "Documentation",
+      values: [true, null, true, true]
+    },
+    {
+      category: "Support",
+      name: "Discord Community",
+      values: [true, false, true, false]
+    },
+    {
+      category: "Pricing",
+      name: "One-time Payment",
+      values: [true, true, false, false]
+    },
+    {
+      category: "Pricing",
+      name: "Price",
+      values: ["$199", "Free*", "$299/yr", "$49/mo"]
+    }
+  ]}
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Section heading |
+| `subtitle` | `string` | - | Small text above title |
+| `description` | `string` | - | Supporting text |
+| `competitors` | `Competitor[]` | Required | List of competitors |
+| `features` | `ComparisonFeature[]` | Required | Features to compare |
+| `animated` | `boolean` | `true` | Enable animations |
+| `colorScheme` | `string` | `'primary'` | Color variant |
+
+### Competitor Interface
+
+```tsx
+interface Competitor {
+  name: string;
+  highlighted?: boolean;  // Highlights column (your product)
+  badge?: string;         // Badge text (e.g., "Best Value")
+}
+```
+
+### ComparisonFeature Interface
+
+```tsx
+interface ComparisonFeature {
+  name: string;
+  category?: string;      // Groups features under headers
+  values: (boolean | string | null)[];
+}
+```
+
+### Value Types
+
+The `values` array supports three types:
+
+| Value | Display | Use For |
+|-------|---------|---------|
+| `true` | Green checkmark | Feature included |
+| `false` | Red X | Feature not included |
+| `null` | Gray dash | Not applicable / Unknown |
+| `string` | Text | Specific values (e.g., "50+", "$199") |
+
+## Color Schemes
+
+Both components support these color schemes:
+
+- `primary` - Default background
+- `secondary` - Light secondary tint
+- `accent` - Accent color background
+- `muted` - Subtle gray background
+- `destructive` - Red-tinted background
+
+## Usage Examples
+
+### Simple Two-Product Comparison
+
+```tsx
+<ComparisonTable
+  title="Why Choose Us?"
+  competitors={[
+    { name: "Us", highlighted: true },
+    { name: "Them" }
+  ]}
+  features={[
+    { name: "Fast Setup", values: [true, false] },
+    { name: "24/7 Support", values: [true, false] },
+    { name: "Free Updates", values: [true, true] },
+    { name: "Price", values: ["$99", "$199"] }
+  ]}
+/>
+```
+
+### Industry Comparison
+
+```tsx
+<WithWithout
+  title="Old Way vs. New Way"
+  withoutTitle="Traditional Approach"
+  withTitle="Modern Approach"
+  withoutItems={[
+    "Hire expensive consultants",
+    "Months of development",
+    "Ongoing maintenance costs"
+  ]}
+  withItems={[
+    "Self-service platform",
+    "Launch in days",
+    "Included updates forever"
+  ]}
+/>
+```
+
+## Best Practices
+
+1. **Be Honest**: Don't misrepresent competitors - it damages trust
+2. **Highlight Strengths**: Use the `highlighted` prop for your product
+3. **Use Categories**: Group related features for easy scanning
+4. **Mix Value Types**: Combine checkmarks with specific values
+5. **Keep It Scannable**: Don't include too many features
+6. **Add Badges**: Use badges like "Best Value" or "Most Popular"
+
+## Combining Components
+
+Use WithWithout for emotional impact, then ComparisonTable for detailed analysis:
+
+```tsx
+// First: Emotional comparison
+<WithWithout
+  title="The Smart Choice"
+  productName="ShipKit"
+  withoutItems={["Frustration", "Delays", "Burnout"]}
+  withItems={["Flow state", "Fast launches", "Joy"]}
+/>
+
+// Then: Logical comparison
+<ComparisonTable
+  title="Feature Comparison"
+  competitors={[...]}
+  features={[...]}
+/>
+```
+
+## Accessibility
+
+- Tables use proper `<th>` and `<td>` semantics
+- Icons have appropriate color contrast
+- Highlighted columns are visually distinct
+- Animations respect `prefers-reduced-motion`

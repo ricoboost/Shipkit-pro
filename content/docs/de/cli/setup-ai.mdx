@@ -1,0 +1,231 @@
+---
+title: KI-Anbieter-Einrichtung
+description: Konfigurieren Sie die KI/LLM-Integration mit OpenAI, Anthropic, Google AI oder OpenRouter.
+---
+
+# KI-Anbieter-Einrichtung
+
+Der KI-Einrichtungsbefehl hilft Ihnen, Ihren KI/LLM-Anbieter für ShipKits KI-Funktionen zu konfigurieren.
+
+## Schnellstart
+
+```bash
+npm run setup:ai
+```
+
+## Unterstützte Anbieter
+
+### OpenAI
+
+GPT-4, GPT-3.5 und Embedding-Modelle.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider openai
+```
+
+**Erforderlich:** `OPENAI_API_KEY`
+
+**Verfügbare Modelle:**
+- `gpt-4o` - Am leistungsfähigsten, multimodal
+- `gpt-4o-mini` - Schnell und erschwinglich
+- `gpt-4-turbo` - Vorherige Generation Flaggschiff
+- `gpt-3.5-turbo` - Schnell, gut für einfache Aufgaben
+
+**API-Schlüssel holen:** [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+
+### Anthropic
+
+Claude 3.5 Sonnet, Claude 3 Opus und andere Claude-Modelle.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider anthropic
+```
+
+**Erforderlich:** `ANTHROPIC_API_KEY`
+
+**Verfügbare Modelle:**
+- `claude-3-5-sonnet-20241022` - Beste Balance zwischen Geschwindigkeit und Fähigkeit
+- `claude-3-opus-20240229` - Am leistungsfähigsten für komplexe Aufgaben
+- `claude-3-haiku-20240307` - Am schnellsten und günstigsten
+
+**API-Schlüssel holen:** [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+
+### Google AI (Gemini)
+
+Gemini Pro, Gemini Flash und andere Google-Modelle.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider google
+```
+
+**Erforderlich:** `GOOGLE_GENERATIVE_AI_API_KEY`
+
+**Verfügbare Modelle:**
+- `gemini-1.5-pro` - Am leistungsfähigsten
+- `gemini-1.5-flash` - Schnell und effizient
+- `gemini-pro` - Vorherige Generation
+
+**API-Schlüssel holen:** [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+
+### OpenRouter
+
+Zugang zu über 100 Modellen über eine API.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider openrouter
+```
+
+**Erforderlich:** `OPENROUTER_API_KEY`
+
+**Verfügbare Modelle:**
+- Alle OpenAI-Modelle
+- Alle Anthropic-Modelle
+- Meta Llama-Modelle
+- Mistral-Modelle
+- Und viele mehr
+
+**API-Schlüssel holen:** [openrouter.ai/keys](https://openrouter.ai/keys)
+
+## Was die Einrichtung Macht
+
+1. **Fragt nach Anbieter** - Wählen Sie Ihren KI-Anbieter
+2. **Aktualisiert `.env`** - Setzt die Variable `AI_PROVIDER`
+3. **Konfiguriert API-Schlüssel** - Hilft beim Setzen des entsprechenden Schlüssels
+4. **Validiert Format** - Prüft das API-Schlüsselformat
+5. **Zeigt verfügbare Modelle** - Listet Modelle auf, die Sie verwenden können
+
+## KI in Ihrer Anwendung Verwenden
+
+Nach der Einrichtung können Sie das KI-SDK in Ihrer gesamten Anwendung nutzen:
+
+### Einfache Chat-Vervollständigung
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const response = await ai.chat({
+  model: 'gpt-4o',
+  messages: [
+    { role: 'system', content: 'Du bist ein hilfreicher Assistent.' },
+    { role: 'user', content: 'Hallo!' }
+  ],
+});
+
+console.log(response.content);
+```
+
+### Streaming-Antworten
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const stream = await ai.chatStream({
+  model: 'claude-3-5-sonnet-20241022',
+  messages: [
+    { role: 'user', content: 'Schreibe eine kurze Geschichte über einen Roboter.' }
+  ],
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk);
+}
+```
+
+### Text-Embeddings
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const embedding = await ai.embed({
+  model: 'text-embedding-3-small',
+  input: 'Der schnelle braune Fuchs springt über den faulen Hund.',
+});
+
+console.log(embedding.vector);
+```
+
+## Ihre Einrichtung Testen
+
+Besuchen Sie den AI Playground unter `/ai-playground`, um Ihre Konfiguration zu testen:
+
+1. Wählen Sie ein Modell aus dem Dropdown
+2. Geben Sie eine Nachricht ein
+3. Sehen Sie die KI-Antwort in Echtzeit
+
+## Umgebungsvariablen Referenz
+
+```bash
+# KI-Anbieter-Auswahl
+AI_PROVIDER="openai"  # oder "anthropic", "google", "openrouter"
+
+# OpenAI
+OPENAI_API_KEY="sk-..."
+
+# Anthropic
+ANTHROPIC_API_KEY="sk-ant-..."
+
+# Google AI
+GOOGLE_GENERATIVE_AI_API_KEY="..."
+
+# OpenRouter
+OPENROUTER_API_KEY="sk-or-..."
+```
+
+## Anbieter Wechseln
+
+Um zwischen KI-Anbietern zu wechseln:
+
+1. Führen Sie den Einrichtungsbefehl aus:
+   ```bash
+   npm run setup:ai
+   ```
+
+2. Wählen Sie Ihren neuen Anbieter
+
+3. Der Code verwendet automatisch den konfigurierten Anbieter:
+   ```typescript
+   // Dies funktioniert mit jedem Anbieter
+   const response = await ai.chat({
+     model: 'gpt-4o', // oder claude, gemini, etc.
+     messages: [...]
+   });
+   ```
+
+## Kostenüberlegungen
+
+| Anbieter | Preismodell |
+|----------|-------------|
+| OpenAI | Pro Token (Eingabe/Ausgabe) |
+| Anthropic | Pro Token (Eingabe/Ausgabe) |
+| Google AI | Kostenlose Stufe verfügbar, dann pro Token |
+| OpenRouter | Pay-per-Use, variiert nach Modell |
+
+**Tipps zur Kostenverwaltung:**
+- Verwenden Sie kleinere Modelle für einfache Aufgaben
+- Implementieren Sie Caching für wiederholte Anfragen
+- Setzen Sie `maxTokens`, um die Antwortlänge zu begrenzen
+- Verwenden Sie Streaming für bessere UX ohne Zusatzkosten
+
+## Fehlerbehebung
+
+### "Ungültiger API-Schlüssel"
+
+Überprüfen Sie Ihr API-Schlüsselformat:
+- OpenAI: Beginnt mit `sk-`
+- Anthropic: Beginnt mit `sk-ant-`
+- OpenRouter: Beginnt mit `sk-or-`
+
+### "Modell nicht gefunden"
+
+Prüfen Sie, ob der Modellname genau übereinstimmt. Modellnamen sind case-sensitive.
+
+### "Rate Limit überschritten"
+
+Sie haben das API-Rate-Limit erreicht. Lösungen:
+- Warten und erneut versuchen
+- Ihr API-Plan upgraden
+- Exponentielles Backoff implementieren
+
+### "Unzureichendes Kontingent"
+
+Fügen Sie Zahlungsinformationen oder Credits zu Ihrem KI-Anbieter-Konto hinzu.

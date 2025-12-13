@@ -1,0 +1,285 @@
+---
+title: Stats
+description: Components for displaying metrics, achievements, and social proof numbers.
+---
+
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Stats Components
+
+Powerful statistics components to showcase your achievements, metrics, and social proof. Numbers tell a compelling story - use them wisely.
+
+## Components Overview
+
+| Component | Purpose | Best For |
+|-----------|---------|----------|
+| `StatsSimple` | Clean, minimal stats display | Hero sections, quick highlights |
+| `StatsCards` | Rich cards with icons and trends | Detailed metrics, dashboards |
+| `StatsAnimated` | Counting animation on scroll | High-impact landing pages |
+
+## Stats Simple
+
+Clean, minimal statistics display perfect for hero sections.
+
+### Preview
+
+<ComponentPreview title="Stats Simple" background="muted">
+  <StatsSimplePreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { StatsSimple } from '@/components/marketing/stats/stats-simple';
+
+<StatsSimple
+  subtitle="By The Numbers"
+  title="Trusted by Thousands"
+  description="Our community continues to grow every day."
+  stats={[
+    { value: "10K", label: "Active Users", prefix: "", suffix: "+" },
+    { value: "500", label: "Companies", suffix: "+" },
+    { value: "99.9", label: "Uptime", suffix: "%" },
+    { value: "24/7", label: "Support" }
+  ]}
+  columns={4}
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Section heading |
+| `subtitle` | `string` | - | Small text above title |
+| `description` | `string` | - | Supporting text |
+| `stats` | `SimpleStat[]` | Required | Array of statistics |
+| `columns` | `2 \| 3 \| 4` | `4` | Number of columns |
+| `animated` | `boolean` | `true` | Enable animations |
+| `colorScheme` | `string` | `'primary'` | Color variant |
+
+### SimpleStat Interface
+
+```tsx
+interface SimpleStat {
+  value: string;
+  label: string;
+  prefix?: string;  // e.g., "$" for currency
+  suffix?: string;  // e.g., "%" or "+"
+}
+```
+
+## Stats Cards
+
+Rich stat cards with support for icons, descriptions, and trend indicators.
+
+### Preview
+
+<ComponentPreview title="Stats Cards" background="muted">
+  <StatsCardsPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { StatsCards } from '@/components/marketing/stats/stats-cards';
+import { Users, TrendingUp, Clock, Star } from 'lucide-react';
+
+<StatsCards
+  subtitle="Performance Metrics"
+  title="This Month's Highlights"
+  stats={[
+    {
+      value: "12,847",
+      label: "Total Users",
+      description: "Compared to 10,234 last month",
+      icon: <Users className="h-5 w-5" />,
+      trend: { value: "25%", positive: true }
+    },
+    {
+      value: "$84,230",
+      label: "Revenue",
+      description: "Monthly recurring revenue",
+      icon: <TrendingUp className="h-5 w-5" />,
+      trend: { value: "12%", positive: true }
+    },
+    {
+      value: "2.4ms",
+      label: "Response Time",
+      description: "Average API latency",
+      icon: <Clock className="h-5 w-5" />,
+      trend: { value: "15%", positive: true }
+    },
+    {
+      value: "4.9",
+      label: "User Rating",
+      description: "Based on 2,847 reviews",
+      icon: <Star className="h-5 w-5" />
+    }
+  ]}
+  columns={4}
+  variant="bordered"
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Section heading |
+| `subtitle` | `string` | - | Small text above title |
+| `description` | `string` | - | Supporting text |
+| `stats` | `CardStat[]` | Required | Array of statistics |
+| `columns` | `2 \| 3 \| 4` | `4` | Number of columns |
+| `variant` | `'default' \| 'bordered' \| 'filled'` | `'default'` | Card style |
+| `animated` | `boolean` | `true` | Enable animations |
+| `colorScheme` | `string` | `'primary'` | Color variant |
+
+### CardStat Interface
+
+```tsx
+interface CardStat {
+  value: string;
+  label: string;
+  description?: string;
+  icon?: React.ReactNode;
+  trend?: {
+    value: string;
+    positive?: boolean;  // Green if true, red if false
+  };
+}
+```
+
+### Card Variants
+
+- **default** - Standard card with shadow
+- **bordered** - Prominent border, no shadow
+- **filled** - Subtle background fill
+
+## Stats Animated
+
+Statistics with counting animations that trigger when scrolling into view.
+
+### Preview
+
+<ComponentPreview title="Stats Animated" background="muted">
+  <StatsAnimatedPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { StatsAnimated } from '@/components/marketing/stats/stats-animated';
+
+<StatsAnimated
+  subtitle="Our Impact"
+  title="Growing Every Day"
+  stats={[
+    { endValue: 50000, label: "Users", suffix: "+" },
+    { endValue: 1200, label: "Projects", suffix: "+" },
+    { endValue: 99.9, label: "Uptime", suffix: "%", decimals: 1 },
+    { endValue: 4.8, label: "Rating", prefix: "", decimals: 1 }
+  ]}
+  columns={4}
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Section heading |
+| `subtitle` | `string` | - | Small text above title |
+| `description` | `string` | - | Supporting text |
+| `stats` | `AnimatedStat[]` | Required | Array of animated stats |
+| `columns` | `2 \| 3 \| 4` | `4` | Number of columns |
+| `colorScheme` | `string` | `'primary'` | Color variant |
+
+### AnimatedStat Interface
+
+```tsx
+interface AnimatedStat {
+  endValue: number;     // Final number to count to
+  label: string;
+  prefix?: string;      // Text before number
+  suffix?: string;      // Text after number
+  decimals?: number;    // Decimal places (default: 0)
+  duration?: number;    // Animation duration in seconds (default: 2)
+}
+```
+
+<Callout type="info">
+Animated stats use `useInView` to only start counting when the element is visible. The animation only plays once.
+</Callout>
+
+## Color Schemes
+
+All Stats components support these color schemes:
+
+- `primary` - Default background
+- `secondary` - Light secondary tint
+- `accent` - Accent color background
+- `muted` - Subtle gray background
+- `destructive` - Red-tinted background
+
+## Usage Examples
+
+### Hero Stats Bar
+
+```tsx
+<StatsSimple
+  stats={[
+    { value: "10K", label: "Users", suffix: "+" },
+    { value: "50K", label: "Downloads", suffix: "+" },
+    { value: "4.9", label: "Rating" }
+  ]}
+  columns={3}
+  colorScheme="muted"
+/>
+```
+
+### Dashboard Metrics
+
+```tsx
+<StatsCards
+  title="This Week"
+  stats={[
+    { value: "2,847", label: "Visitors", trend: { value: "12%", positive: true } },
+    { value: "142", label: "Sign Ups", trend: { value: "8%", positive: true } },
+    { value: "34", label: "Churned", trend: { value: "5%", positive: false } }
+  ]}
+  columns={3}
+  variant="filled"
+/>
+```
+
+### Impact Statement
+
+```tsx
+<StatsAnimated
+  subtitle="Since Launch"
+  title="Making a Difference"
+  stats={[
+    { endValue: 1000000, label: "Hours Saved", suffix: "+" },
+    { endValue: 50, label: "Countries", suffix: "+" },
+    { endValue: 99, label: "Satisfaction", suffix: "%" }
+  ]}
+  columns={3}
+/>
+```
+
+## Best Practices
+
+1. **Use Real Numbers**: Avoid made-up statistics - authenticity builds trust
+2. **Round Appropriately**: "10K+" is more impactful than "10,234"
+3. **Choose Meaningful Metrics**: Quality over quantity
+4. **Add Context**: Descriptions help visitors understand significance
+5. **Use Trends Sparingly**: Only when the comparison is meaningful
+
+## Accessibility
+
+- Statistics use semantic markup
+- Color contrast meets WCAG standards
+- Animations respect `prefers-reduced-motion`
+- Numbers are screen reader friendly

@@ -1,0 +1,326 @@
+---
+title: FAQ Components
+description: Frequently asked questions sections with accordion, two-column, and categorized layouts
+---
+
+# FAQ Components
+
+Answer common questions and reduce support tickets with well-organized FAQ sections. ShipKit includes 3 FAQ variants for different content structures.
+
+## Available Components
+
+| Component | Description |
+|-----------|-------------|
+| `FAQAccordion` | Expandable accordion with multiple style variants |
+| `FAQTwoColumn` | Side-by-side Q&A layout |
+| `FAQCategorized` | FAQ grouped by category with tabs |
+
+---
+
+## FAQAccordion
+
+Classic expandable FAQ section with smooth animations.
+
+### Preview
+
+<ComponentPreview title="FAQAccordion" background="muted">
+  <FAQAccordionPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { FAQAccordion } from '@/components/marketing/faq/faq-accordion';
+
+const faqs = [
+  {
+    question: 'What payment methods do you accept?',
+    answer: 'We accept all major credit cards (Visa, Mastercard, American Express), PayPal, and bank transfers for annual plans.',
+  },
+  {
+    question: 'Can I cancel my subscription anytime?',
+    answer: 'Yes, you can cancel your subscription at any time. Your access will continue until the end of your billing period.',
+  },
+  {
+    question: 'Do you offer refunds?',
+    answer: 'We offer a 30-day money-back guarantee for all plans. If you are not satisfied, contact support for a full refund.',
+  },
+  // ... more FAQs
+];
+
+<FAQAccordion
+  title="Frequently Asked Questions"
+  subtitle="FAQ"
+  description="Find answers to common questions about ShipKit"
+  items={faqs}
+  defaultOpen={0}
+  allowMultiple={false}
+  variant="bordered"
+/>
+```
+
+### Props
+
+```typescript
+interface FAQAccordionProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  items: FAQItem[];
+  defaultOpen?: number | number[];   // Index(es) of initially open items
+  allowMultiple?: boolean;           // Allow multiple items open at once
+  variant?: 'default' | 'bordered' | 'separated';
+  animated?: boolean;
+  colorScheme?: ColorScheme;
+  className?: string;
+}
+
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+```
+
+### Variants
+
+| Variant | Description |
+|---------|-------------|
+| `default` | Simple divider lines between items |
+| `bordered` | Each item has a border (default) |
+| `separated` | Items as separate cards with backgrounds |
+
+### Examples
+
+```tsx
+// Multiple items open by default
+<FAQAccordion
+  items={faqs}
+  defaultOpen={[0, 1, 2]}
+  allowMultiple={true}
+/>
+
+// Separated card style
+<FAQAccordion
+  items={faqs}
+  variant="separated"
+  colorScheme="muted"
+/>
+```
+
+---
+
+## FAQTwoColumn
+
+Clean two-column layout for scannable Q&A content.
+
+### Preview
+
+<ComponentPreview title="FAQTwoColumn" background="muted">
+  <FAQTwoColumnPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { FAQTwoColumn } from '@/components/marketing/faq/faq-two-column';
+
+<FAQTwoColumn
+  title="Common Questions"
+  subtitle="Support"
+  items={faqs}
+  colorScheme="primary"
+/>
+```
+
+### Props
+
+```typescript
+interface FAQTwoColumnProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  items: FAQItem[];
+  animated?: boolean;
+  colorScheme?: ColorScheme;
+  className?: string;
+}
+```
+
+### Best For
+
+- Pages with 4-10 FAQs
+- When answers are relatively short
+- Desktop-focused layouts
+- Scannable content
+
+---
+
+## FAQCategorized
+
+Tabbed FAQ section for organizing questions by category.
+
+### Preview
+
+<ComponentPreview title="FAQCategorized" background="muted">
+  <FAQCategorizedPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { FAQCategorized } from '@/components/marketing/faq/faq-categorized';
+import { CreditCard, Settings, Shield, HelpCircle } from 'lucide-react';
+
+const categories = [
+  {
+    name: 'Billing',
+    icon: <CreditCard className="h-4 w-4" />,
+    items: [
+      { question: 'What payment methods...', answer: '...' },
+      { question: 'Can I get a refund...', answer: '...' },
+    ],
+  },
+  {
+    name: 'Account',
+    icon: <Settings className="h-4 w-4" />,
+    items: [
+      { question: 'How do I reset...', answer: '...' },
+      { question: 'Can I change my email...', answer: '...' },
+    ],
+  },
+  {
+    name: 'Security',
+    icon: <Shield className="h-4 w-4" />,
+    items: [
+      { question: 'Is my data secure...', answer: '...' },
+      { question: 'Do you support 2FA...', answer: '...' },
+    ],
+  },
+  {
+    name: 'General',
+    icon: <HelpCircle className="h-4 w-4" />,
+    items: [
+      { question: 'What is ShipKit...', answer: '...' },
+      { question: 'Who is this for...', answer: '...' },
+    ],
+  },
+];
+
+<FAQCategorized
+  title="Help Center"
+  subtitle="FAQ"
+  description="Browse questions by category"
+  categories={categories}
+  defaultCategory="Billing"
+/>
+```
+
+### Props
+
+```typescript
+interface FAQCategory {
+  name: string;
+  icon?: React.ReactNode;
+  items: FAQItem[];
+}
+
+interface FAQCategorizedProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  categories: FAQCategory[];
+  defaultCategory?: string;          // Name of initially active category
+  animated?: boolean;
+  colorScheme?: ColorScheme;
+  className?: string;
+}
+```
+
+### Best For
+
+- Large FAQ sections (15+ questions)
+- Multiple product areas or topics
+- Support documentation pages
+- Help centers
+
+---
+
+## Color Schemes
+
+All FAQ components support 5 color schemes:
+
+```tsx
+<FAQAccordion colorScheme="primary" {...props} />
+<FAQAccordion colorScheme="secondary" {...props} />
+<FAQAccordion colorScheme="accent" {...props} />
+<FAQAccordion colorScheme="muted" {...props} />
+<FAQAccordion colorScheme="destructive" {...props} />
+```
+
+---
+
+## Best Practices
+
+### Write Clear Questions
+
+```tsx
+// Good: Specific, common question
+{ question: 'Can I cancel my subscription at any time?' }
+
+// Weak: Vague
+{ question: 'About cancellation' }
+```
+
+### Keep Answers Concise
+
+```tsx
+// Good: Direct answer
+{
+  answer: 'Yes, you can cancel anytime from your account settings. Your access continues until the end of your billing period.'
+}
+
+// Weak: Too long
+{
+  answer: 'Well, it depends on several factors. First, you need to consider... [500 words]'
+}
+```
+
+### Order by Importance
+
+Place the most common questions at the top:
+
+```tsx
+const faqs = [
+  // Most asked questions first
+  { question: 'What is included in the free plan?', ... },
+  { question: 'How do I upgrade?', ... },
+  { question: 'What payment methods do you accept?', ... },
+  // Less common questions later
+  { question: 'Do you offer enterprise plans?', ... },
+];
+```
+
+### Use Categories for Large FAQs
+
+When you have 15+ questions, group them:
+
+```tsx
+// Instead of one long list
+<FAQAccordion items={allFaqs} />
+
+// Use categories
+<FAQCategorized categories={[
+  { name: 'Getting Started', items: [...] },
+  { name: 'Billing', items: [...] },
+  { name: 'Technical', items: [...] },
+]} />
+```
+
+---
+
+## Accessibility
+
+- Accordion uses proper ARIA attributes
+- Keyboard navigation support (Enter/Space to toggle)
+- Tab triggers are properly focusable
+- Expanded state is announced to screen readers

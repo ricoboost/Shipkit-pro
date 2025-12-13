@@ -1,0 +1,58 @@
+---
+title: Déployer en Production
+description: Guide complet pour déployer votre application ShipKit sur Vercel, Railway ou Docker.
+---
+
+# Déployer en Production
+
+Ce tutoriel couvre le déploiement de votre application ShipKit en production avec une configuration appropriée de sécurité, performance et surveillance.
+
+## Options de Déploiement
+
+| Plateforme | Idéal Pour | Complexité |
+|------------|------------|------------|
+| **Vercel** | Déploiement le plus rapide | Facile |
+| **Railway** | Contrôle total, base de données incluse | Moyen |
+| **Docker** | Auto-hébergé, contrôle maximum | Avancé |
+
+## Option 1: Déployer sur Vercel
+
+### Étape 1: Connecter le Dépôt
+
+1. Allez sur [vercel.com/new](https://vercel.com/new)
+2. Importez votre dépôt GitHub
+3. Vercel détecte automatiquement Next.js
+
+### Étape 2: Configurer les Variables d'Environnement
+
+```bash
+NEXT_PUBLIC_APP_URL=https://votre-domaine.com
+DATABASE_URL="postgresql://..."
+NEXTAUTH_SECRET="générer-avec-openssl"
+STRIPE_SECRET_KEY=sk_live_xxx
+```
+
+### Étape 3: Déployer
+
+Cliquez sur "Deploy" et attendez la fin du build.
+
+### Étape 4: Configurer les Webhooks Stripe
+
+1. Tableau de bord Stripe > Développeurs > Webhooks
+2. Ajoutez l'endpoint: `https://votre-domaine.com/api/payments/webhook`
+
+## Liste de Vérification Production
+
+- [ ] Nouveau `NEXTAUTH_SECRET` généré
+- [ ] Clés Stripe en mode live
+- [ ] Vérification de signature webhook activée
+- [ ] Pooling de connexions base de données
+- [ ] Sentry configuré pour le suivi des erreurs
+
+## Prochaines Étapes
+
+<Cards>
+  <Card title="Configurer la Surveillance" href="/docs/infrastructure/monitoring">
+    Configurez Sentry, analytics et surveillance uptime.
+  </Card>
+</Cards>

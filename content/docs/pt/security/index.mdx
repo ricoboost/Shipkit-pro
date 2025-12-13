@@ -1,0 +1,71 @@
+---
+title: Segurança
+description: Melhores práticas e guias de segurança para proteger sua aplicação ShipKit.
+---
+
+# Segurança
+
+Proteja sua aplicação ShipKit com estas melhores práticas e guias de segurança.
+
+---
+
+## Guias de Segurança
+
+<Cards>
+  <Card title="Segurança de Autenticação" href="/docs/security/authentication">
+    Gerenciamento de sessões, hash de senhas e segurança OAuth.
+  </Card>
+  <Card title="Segurança de API" href="/docs/security/api-security">
+    Limitação de taxa, chaves de API e validação de entrada.
+  </Card>
+  <Card title="Cabeçalhos de Segurança" href="/docs/security/headers">
+    CSP, HSTS e outros cabeçalhos HTTP de segurança.
+  </Card>
+  <Card title="Proteção de Dados" href="/docs/security/data-protection">
+    Criptografia, tratamento de PII e conformidade LGPD/GDPR.
+  </Card>
+</Cards>
+
+---
+
+## Visão Geral de Segurança
+
+### Autenticação
+- ✅ Hash bcrypt com fator de custo 12
+- ✅ Cookies de sessão seguros (HttpOnly, SameSite)
+- ✅ Parâmetro de estado OAuth
+- ✅ Suporte a autenticação de dois fatores
+
+### Segurança de API
+- ✅ Limitação de taxa em todos os endpoints
+- ✅ Validação de entrada com Zod
+- ✅ Autenticação por chave de API
+- ✅ Verificação de assinatura de webhooks
+
+### Proteção de Dados
+- ✅ Criptografia em repouso (AES-256)
+- ✅ HTTPS forçado (HSTS)
+- ✅ Conformidade LGPD/GDPR
+- ✅ Políticas de retenção de dados
+
+---
+
+## Lista de Verificação de Segurança
+
+### Antes do Lançamento
+
+- [ ] Variáveis de ambiente seguras configuradas
+- [ ] HTTPS habilitado com HSTS
+- [ ] Cabeçalhos de segurança configurados
+- [ ] Limitação de taxa habilitada
+- [ ] Validação de entrada em todas as rotas de API
+- [ ] Segredos de autenticação rotacionados
+- [ ] Permissões de banco de dados revisadas
+- [ ] Monitoramento de erros habilitado (Sentry)
+
+### Contínuo
+
+- [ ] Auditorias de segurança regulares
+- [ ] Atualizações de dependências
+- [ ] Revisões de logs de acesso
+- [ ] Plano de resposta a incidentes documentado

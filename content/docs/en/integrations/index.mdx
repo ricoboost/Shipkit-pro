@@ -1,0 +1,277 @@
+---
+title: Integrations
+description: Third-party service integrations for monitoring, email, storage, and more.
+---
+
+# Integrations
+
+ShipKit integrates with popular third-party services to provide monitoring, email delivery, storage, and caching capabilities.
+
+---
+
+## Available Integrations
+
+<Cards>
+  <Card title="Sentry" href="/docs/integrations/sentry">
+    Error tracking and performance monitoring.
+  </Card>
+  <Card title="Resend" href="/docs/integrations/resend">
+    Transactional email delivery.
+  </Card>
+  <Card title="Analytics" href="/docs/integrations/analytics">
+    Google Analytics, PostHog, and Plausible.
+  </Card>
+  <Card title="Upstash" href="/docs/integrations/upstash">
+    Redis caching and rate limiting.
+  </Card>
+  <Card title="Storage" href="/docs/integrations/storage">
+    AWS S3, Cloudflare R2, and file uploads.
+  </Card>
+</Cards>
+
+---
+
+## Quick Setup Guide
+
+### Essential Services
+
+| Service | Purpose | Required |
+|---------|---------|----------|
+| [Sentry](/docs/integrations/sentry) | Error tracking | Recommended |
+| [Resend](/docs/integrations/resend) | Email delivery | Required for auth |
+| [Upstash](/docs/integrations/upstash) | Rate limiting | Recommended |
+| [Analytics](/docs/integrations/analytics) | User analytics | Optional |
+| [Storage](/docs/integrations/storage) | File uploads | Optional |
+
+---
+
+## Environment Variables
+
+Add these to your `.env` file based on services you use:
+
+```bash
+# Sentry - Error Tracking
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+SENTRY_ORG=your-org
+SENTRY_PROJECT=your-project
+SENTRY_AUTH_TOKEN=sntrys_xxx
+
+# Resend - Email
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@your-domain.com
+
+# Upstash - Redis
+UPSTASH_REDIS_REST_URL=https://xxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=xxx
+
+# Analytics - Google Analytics
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
+# Analytics - PostHog
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+
+# Analytics - Plausible
+NEXT_PUBLIC_PLAUSIBLE_DOMAIN=your-domain.com
+
+# Storage - AWS S3
+AWS_ACCESS_KEY_ID=xxx
+AWS_SECRET_ACCESS_KEY=xxx
+AWS_REGION=us-east-1
+AWS_BUCKET_NAME=your-bucket
+
+# Storage - Cloudflare R2
+R2_ACCESS_KEY_ID=xxx
+R2_SECRET_ACCESS_KEY=xxx
+R2_BUCKET_NAME=your-bucket
+R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
+```
+
+---
+
+## Integration Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Your ShipKit App                      │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │   Sentry    │  │   Resend    │  │   Upstash   │     │
+│  │   Errors    │  │   Emails    │  │   Redis     │     │
+│  └─────────────┘  └─────────────┘  └─────────────┘     │
+│                                                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │  Analytics  │  │   Storage   │  │    More     │     │
+│  │   Tracking  │  │   S3/R2     │  │   Coming    │     │
+│  └─────────────┘  └─────────────┘  └─────────────┘     │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Best Practices
+
+### 1. Use Environment Variables
+
+Never hardcode API keys or secrets:
+
+```typescript
+// ❌ Bad
+const apiKey = 're_1234567890';
+
+// ✅ Good
+const apiKey = process.env.RESEND_API_KEY;
+```
+
+---
+
+### 2. Handle Failures Gracefully
+
+Third-party services can fail. Always handle errors:
+
+```typescript
+try {
+  await sendEmail(options);
+} catch (error) {
+  console.error('Email failed:', error);
+  // Log to Sentry
+  Sentry.captureException(error);
+  // Don't crash the app - queue for retry or notify
+}
+```
+
+---
+
+### 3. Use Fallbacks When Possible
+
+```typescript
+async function trackEvent(event: string, data: object) {
+  try {
+    await posthog.capture(event, data);
+  } catch {
+    // Fallback to console in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Track:', event, data);
+    }
+  }
+}
+```
+
+---
+
+### 4. Monitor Rate Limits
+
+Most services have rate limits. Track usage:
+
+```typescript
+// src/lib/integrations/resend.ts
+let emailsSentToday = 0;
+const DAILY_LIMIT = 100;
+
+export async function sendEmail(options: EmailOptions) {
+  if (emailsSentToday >= DAILY_LIMIT) {
+    throw new Error('Daily email limit reached');
+  }
+
+  await resend.emails.send(options);
+  emailsSentToday++;
+}
+```
+
+---
+
+## Testing Integrations
+
+### Mock Services in Tests
+
+```typescript
+// __tests__/email.test.ts
+jest.mock('@/lib/resend', () => ({
+  sendEmail: jest.fn().mockResolvedValue({ id: 'test-id' }),
+}));
+
+test('sends welcome email', async () => {
+  await sendWelcomeEmail('test@example.com');
+  expect(sendEmail).toHaveBeenCalledWith(
+    expect.objectContaining({
+      to: 'test@example.com',
+    })
+  );
+});
+```
+
+---
+
+### Environment-Based Configuration
+
+```typescript
+// src/lib/config.ts
+export const config = {
+  sentry: {
+    enabled: !!process.env.NEXT_PUBLIC_SENTRY_DSN,
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  },
+  analytics: {
+    enabled: process.env.NODE_ENV === 'production',
+    gaId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
+  },
+  email: {
+    enabled: !!process.env.RESEND_API_KEY,
+    from: process.env.EMAIL_FROM || 'noreply@example.com',
+  },
+};
+```
+
+---
+
+## Adding New Integrations
+
+1. Install the SDK:
+
+```bash
+npm install @service/sdk
+```
+
+2. Create integration module:
+
+```typescript
+// src/lib/integrations/service.ts
+import { ServiceClient } from '@service/sdk';
+
+export const serviceClient = new ServiceClient({
+  apiKey: process.env.SERVICE_API_KEY!,
+});
+
+export async function doSomething() {
+  return serviceClient.action();
+}
+```
+
+3. Add environment variable validation:
+
+```typescript
+// src/env.ts
+import { z } from 'zod';
+
+const envSchema = z.object({
+  SERVICE_API_KEY: z.string().optional(),
+});
+```
+
+4. Document in this guide!
+
+---
+
+## Integration Status Checklist
+
+Use this checklist when setting up integrations:
+
+- [ ] API keys obtained and added to `.env`
+- [ ] SDK installed and configured
+- [ ] Error handling implemented
+- [ ] Rate limits understood
+- [ ] Fallback behavior defined
+- [ ] Testing strategy in place
+- [ ] Production deployment verified

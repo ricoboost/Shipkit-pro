@@ -1,0 +1,463 @@
+---
+title: Features Components
+description: Showcase your product features with 6 different layout variants
+---
+
+# Features Components
+
+Feature sections help visitors understand what makes your product valuable. ShipKit includes 6 feature component variants for different presentation styles.
+
+## Available Variants
+
+| Variant | Best For | Key Feature |
+|---------|----------|-------------|
+| `FeaturesGrid` | Multiple features | Responsive card grid |
+| `FeaturesListicle` | Detailed explanations | Numbered list format |
+| `FeaturesAccordion` | FAQ-style content | Expandable sections |
+| `FeaturesTabs` | Feature categories | Tabbed interface with images |
+| `FeaturesBento` | Visual showcase | Bento grid layout |
+| `FeaturesComparison` | Plan comparisons | Side-by-side comparison |
+
+## Common Props
+
+All features components share these base props:
+
+```typescript
+interface FeaturesBaseProps {
+  title?: string;                   // Section heading
+  subtitle?: string;                // Small text above title
+  description?: string;             // Supporting text
+  animated?: boolean;               // Enable/disable animations
+  colorScheme?: ColorScheme;        // Color theme
+  className?: string;               // Additional CSS classes
+}
+
+interface FeatureItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+}
+```
+
+---
+
+## FeaturesGrid
+
+The most versatile variant displaying features in a responsive card grid.
+
+### Usage
+
+```tsx
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+import { Zap, Shield, Rocket, Heart, Star, Globe } from 'lucide-react';
+
+export function FeaturesSection() {
+  return (
+    <FeaturesGrid
+      title="Everything You Need to Ship Fast"
+      subtitle="Features"
+      description="Built with modern best practices and production-ready from day one"
+      columns={3}
+      features={[
+        {
+          title: 'Lightning Fast',
+          description: 'Optimized for performance with Turbopack and edge functions',
+          icon: <Zap className="h-6 w-6" />,
+        },
+        {
+          title: 'Enterprise Security',
+          description: 'Built-in auth, rate limiting, and security headers',
+          icon: <Shield className="h-6 w-6" />,
+        },
+        {
+          title: 'Scale Effortlessly',
+          description: 'From zero to millions of users without code changes',
+          icon: <Rocket className="h-6 w-6" />,
+        },
+        {
+          title: 'Developer Experience',
+          description: 'TypeScript, ESLint, Prettier configured out of the box',
+          icon: <Heart className="h-6 w-6" />,
+        },
+        {
+          title: 'AI Ready',
+          description: 'OpenRouter and Vercel AI SDK integration built-in',
+          icon: <Star className="h-6 w-6" />,
+        },
+        {
+          title: 'Global by Default',
+          description: '7 languages supported with next-intl',
+          icon: <Globe className="h-6 w-6" />,
+        },
+      ]}
+      colorScheme="primary"
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface FeaturesGridProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  columns?: 2 | 3 | 4;              // Grid columns (default: 3)
+}
+```
+
+---
+
+## FeaturesListicle
+
+Numbered list format ideal for step-by-step features or ordered benefits.
+
+### Usage
+
+```tsx
+import { FeaturesListicle } from '@/components/marketing/features/features-listicle';
+
+export function HowItWorks() {
+  return (
+    <FeaturesListicle
+      title="How It Works"
+      subtitle="Getting Started"
+      features={[
+        {
+          title: 'Clone the Repository',
+          description: 'One command to get started with the complete stack',
+        },
+        {
+          title: 'Configure Your Providers',
+          description: 'Use our setup wizard to configure auth, payments, and AI',
+        },
+        {
+          title: 'Customize Your Theme',
+          description: 'Use the visual theme builder to match your brand',
+        },
+        {
+          title: 'Deploy to Production',
+          description: 'One-click deploy to Vercel or use Docker for self-hosting',
+        },
+      ]}
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface FeaturesListicleProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  numbered?: boolean;               // Show numbers (default: true)
+  orientation?: 'vertical' | 'horizontal';
+}
+```
+
+---
+
+## FeaturesAccordion
+
+Expandable accordion sections for detailed feature explanations.
+
+### Usage
+
+```tsx
+import { FeaturesAccordion } from '@/components/marketing/features/features-accordion';
+
+export function DetailedFeatures() {
+  return (
+    <FeaturesAccordion
+      title="Detailed Features"
+      features={[
+        {
+          title: 'Multi-Provider Authentication',
+          description: 'Support for NextAuth.js, Supabase Auth, and Better-Auth. Switch between providers with a single environment variable. Includes OAuth, magic links, and credentials.',
+        },
+        {
+          title: 'Flexible Payment Integration',
+          description: 'Pre-built integrations with Stripe, LemonSqueezy, and Polar. Support for subscriptions, one-time payments, and usage-based billing.',
+        },
+        {
+          title: 'AI-Native Architecture',
+          description: 'OpenRouter integration for 100+ AI models. Vercel AI SDK for streaming responses. Built-in chat and image generation demos.',
+        },
+      ]}
+      defaultOpen={0}
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface FeaturesAccordionProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  defaultOpen?: number;             // Index of initially open item
+  allowMultiple?: boolean;          // Allow multiple open (default: false)
+}
+```
+
+---
+
+## FeaturesTabs
+
+Tabbed interface showing features with images, ideal for feature categories.
+
+### Usage
+
+```tsx
+import { FeaturesTabs } from '@/components/marketing/features/features-tabs';
+import { Palette, Lock, CreditCard } from 'lucide-react';
+
+export function FeatureCategories() {
+  return (
+    <FeaturesTabs
+      title="Explore Our Features"
+      tabs={[
+        {
+          id: 'theming',
+          label: 'Theming',
+          icon: <Palette className="h-4 w-4" />,
+          title: 'Visual Theme Builder',
+          description: 'Customize every aspect of your application with our visual theme builder. Choose from presets or create your own unique look.',
+          image: {
+            src: '/images/features/theming.png',
+            alt: 'Theme Builder Interface',
+          },
+          highlights: [
+            '5 color scheme presets',
+            'HSL color picker',
+            'Light and dark mode support',
+            'Export as CSS',
+          ],
+        },
+        {
+          id: 'auth',
+          label: 'Authentication',
+          icon: <Lock className="h-4 w-4" />,
+          title: 'Flexible Authentication',
+          description: 'Choose from multiple auth providers or use them together. All major OAuth providers supported.',
+          image: {
+            src: '/images/features/auth.png',
+            alt: 'Authentication Options',
+          },
+          highlights: [
+            'NextAuth.js, Supabase, Better-Auth',
+            'OAuth with Google, GitHub, etc.',
+            'Magic links and credentials',
+            'Two-factor authentication',
+          ],
+        },
+        {
+          id: 'payments',
+          label: 'Payments',
+          icon: <CreditCard className="h-4 w-4" />,
+          title: 'Payment Processing',
+          description: 'Accept payments globally with your choice of payment processor. Subscriptions, one-time, and usage-based billing.',
+          image: {
+            src: '/images/features/payments.png',
+            alt: 'Payment Integration',
+          },
+          highlights: [
+            'Stripe, LemonSqueezy, Polar',
+            'Subscription management',
+            'Customer portal',
+            'Webhook handling',
+          ],
+        },
+      ]}
+      defaultTab="theming"
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface FeatureTab {
+  id: string;
+  label: string;
+  icon?: ReactNode;
+  title: string;
+  description: string;
+  image?: { src: string; alt: string };
+  highlights?: string[];
+}
+
+interface FeaturesTabsProps extends FeaturesBaseProps {
+  tabs: FeatureTab[];
+  defaultTab?: string;              // ID of default active tab
+}
+```
+
+---
+
+## FeaturesBento
+
+Bento grid layout for visually striking feature showcases.
+
+### Usage
+
+```tsx
+import { FeaturesBento } from '@/components/marketing/features/features-bento';
+import { Zap, Shield, Rocket, Code2, Palette, Globe } from 'lucide-react';
+
+export function BentoShowcase() {
+  return (
+    <FeaturesBento
+      title="Built for Modern Development"
+      subtitle="Features"
+      items={[
+        {
+          title: 'Blazing Fast',
+          description: 'Turbopack-powered development with instant HMR',
+          icon: <Zap className="h-6 w-6" />,
+          size: 'large',
+        },
+        {
+          title: 'Secure by Default',
+          description: 'Enterprise-grade security built-in',
+          icon: <Shield className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: 'AI-Native',
+          description: 'OpenRouter and Vercel AI SDK ready',
+          icon: <Rocket className="h-6 w-6" />,
+          size: 'wide',
+        },
+        {
+          title: 'TypeScript',
+          description: 'Full type safety across the stack',
+          icon: <Code2 className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: 'Themeable',
+          description: 'Visual theme builder included',
+          icon: <Palette className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: 'i18n Ready',
+          description: '7 languages out of the box',
+          icon: <Globe className="h-6 w-6" />,
+          size: 'tall',
+        },
+      ]}
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface BentoItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+  size?: 'default' | 'large' | 'wide' | 'tall';
+}
+
+interface FeaturesBentoProps extends FeaturesBaseProps {
+  items: BentoItem[];
+}
+```
+
+### Size Options
+
+| Size | Grid Span | Best For |
+|------|-----------|----------|
+| `default` | 1x1 | Standard features |
+| `large` | 2x2 | Hero features |
+| `wide` | 2x1 | Features with longer titles |
+| `tall` | 1x2 | Features with longer descriptions |
+
+---
+
+## FeaturesComparison
+
+Side-by-side comparison table for plans or product versions.
+
+### Usage
+
+```tsx
+import { FeaturesComparison } from '@/components/marketing/features/features-comparison';
+
+export function PlanComparison() {
+  return (
+    <FeaturesComparison
+      title="Compare Plans"
+      columns={[
+        { name: 'Starter', price: 'Free' },
+        { name: 'Pro', price: '$19/mo', highlighted: true },
+        { name: 'Enterprise', price: 'Custom' },
+      ]}
+      features={[
+        { name: 'Users', values: ['1', 'Unlimited', 'Unlimited'] },
+        { name: 'API Calls', values: ['1,000/mo', '100,000/mo', 'Unlimited'] },
+        { name: 'Support', values: ['Community', 'Priority', '24/7 Dedicated'] },
+        { name: 'Custom Domain', values: [false, true, true] },
+        { name: 'Analytics', values: [false, true, true] },
+        { name: 'SSO', values: [false, false, true] },
+      ]}
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface ComparisonColumn {
+  name: string;
+  price?: string;
+  highlighted?: boolean;
+  cta?: { label: string; href: string };
+}
+
+interface ComparisonFeature {
+  name: string;
+  values: (string | boolean)[];     // Boolean renders as check/x
+}
+
+interface FeaturesComparisonProps extends FeaturesBaseProps {
+  columns: ComparisonColumn[];
+  features: ComparisonFeature[];
+}
+```
+
+---
+
+## Color Schemes
+
+All feature variants support 5 color schemes:
+
+```tsx
+<FeaturesGrid colorScheme="primary" {...props} />   // Default brand colors
+<FeaturesGrid colorScheme="secondary" {...props} /> // Subtle secondary
+<FeaturesGrid colorScheme="accent" {...props} />    // Eye-catching accent
+<FeaturesGrid colorScheme="muted" {...props} />     // Neutral, subdued
+<FeaturesGrid colorScheme="destructive" {...props} /> // Warning style
+```
+
+## Animations
+
+All components include scroll-triggered animations:
+
+```tsx
+// Enabled by default
+<FeaturesGrid animated={true} {...props} />
+
+// Disable for performance/accessibility
+<FeaturesGrid animated={false} {...props} />
+```
+
+Animation features:
+- **Staggered reveal**: Items appear sequentially
+- **Fade up**: Elements fade in while moving up
+- **Viewport trigger**: Animates when scrolled into view

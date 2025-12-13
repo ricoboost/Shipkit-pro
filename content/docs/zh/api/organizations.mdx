@@ -1,0 +1,126 @@
+---
+title: 组织API
+description: 组织管理的API参考。
+---
+
+# 组织API
+
+## 端点
+
+### 列出组织
+
+获取当前用户的所有组织。
+
+```http
+GET /api/organizations
+Authorization: Bearer <token>
+```
+
+**响应:**
+
+```json
+{
+  "organizations": [
+    {
+      "id": "cuid",
+      "name": "My Team",
+      "slug": "my-team",
+      "role": "OWNER"
+    }
+  ]
+}
+```
+
+### 创建组织
+
+```http
+POST /api/organizations
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "My Team",
+  "slug": "my-team"
+}
+```
+
+### 获取组织
+
+```http
+GET /api/organizations/:id
+Authorization: Bearer <token>
+```
+
+### 更新组织
+
+```http
+PATCH /api/organizations/:id
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "Updated Name"
+}
+```
+
+### 删除组织
+
+```http
+DELETE /api/organizations/:id
+Authorization: Bearer <token>
+```
+
+## 成员
+
+### 列出成员
+
+```http
+GET /api/organizations/:id/members
+Authorization: Bearer <token>
+```
+
+### 更新成员角色
+
+```http
+PATCH /api/organizations/:id/members/:memberId
+Authorization: Bearer <token>
+
+{
+  "role": "ADMIN"
+}
+```
+
+### 移除成员
+
+```http
+DELETE /api/organizations/:id/members/:memberId
+Authorization: Bearer <token>
+```
+
+## 邀请
+
+### 发送邀请
+
+```http
+POST /api/organizations/:id/invitations
+Authorization: Bearer <token>
+
+{
+  "email": "user@example.com",
+  "role": "MEMBER"
+}
+```
+
+### 接受邀请
+
+```http
+POST /api/invitations/:token
+```
+
+## 角色
+
+| 角色 | 权限 |
+|------|------|
+| OWNER | 完全访问权限，可删除组织 |
+| ADMIN | 管理成员和设置 |
+| MEMBER | 查看和使用资源 |

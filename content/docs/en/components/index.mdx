@@ -1,0 +1,128 @@
+---
+title: Components Overview
+description: Comprehensive library of pre-built, customizable marketing and UI components for ShipKit
+---
+
+# Components Overview
+
+ShipKit includes a comprehensive library of pre-built, customizable components designed for modern SaaS applications. All components support:
+
+- **Color Schemes**: `primary`, `secondary`, `accent`, `muted`, `destructive`
+- **Animations**: Optional Framer Motion animations
+- **Responsive Design**: Mobile-first, fully responsive
+- **TypeScript**: Full type safety with exported interfaces
+
+## Marketing Components
+
+Build beautiful landing pages with our marketing component library:
+
+| Category | Variants | Description |
+|----------|----------|-------------|
+| [Hero](/docs/components/hero) | 5 variants | Landing page hero sections |
+| [CTA](/docs/components/cta) | 4 variants | Call-to-action sections |
+| [Features](/docs/components/features) | 6 variants | Feature showcases |
+| [Pricing](/docs/components/pricing) | 4 variants | Pricing tables and cards |
+| [Testimonials](/docs/components/testimonials) | 4 variants | Social proof displays |
+| [FAQ](/docs/components/faq) | 3 variants | Frequently asked questions |
+| [Problem/Solution](/docs/components/problem) | 3 variants | PAS framework sections |
+| [Comparison](/docs/components/comparison) | 2 variants | Competitor comparisons |
+| [Stats](/docs/components/stats) | 3 variants | Metrics and achievements |
+| [Logo Cloud](/docs/components/logos) | 3 variants | Client/partner logos |
+| [Dividers](/docs/components/dividers) | 4 variants | Section separators |
+
+## UI Primitives
+
+ShipKit uses [shadcn/ui](https://ui.shadcn.com) as the foundation for UI components. All primitives are fully customizable and follow the Radix UI design patterns.
+
+See the [UI Primitives](/docs/components/ui-primitives) documentation for the complete list.
+
+## Feature Components
+
+Specialized components for specific features:
+
+| Component | Description |
+|-----------|-------------|
+| [Theme Builder](/docs/components/theme-builder) | Visual theme customization interface |
+
+## Import Patterns
+
+### Marketing Components
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+import { CTASimple } from '@/components/marketing/cta/cta-simple';
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+```
+
+### UI Primitives
+
+```tsx
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+```
+
+## Shared Types
+
+All marketing components share common types defined in `@/components/marketing/types`:
+
+```typescript
+export type ColorScheme = 'primary' | 'secondary' | 'accent' | 'muted' | 'destructive';
+
+export interface CTAButton {
+  label: string;
+  href: string;
+  variant?: 'default' | 'outline' | 'ghost';
+}
+
+export interface BaseMarketingProps {
+  className?: string;
+  colorScheme?: ColorScheme;
+}
+
+export interface FeatureItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+}
+```
+
+## Quick Start
+
+Here's how to build a complete landing page:
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+import { CTASimple } from '@/components/marketing/cta/cta-simple';
+import { Zap, Shield, Rocket } from 'lucide-react';
+
+export default function LandingPage() {
+  return (
+    <>
+      <HeroCentered
+        title="Build SaaS Products Faster"
+        description="The complete starter kit for modern web applications"
+        primaryCTA={{ label: 'Get Started', href: '/register' }}
+        secondaryCTA={{ label: 'View Demo', href: '/demo' }}
+        badge="Now in v3.0"
+      />
+
+      <FeaturesGrid
+        title="Everything You Need"
+        features={[
+          { title: 'Fast', description: 'Built for speed', icon: <Zap /> },
+          { title: 'Secure', description: 'Enterprise security', icon: <Shield /> },
+          { title: 'Scalable', description: 'Grows with you', icon: <Rocket /> },
+        ]}
+      />
+
+      <CTASimple
+        title="Ready to Start?"
+        description="Join thousands of developers building with ShipKit"
+        primaryCTA={{ label: 'Start Free Trial', href: '/register' }}
+      />
+    </>
+  );
+}
+```

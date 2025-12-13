@@ -1,0 +1,162 @@
+---
+title: 项目结构
+description: 了解ShipKit代码库组织和文件结构。
+---
+
+# 项目结构
+
+ShipKit遵循基于Next.js App Router约定的良好组织结构。
+
+## 目录概览
+
+```
+shipkit/
+├── content/
+│   └── docs/           # 文档MDX文件
+├── prisma/
+│   └── schema.prisma   # 数据库模式
+├── public/             # 静态资源
+├── src/
+│   ├── app/            # Next.js App Router页面
+│   ├── components/     # React组件
+│   ├── config/         # 配置文件
+│   ├── hooks/          # 自定义React Hooks
+│   ├── lib/            # 核心库和工具
+│   └── middleware.ts   # Next.js中间件
+├── .env.example        # 环境变量模板
+├── next.config.ts      # Next.js配置
+└── package.json        # 依赖项
+```
+
+## App目录 (`src/app/`)
+
+```
+src/app/
+├── (admin)/            # 管理仪表板路由
+│   ├── admin/
+│   │   ├── page.tsx    # 管理概览
+│   │   ├── users/      # 用户管理
+│   │   ├── analytics/  # 分析仪表板
+│   │   └── subscriptions/
+│   └── layout.tsx      # 管理布局
+├── (auth)/             # 身份验证路由
+│   ├── login/          # 登录页面
+│   ├── register/       # 注册页面
+│   └── layout.tsx      # 身份验证布局
+├── (dashboard)/        # 用户仪表板路由
+│   ├── dashboard/      # 主仪表板
+│   ├── ai-playground/  # AI演示界面
+│   ├── settings/       # 用户设置
+│   │   ├── profile/
+│   │   ├── billing/
+│   │   ├── api-keys/
+│   │   └── theme/
+│   └── layout.tsx      # 仪表板布局
+├── (marketing)/        # 公共营销页面
+│   ├── page.tsx        # 首页
+│   ├── pricing/        # 定价页面
+│   ├── blog/           # 博客页面
+│   └── layout.tsx      # 营销布局
+├── api/                # API路由
+│   ├── auth/           # 身份验证端点
+│   ├── payments/       # 支付端点
+│   ├── ai/             # AI端点
+│   ├── organizations/  # 组织端点
+│   └── newsletter/     # 新闻通讯端点
+├── docs/               # 文档页面
+└── layout.tsx          # 根布局
+```
+
+## 库目录 (`src/lib/`)
+
+核心功能组织为与提供商无关的模块：
+
+```
+src/lib/
+├── auth/               # 身份验证抽象
+│   ├── index.ts        # 统一身份验证接口
+│   ├── types.ts        # TypeScript类型
+│   ├── nextauth.ts     # NextAuth实现
+│   ├── supabase.ts     # Supabase实现
+│   └── betterauth.ts   # Better Auth实现
+├── payments/           # 支付抽象
+│   ├── index.ts        # 统一支付接口
+│   ├── types.ts        # TypeScript类型
+│   ├── stripe.ts       # Stripe实现
+│   ├── lemonsqueezy.ts # LemonSqueezy实现
+│   ├── polar.ts        # Polar实现
+│   └── credits.ts      # 积分系统
+├── ai/                 # AI抽象
+│   ├── index.ts        # 统一AI接口
+│   ├── types.ts        # TypeScript类型
+│   ├── openrouter.ts   # OpenRouter实现
+│   └── vercel.ts       # Vercel AI实现
+├── organizations/      # 团队/组织管理
+├── blog/               # 博客工具
+├── newsletter/         # 新闻通讯系统
+├── theme/              # 主题系统
+├── admin/              # 管理工具
+├── security/           # 速率限制、标头
+├── onboarding/         # 用户引导
+├── referrals/          # 推荐系统
+├── rpc/                # 类型安全RPC (oRPC)
+├── db.ts               # 数据库客户端
+└── utils.ts            # 实用函数
+```
+
+## 组件目录 (`src/components/`)
+
+```
+src/components/
+├── ui/                 # shadcn/ui基础组件
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── dialog.tsx
+│   └── ...
+├── auth/               # 身份验证组件
+│   ├── login-form.tsx
+│   ├── register-form.tsx
+│   └── social-buttons.tsx
+├── layout/             # 布局组件
+│   ├── header.tsx
+│   ├── footer.tsx
+│   ├── sidebar.tsx
+│   └── dashboard-header.tsx
+├── blog/               # 博客组件
+├── newsletter/         # 新闻通讯组件
+├── theme/              # 主题构建器
+├── onboarding/         # 引导向导
+└── providers.tsx       # React Context提供者
+```
+
+## 关键概念
+
+### 路由组
+
+路由组 `(groupName)` 在不影响URL的情况下组织路由：
+
+- `(marketing)` - `/`、`/pricing`、`/blog`的公共页面
+- `(auth)` - `/login`、`/register`的身份验证页面
+- `(dashboard)` - `/dashboard`、`/settings`的用户页面
+- `(admin)` - `/admin`的管理页面
+
+### 提供商抽象
+
+每个主要功能使用统一接口：
+
+```typescript
+// lib/auth/index.ts导出统一接口
+export const auth = getAuthProvider(); // 返回配置的提供商
+
+// 无论提供商如何，使用方式相同
+const session = await auth.getSession();
+```
+
+### 类型安全
+
+所有API使用Zod进行验证，使用oRPC实现类型安全的端点：
+
+```typescript
+// 完全类型化的API调用
+const result = await rpc.users.getProfile.query();
+```

@@ -1,0 +1,50 @@
+# ShipKit - Windsurf AI Context
+# This file provides context for Windsurf AI coding assistant
+
+## Project: ShipKit SaaS Boilerplate
+AI-native SaaS starter with multi-provider architecture.
+
+## Key Abstractions (Switch via env vars)
+- Auth: `src/lib/auth/` → AUTH_PROVIDER=nextauth|supabase|betterauth
+- Payments: `src/lib/payments/` → PAYMENT_PROVIDER=stripe|lemonsqueezy|polar
+- AI: `src/lib/ai/` → AI_PROVIDER=openrouter|vercel
+
+## Tech Stack
+Next.js 16, TypeScript (strict), Tailwind CSS 4, shadcn/ui, Prisma, Zustand
+
+## Code Style
+- Function components with named exports
+- Server components by default
+- No `any` types
+- Zod for validation
+- Error handling with try/catch
+
+## Common Patterns
+
+### Get current user:
+```typescript
+import { auth } from '@/lib/auth';
+const session = await auth.getSession();
+```
+
+### Create API route:
+```typescript
+export async function POST(req: NextRequest) {
+  const session = await auth.getSession();
+  if (!session) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  // ...
+}
+```
+
+### Use database:
+```typescript
+import { db } from '@/lib/db';
+const user = await db.user.findUnique({ where: { id } });
+```
+
+## File Naming
+- Components: PascalCase.tsx
+- Hooks: use-kebab-case.ts
+- Utils: kebab-case.ts
+
+See AGENTS.md for complete documentation.

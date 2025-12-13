@@ -1,0 +1,169 @@
+---
+title: 認証セットアップ
+description: NextAuth.js、Supabase Auth、またはBetter Authで認証を設定します。
+---
+
+# 認証セットアップ
+
+認証セットアップコマンドは、認証プロバイダーとOAuth資格情報の設定を支援します。
+
+## クイックスタート
+
+```bash
+npm run setup:auth
+```
+
+## サポートされているプロバイダー
+
+### NextAuth.js
+
+複数のプロバイダー、セッション、JWTをサポートするフル機能の認証。
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider next-auth
+```
+
+**必須の環境変数：**
+- `AUTH_SECRET` - セッション暗号化キー（自動生成）
+- `AUTH_GOOGLE_ID` - Google OAuthクライアントID
+- `AUTH_GOOGLE_SECRET` - Google OAuthクライアントシークレット
+- `AUTH_GITHUB_ID` - GitHub OAuthクライアントID
+- `AUTH_GITHUB_SECRET` - GitHub OAuthクライアントシークレット
+
+### Supabase Auth
+
+Row Level Securityを備えたSupabase powered認証。
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider supabase
+```
+
+**必須の環境変数：**
+- `NEXT_PUBLIC_SUPABASE_URL` - SupabaseプロジェクトURL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase匿名キー
+- `SUPABASE_SERVICE_ROLE_KEY` - Supabaseサービスロールキー
+
+### Better Auth
+
+モダンで型安全な認証ライブラリ。
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider better-auth
+```
+
+**必須の環境変数：**
+- `AUTH_SECRET` - セッション暗号化キー
+- 選択したプロバイダーのOAuth資格情報
+
+## OAuthプロバイダーセットアップ
+
+### Google OAuth
+
+1. [Google Cloud Console](https://console.cloud.google.com/apis/credentials)にアクセス
+2. 新しいプロジェクトを作成するか、既存のものを選択
+3. **認証情報 > 認証情報を作成 > OAuth 2.0クライアントID**に移動
+4. **ウェブアプリケーション**を選択
+5. 承認済みリダイレクトURIを追加：
+   ```
+   http://localhost:3000/api/auth/callback/google
+   ```
+6. **クライアントID**と**クライアントシークレット**を`.env`にコピー
+
+### GitHub OAuth
+
+1. [GitHub開発者設定](https://github.com/settings/applications/new)にアクセス
+2. アプリケーション詳細を入力：
+   - **アプリケーション名**：アプリ名
+   - **ホームページURL**：`http://localhost:3000`
+   - **認証コールバックURL**：`http://localhost:3000/api/auth/callback/github`
+3. **クライアントID**をコピーし、**クライアントシークレット**を生成
+4. `.env`に追加
+
+### Discord OAuth
+
+1. [Discord Developer Portal](https://discord.com/developers/applications)にアクセス
+2. 新しいアプリケーションを作成
+3. **OAuth2 > 一般**に移動
+4. リダイレクトURLを追加：
+   ```
+   http://localhost:3000/api/auth/callback/discord
+   ```
+5. **クライアントID**と**クライアントシークレット**をコピー
+
+## セットアップの動作
+
+1. **プロバイダーを選択** - NextAuth、Supabase、またはBetter Authを選択
+2. **`.env`を更新** - `AUTH_PROVIDER`変数を設定
+3. **資格情報を確認** - 不足している環境変数を特定
+4. **設定をガイド** - セットアップ手順を提供
+5. **フォーマットを検証** - 可能な場合はAPIキーフォーマットをチェック
+
+## プロバイダーの切り替え
+
+認証プロバイダー間で切り替えるには：
+
+1. セットアップコマンドを実行：
+   ```bash
+   npm run setup:auth
+   ```
+
+2. 新しいプロバイダーを選択
+
+3. 環境変数`AUTH_PROVIDER`がアクティブなプロバイダーを制御：
+   ```bash
+   AUTH_PROVIDER="next-auth"  # または "supabase" または "better-auth"
+   ```
+
+4. 開発サーバーを再起動
+
+## 本番環境の考慮事項
+
+### コールバックURLの更新
+
+デプロイ前に、すべてのOAuthコールバックURLを本番ドメインに更新：
+
+```
+https://あなたのドメイン.com/api/auth/callback/google
+https://あなたのドメイン.com/api/auth/callback/github
+```
+
+### 新しいシークレットの生成
+
+本番用に新しい`AUTH_SECRET`を生成：
+
+```bash
+openssl rand -base64 32
+```
+
+### 環境変数の保護
+
+シークレットをgitにコミットしないでください。ホスティングプロバイダーの環境変数管理を使用：
+
+- Vercel：プロジェクト設定 > 環境変数
+- Railway：Variablesタブ
+- Fly.io：`fly secrets set`
+
+## トラブルシューティング
+
+### 「無効なリダイレクトURI」
+
+コールバックURLがOAuthプロバイダーで設定されているものと完全に一致することを確認してください。
+
+### 「セッションが保持されない」
+
+`AUTH_SECRET`が設定され、すべてのデプロイで一貫していることを確認してください。
+
+### 「CORSエラー」
+
+`NEXT_PUBLIC_APP_URL`が正しく設定されていることを確認：
+
+```bash
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+### 「Supabase認証が動作しない」
+
+3つのSupabase変数がすべて設定されていることを確認：
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`

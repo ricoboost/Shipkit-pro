@@ -1,0 +1,98 @@
+---
+title: 组织
+description: ShipKit中的多租户团队管理。
+---
+
+# 组织
+
+ShipKit包含完整的组织/团队管理系统。
+
+## 功能
+
+- 创建和管理组织
+- 邀请团队成员
+- 基于角色的访问控制
+- 组织级别的计费
+
+## 数据模型
+
+```prisma
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  members   OrganizationMember[]
+  invitations OrganizationInvitation[]
+  createdAt DateTime @default(now())
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  organizationId String
+  userId         String
+  role           MemberRole   @default(MEMBER)
+  organization   Organization @relation(...)
+  user           User         @relation(...)
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+```
+
+## API路由
+
+### 创建组织
+
+```typescript
+POST /api/organizations
+{ "name": "My Team", "slug": "my-team" }
+```
+
+### 列出成员
+
+```typescript
+GET /api/organizations/:id/members
+```
+
+### 邀请成员
+
+```typescript
+POST /api/organizations/:id/invitations
+{ "email": "user@example.com", "role": "MEMBER" }
+```
+
+### 接受邀请
+
+```typescript
+POST /api/invitations/:token
+```
+
+## 使用方法
+
+```typescript
+import { organizations } from '@/lib/organizations';
+
+// Create organization
+const org = await organizations.create({
+  name: 'My Team',
+  slug: 'my-team',
+  ownerId: user.id,
+});
+
+// Add member
+await organizations.addMember(org.id, userId, 'MEMBER');
+
+// Check permission
+const canEdit = await organizations.hasPermission(org.id, userId, 'edit');
+```
+
+## React组件
+
+```tsx
+import { OrganizationSwitcher } from '@/components/organizations';
+
+<OrganizationSwitcher />
+```

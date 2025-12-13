@@ -1,0 +1,68 @@
+---
+title: ニュースレター
+description: ダブルオプトイン機能付きのメールニュースレターシステム。
+---
+
+# ニュースレターシステム
+
+ShipKitにはResend統合を備えたニュースレターシステムが含まれています。
+
+## 設定
+
+```bash
+RESEND_API_KEY="re_xxx"
+EMAIL_FROM="noreply@yourdomain.com"
+```
+
+## 機能
+
+- ダブルオプトイン確認
+- 購読解除の処理
+- メールテンプレート
+- 購読者管理
+
+## APIルート
+
+### 購読
+
+```typescript
+POST /api/newsletter/subscribe
+{ "email": "user@example.com" }
+```
+
+### 確認
+
+```typescript
+POST /api/newsletter/confirm
+{ "token": "confirmation-token" }
+```
+
+### 購読解除
+
+```typescript
+POST /api/newsletter/unsubscribe
+{ "token": "unsubscribe-token" }
+```
+
+## 使用方法
+
+```typescript
+import { newsletter } from '@/lib/newsletter';
+
+// Subscribe
+await newsletter.subscribe('user@example.com');
+
+// Send to all subscribers
+await newsletter.sendToAll({
+  subject: 'Monthly Update',
+  html: '<h1>Hello!</h1>',
+});
+```
+
+## 購読フォームコンポーネント
+
+```tsx
+import { SubscribeForm } from '@/components/newsletter/subscribe-form';
+
+<SubscribeForm />
+```

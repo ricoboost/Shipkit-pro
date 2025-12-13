@@ -1,0 +1,71 @@
+---
+description: API route development rules
+globs: ["**/api/**/*.ts"]
+---
+
+# API Route Standards
+
+## Structure
+```typescript
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { auth } from '@/lib/auth';
+
+const schema = z.object({
+  // Define request body schema
+});
+
+export async function POST(req: NextRequest) {
+  try {
+    // 1. Auth check (if needed)
+    const session = await auth.getSession();
+    if (!session) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // 2. Parse and validate body
+    const body = await req.json();
+    const data = schema.parse(body);
+
+    // 3. Business logic
+    const result = await doSomething(data);
+
+    // 4. Return response
+    return Response.json(result);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return Response.json({ error: error.errors }, { status: 400 });
+    }
+    console.error('API Error:', error);
+    return Response.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+```
+
+## HTTP Methods
+- GET: Fetch data (no body)
+- POST: Create resource
+- PUT: Full update
+- PATCH: Partial update
+- DELETE: Remove resource
+
+## Response Format
+Always return consistent JSON:
+```typescript
+// Success
+{ data: result }
+{ data: result, meta: { page, total } }
+
+// Error
+{ error: 'Error message' }
+{ error: 'Validation failed', details: [...] }
+```
+
+## Status Codes
+- 200: Success
+- 201: Created
+- 400: Bad Request (validation)
+- 401: Unauthorized
+- 403: Forbidden
+- 404: Not Found
+- 500: Server Error

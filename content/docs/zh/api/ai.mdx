@@ -1,0 +1,81 @@
+---
+title: AI API
+description: AI端点的API参考。
+---
+
+# AI API
+
+## 端点
+
+### 聊天补全
+
+生成支持流式传输的AI聊天响应。
+
+```http
+POST /api/ai/chat
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "messages": [
+    { "role": "system", "content": "You are a helpful assistant." },
+    { "role": "user", "content": "Hello!" }
+  ],
+  "model": "gpt-4-turbo",
+  "stream": true
+}
+```
+
+**响应（非流式）:**
+
+```json
+{
+  "content": "Hello! How can I help you today?",
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 10,
+    "total_tokens": 30
+  }
+}
+```
+
+**响应（流式）:**
+
+服务器发送事件流:
+
+```
+data: {"content": "Hello"}
+data: {"content": "!"}
+data: {"content": " How"}
+data: {"content": " can"}
+data: [DONE]
+```
+
+## 参数
+
+| 参数 | 类型 | 描述 |
+|------|------|------|
+| messages | array | 对话消息 |
+| model | string | 模型ID（可选）|
+| stream | boolean | 启用流式传输 |
+| temperature | number | 随机性 (0-2) |
+| maxTokens | number | 最大响应长度 |
+
+## 可用模型
+
+| 模型 | 提供商 |
+|------|--------|
+| gpt-4-turbo | OpenAI |
+| gpt-3.5-turbo | OpenAI |
+| claude-3-opus | Anthropic |
+| claude-3-sonnet | Anthropic |
+| gemini-pro | Google |
+
+## 错误代码
+
+| 代码 | 描述 |
+|------|------|
+| 401 | 未授权 |
+| 402 | 积分不足 |
+| 429 | 速率限制 |
+| 500 | AI提供商错误 |

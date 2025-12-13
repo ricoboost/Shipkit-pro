@@ -1,0 +1,296 @@
+---
+title: CTA Components
+description: Call-to-action sections with 4 variants designed to convert visitors into users
+---
+
+# CTA Components
+
+Call-to-action (CTA) components are designed to convert visitors into users. ShipKit includes 4 CTA variants for different placement scenarios.
+
+## Available Variants
+
+| Variant | Best For | Key Feature |
+|---------|----------|-------------|
+| `CTASimple` | General purpose | Clean, centered design |
+| `CTASplit` | Feature highlights | Side-by-side with image |
+| `CTABanner` | Announcements | Full-width banner style |
+| `CTAFloating` | Persistent CTAs | Fixed position overlay |
+
+## Common Props
+
+All CTA components share these base props:
+
+```typescript
+interface CTABaseProps {
+  title: string;                    // Main headline
+  description?: string;             // Supporting text
+  primaryCTA: CTAButton;            // Required primary action
+  secondaryCTA?: CTAButton;         // Optional secondary action
+  animated?: boolean;               // Enable/disable animations
+  colorScheme?: ColorScheme;        // Color theme
+  className?: string;               // Additional CSS classes
+}
+
+interface CTAButton {
+  label: string;
+  href: string;
+  variant?: 'default' | 'outline' | 'ghost';
+}
+```
+
+---
+
+## CTASimple
+
+The most common CTA variant with centered content on a solid background. Supports multiple color schemes for different contexts.
+
+<VariantTabs
+  variants={[
+    { name: 'Primary', component: <CTASimplePreview /> },
+    { name: 'Accent', component: <CTASimpleAccentPreview /> },
+    { name: 'Muted', component: <CTASimpleMutedPreview /> },
+  ]}
+/>
+
+### Usage
+
+```tsx
+import { CTASimple } from '@/components/marketing/cta/cta-simple';
+
+export function BottomCTA() {
+  return (
+    <CTASimple
+      title="Ready to Ship Your Product?"
+      description="Join 10,000+ developers building with ShipKit. Start your free trial today."
+      primaryCTA={{
+        label: 'Start Free Trial',
+        href: '/register',
+      }}
+      secondaryCTA={{
+        label: 'Contact Sales',
+        href: '/contact',
+      }}
+      colorScheme="primary"
+    />
+  );
+}
+```
+
+### Color Scheme Behavior
+
+The `CTASimple` component inverts colors based on the scheme:
+
+- **Primary**: Uses primary color as background, primary-foreground for text
+- **Secondary**: Uses secondary color as background
+- Buttons automatically use contrasting colors
+
+---
+
+## CTASplit
+
+Side-by-side layout with content and an image or illustration. Perfect for feature highlights and visual storytelling.
+
+<VariantTabs
+  variants={[
+    { name: 'Image Right', component: <CTASplitPreview /> },
+    { name: 'Image Left', component: <CTASplitLeftPreview /> },
+  ]}
+/>
+
+### Usage
+
+```tsx
+import { CTASplit } from '@/components/marketing/cta/cta-split';
+
+export function FeatureCTA() {
+  return (
+    <CTASplit
+      title="See the Dashboard in Action"
+      description="Get a guided tour of all features included in ShipKit"
+      primaryCTA={{ label: 'Book a Demo', href: '/demo' }}
+      image={{
+        src: '/images/dashboard-demo.png',
+        alt: 'Dashboard Demo',
+      }}
+      imagePosition="right"
+      colorScheme="secondary"
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface CTASplitProps extends CTABaseProps {
+  image?: {
+    src: string;
+    alt: string;
+    width?: number;
+    height?: number;
+  };
+  imagePosition?: 'left' | 'right';  // Default: 'right'
+}
+```
+
+---
+
+## CTABanner
+
+Full-width banner style CTA, ideal for announcements, promotions, and urgent messaging.
+
+<VariantTabs
+  variants={[
+    { name: 'Promo', component: <CTABannerPreview /> },
+    { name: 'Announcement', component: <CTABannerAccentPreview /> },
+    { name: 'Urgent', component: <CTABannerUrgentPreview /> },
+  ]}
+/>
+
+### Usage
+
+```tsx
+import { CTABanner } from '@/components/marketing/cta/cta-banner';
+
+export function PromoBanner() {
+  return (
+    <CTABanner
+      title="Black Friday Sale"
+      description="50% off all plans. Limited time offer!"
+      primaryCTA={{ label: 'Claim Offer', href: '/pricing?promo=bf50' }}
+      icon="sparkles"
+      dismissible={true}
+      onDismiss={() => console.log('Banner dismissed')}
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface CTABannerProps extends CTABaseProps {
+  icon?: string;                    // Lucide icon name
+  dismissible?: boolean;            // Show close button
+  onDismiss?: () => void;           // Dismiss callback
+  position?: 'top' | 'bottom';      // Fixed position (optional)
+}
+```
+
+---
+
+## CTAFloating
+
+Floating CTA that stays visible as users scroll.
+
+<ComponentPreview>
+  <CTAFloatingPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { CTAFloating } from '@/components/marketing/cta/cta-floating';
+
+export function FloatingCTA() {
+  return (
+    <CTAFloating
+      title="Start Building Today"
+      primaryCTA={{ label: 'Get Started', href: '/register' }}
+      position="bottom-right"
+      showAfterScroll={500}
+      dismissible={true}
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface CTAFloatingProps extends CTABaseProps {
+  position?: 'bottom-right' | 'bottom-left' | 'bottom-center';
+  showAfterScroll?: number;         // Pixels scrolled before showing
+  dismissible?: boolean;            // Allow user to dismiss
+  autoHideOnMobile?: boolean;       // Hide on mobile devices
+}
+```
+
+---
+
+## Color Schemes
+
+CTAs support all 5 color schemes. Each scheme applies appropriate contrasting colors:
+
+```tsx
+// Primary - Bold brand color background
+<CTASimple colorScheme="primary" {...props} />
+
+// Secondary - Subtle secondary background
+<CTASimple colorScheme="secondary" {...props} />
+
+// Accent - High-contrast accent color
+<CTASimple colorScheme="accent" {...props} />
+
+// Muted - Neutral, understated
+<CTASimple colorScheme="muted" {...props} />
+
+// Destructive - Urgency/warning (use sparingly)
+<CTASimple colorScheme="destructive" {...props} />
+```
+
+## Animation Effects
+
+All CTA components feature scroll-triggered animations by default:
+
+```tsx
+// Animations enabled (default)
+<CTASimple animated={true} {...props} />
+
+// Disable for performance or accessibility
+<CTASimple animated={false} {...props} />
+```
+
+The animations use Framer Motion with:
+- **Staggered children**: Elements appear sequentially
+- **Fade up**: Content fades in while moving up
+- **Viewport trigger**: Animates when component enters viewport
+
+## Best Practices
+
+### Placement
+
+1. **End of page**: Use `CTASimple` after content sections
+2. **After features**: Use `CTASplit` with relevant imagery
+3. **Site-wide promotions**: Use `CTABanner` at top of page
+4. **Persistent engagement**: Use `CTAFloating` for high-priority actions
+
+### Copy Guidelines
+
+```tsx
+// Good: Clear value proposition
+<CTASimple
+  title="Start Your Free 14-Day Trial"
+  description="No credit card required. Cancel anytime."
+  primaryCTA={{ label: 'Start Free Trial', href: '/register' }}
+/>
+
+// Avoid: Vague messaging
+<CTASimple
+  title="Click Here"
+  description="Do something"
+  primaryCTA={{ label: 'Submit', href: '/form' }}
+/>
+```
+
+### Multiple CTAs
+
+Use secondary CTAs sparingly to avoid decision paralysis:
+
+```tsx
+<CTASimple
+  title="Ready to Get Started?"
+  primaryCTA={{ label: 'Start Free Trial', href: '/register' }}
+  secondaryCTA={{ label: 'Talk to Sales', href: '/contact' }}
+/>
+```

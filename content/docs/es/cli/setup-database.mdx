@@ -1,0 +1,205 @@
+---
+title: Configuración de Base de Datos
+description: Configura tu conexión de base de datos con soporte para PostgreSQL, MySQL, SQLite y proveedores en la nube.
+---
+
+# Configuración de Base de Datos
+
+El comando de configuración de base de datos te ayuda a configurar tu conexión de base de datos e inicializar el esquema.
+
+## Inicio Rápido
+
+```bash
+npm run setup:db
+```
+
+## Bases de Datos Soportadas
+
+### PostgreSQL
+
+Base de datos PostgreSQL estándar, local o en la nube.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider postgresql
+```
+
+Formato de cadena de conexión:
+```
+postgresql://USUARIO:CONTRASEÑA@HOST:5432/BASE_DE_DATOS
+```
+
+### MySQL
+
+Base de datos MySQL, local o en la nube.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider mysql
+```
+
+Formato de cadena de conexión:
+```
+mysql://USUARIO:CONTRASEÑA@HOST:3306/BASE_DE_DATOS
+```
+
+### SQLite
+
+Base de datos basada en archivos, perfecta para desarrollo local.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider sqlite
+```
+
+Formato de cadena de conexión:
+```
+file:./dev.db
+```
+
+<Callout type="warning">
+SQLite es excelente para desarrollo pero no se recomienda para producción.
+</Callout>
+
+### Supabase
+
+PostgreSQL con las características adicionales de Supabase.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider supabase
+```
+
+Formato de cadena de conexión:
+```
+postgresql://postgres:[CONTRASEÑA]@db.[PROYECTO].supabase.co:5432/postgres
+```
+
+Obtén tu cadena de conexión desde **Configuración > Base de Datos** en el dashboard de Supabase.
+
+### Neon
+
+PostgreSQL serverless con soporte de branching.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider neon
+```
+
+Formato de cadena de conexión:
+```
+postgresql://[USUARIO]:[CONTRASEÑA]@[HOST].neon.tech/[BASE_DE_DATOS]?sslmode=require
+```
+
+### PlanetScale
+
+MySQL serverless con soporte de branching.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider planetscale
+```
+
+Formato de cadena de conexión:
+```
+mysql://[USUARIO]:[CONTRASEÑA]@[HOST]/[BASE_DE_DATOS]?ssl={"rejectUnauthorized":true}
+```
+
+<Callout type="info">
+PlanetScale requiere `relationMode = "prisma"` en tu esquema de Prisma.
+</Callout>
+
+## Qué Hace la Configuración
+
+1. **Solicita el proveedor** - Selecciona tu tipo de base de datos
+2. **Configura la conexión** - Actualiza `DATABASE_URL` en `.env`
+3. **Actualiza el esquema Prisma** - Cambia el proveedor si es necesario
+4. **Prueba la conexión** - Verifica que la base de datos sea accesible
+5. **Ejecuta migraciones** - Ejecuta `prisma generate` y `prisma db push`
+
+## Opciones de Comando
+
+Omitir el paso de migración:
+```bash
+npx tsx scripts/setup/setup-db.ts --skip-migrate
+```
+
+Seleccionar proveedor directamente:
+```bash
+npx tsx scripts/setup/setup-db.ts --provider postgresql
+```
+
+## Configuración Manual
+
+Si prefieres la configuración manual:
+
+### 1. Actualizar `.env`
+
+```bash
+DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/shipkit"
+```
+
+### 2. Generar Cliente Prisma
+
+```bash
+npm run db:generate
+```
+
+### 3. Enviar Esquema a la Base de Datos
+
+```bash
+npm run db:push
+```
+
+### 4. Verificar con Prisma Studio
+
+```bash
+npm run db:studio
+```
+
+## Referencia de Comandos de Base de Datos
+
+| Comando | Descripción |
+|---------|-------------|
+| `npm run db:generate` | Generar cliente Prisma |
+| `npm run db:push` | Enviar esquema a la base de datos (sin migraciones) |
+| `npm run db:migrate` | Ejecutar migraciones en desarrollo |
+| `npm run db:studio` | Abrir Prisma Studio |
+
+## Solución de Problemas
+
+### Conexión Rechazada
+
+Asegúrate de que tu base de datos esté ejecutándose:
+
+```bash
+# PostgreSQL
+pg_isready -h localhost -p 5432
+
+# MySQL
+mysqladmin ping -h localhost
+```
+
+### Permiso Denegado
+
+Verifica que tu usuario de base de datos tenga los permisos requeridos:
+
+```sql
+-- PostgreSQL
+GRANT ALL PRIVILEGES ON DATABASE shipkit TO tu_usuario;
+
+-- MySQL
+GRANT ALL PRIVILEGES ON shipkit.* TO 'tu_usuario'@'localhost';
+```
+
+### SSL Requerido
+
+Para bases de datos en la nube, asegúrate de que SSL esté habilitado:
+
+```bash
+# Agregar a la cadena de conexión
+?sslmode=require
+```
+
+### Esquema Desincronizado
+
+Si tu esquema está desincronizado con la base de datos:
+
+```bash
+# Reiniciar y enviar (ADVERTENCIA: destruye datos)
+npx prisma db push --force-reset
+```

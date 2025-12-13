@@ -1,0 +1,76 @@
+---
+title: Créer un SaaS IA avec Crédits
+description: Créez une application IA avec intégration OpenRouter, facturation basée sur les crédits et suivi d'utilisation.
+---
+
+# Créer un SaaS Alimenté par l'IA avec Crédits
+
+Dans ce tutoriel, vous allez créer une application SaaS alimentée par l'IA qui:
+
+- S'intègre avec plusieurs modèles IA via OpenRouter
+- Utilise un système de facturation basé sur les crédits
+- Suit l'utilisation par utilisateur
+- Implémente des réponses en streaming
+
+## Prérequis
+
+- Terminé le [Tutoriel Démarrage Rapide](/docs/tutorials/quickstart)
+- [Clé API OpenRouter](https://openrouter.ai/keys)
+
+## Étape 1: Configurer OpenRouter
+
+```bash
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=sk-or-v1-xxx
+```
+
+## Étape 2: Comprendre le Système de Crédits
+
+ShipKit inclut un système de crédits intégré:
+
+```typescript
+export const creditConfig = {
+  plans: {
+    free: { monthlyCredits: 100 },
+    pro: { monthlyCredits: 10000 },
+  },
+  costs: {
+    'gpt-4-turbo': 10,
+    'gpt-3.5-turbo': 1,
+    'claude-3-opus': 15,
+  },
+};
+```
+
+## Étape 3: Créer l'API de Chat IA
+
+```typescript
+// src/app/api/ai/chat/route.ts
+export async function POST(request: Request) {
+  const session = await auth();
+  if (!session?.user) {
+    return new Response('Non autorisé', { status: 401 });
+  }
+
+  const { messages, model } = await request.json();
+  const balance = await getCreditBalance(session.user.id);
+
+  if (balance < creditConfig.costs[model]) {
+    return new Response('Crédits insuffisants', { status: 402 });
+  }
+
+  // Appeler le modèle IA et déduire les crédits
+  const response = await openrouter.chat({ model, messages });
+  await useCredits(session.user.id, creditConfig.costs[model]);
+
+  return response;
+}
+```
+
+## Prochaines Étapes
+
+<Cards>
+  <Card title="Déployer en Production" href="/docs/tutorials/deploy-production">
+    Lancez votre SaaS IA avec mise à l'échelle appropriée.
+  </Card>
+</Cards>

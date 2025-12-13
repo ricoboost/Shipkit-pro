@@ -1,0 +1,352 @@
+---
+title: Authentication Issues
+description: Solutions for OAuth failures, session problems, and login issues.
+---
+
+# Authentication Issues
+
+Troubleshoot common authentication problems with OAuth, sessions, and login flows.
+
+---
+
+## OAuth Provider Issues
+
+### Google OAuth Errors
+
+**Error: "redirect_uri_mismatch"**
+
+```
+Error 400: redirect_uri_mismatch
+The redirect URI in the request does not match the ones authorized for the OAuth client.
+```
+
+**Solution:**
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. Click on your OAuth 2.0 Client ID
+3. Add authorized redirect URIs:
+
+```
+# Development
+http://localhost:3000/api/auth/callback/google
+
+# Production
+https://your-domain.com/api/auth/callback/google
+```
+
+4. Save and wait 5 minutes for changes to propagate
+
+---
+
+**Error: "access_denied"**
+
+```
+Access denied. You don't have permission to access this resource.
+```
+
+**Causes:**
+- Test user not added (if app is in testing mode)
+- User cancelled the consent screen
+- Required scopes not approved
+
+**Solution:**
+
+1. In Google Cloud Console → OAuth consent screen
+2. Add test users if in "Testing" mode
+3. Or publish app for production use
+
+---
+
+### GitHub OAuth Errors
+
+**Error: "redirect_uri does not match"**
+
+**Solution:**
+
+1. Go to GitHub → Settings → Developer settings → OAuth Apps
+2. Update "Authorization callback URL":
+
+```
+# Development
+http://localhost:3000/api/auth/callback/github
+
+# Production
+https://your-domain.com/api/auth/callback/github
+```
+
+---
+
+### Discord OAuth Errors
+
+**Error: "Invalid OAuth2 redirect_uri"**
+
+**Solution:**
+
+1. Go to Discord Developer Portal → Your App → OAuth2
+2. Add redirects:
+
+```
+http://localhost:3000/api/auth/callback/discord
+https://your-domain.com/api/auth/callback/discord
+```
+
+---
+
+## Session Issues
+
+### Session Not Persisting
+
+**Symptoms:**
+- User logged out after page refresh
+- Session expires immediately
+- "Not authenticated" errors
+
+**Check environment variables:**
+
+```bash
+# .env
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key-at-least-32-chars
+```
+
+**Generate a secure secret:**
+
+```bash
+openssl rand -base64 32
+```
+
+---
+
+### Session Cookie Not Set
+
+**Check cookie configuration:**
+
+```typescript
+// src/lib/auth/config.ts
+export const authConfig = {
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production'
+        ? '__Secure-authjs.session-token'
+        : 'authjs.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
+};
+```
+
+**For production:** Ensure HTTPS is properly configured.
+
+---
+
+### JWT Token Issues
+
+**Error: "JWTSessionError"**
+
+**Solutions:**
+
+1. Clear browser cookies and try again
+2. Check JWT secret configuration:
+
+```typescript
+// Make sure NEXTAUTH_SECRET is set
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error('NEXTAUTH_SECRET is not set');
+}
+```
+
+3. Verify token callbacks:
+
+```typescript
+callbacks: {
+  jwt({ token, user }) {
+    if (user) {
+      token.id = user.id;
+    }
+    return token;
+  },
+  session({ session, token }) {
+    if (token?.id) {
+      session.user.id = token.id as string;
+    }
+    return session;
+  },
+}
+```
+
+---
+
+## Login Problems
+
+### Infinite Login Loop
+
+**Symptoms:**
+- Redirected back to login after successful auth
+- Constant redirects between pages
+
+**Solutions:**
+
+1. Check middleware configuration:
+
+```typescript
+// src/middleware.ts
+export const config = {
+  matcher: [
+    // Exclude auth routes from middleware
+    '/((?!api|_next/static|_next/image|favicon.ico|auth).*)',
+  ],
+};
+```
+
+2. Verify callback URLs:
+
+```typescript
+// In auth config
+pages: {
+  signIn: '/auth/signin',
+  error: '/auth/error',
+}
+```
+
+---
+
+### "OAuthAccountNotLinked" Error
+
+**Cause:** User tried to sign in with OAuth but email already exists with different provider.
+
+**Solution:**
+
+```typescript
+// Option 1: Allow account linking (security consideration)
+export const authOptions = {
+  providers: [...],
+  callbacks: {
+    async signIn({ user, account }) {
+      // Allow linking if email matches
+      return true;
+    },
+  },
+};
+
+// Option 2: Show user-friendly error
+pages: {
+  error: '/auth/error', // Custom error page
+}
+```
+
+---
+
+### Email Verification Issues
+
+**Email not sending:**
+
+1. Check email provider configuration:
+
+```bash
+# .env
+RESEND_API_KEY=re_xxxxx
+EMAIL_FROM=noreply@your-domain.com
+```
+
+2. Verify DNS records for custom domain
+3. Check spam folder
+
+---
+
+## Database Session Issues
+
+### Prisma Session Errors
+
+**Error: "Session not found"**
+
+```bash
+# Check database connection
+npx prisma db push
+
+# Verify session table exists
+npx prisma studio
+```
+
+**Clear expired sessions:**
+
+```typescript
+// src/lib/auth/cleanup.ts
+async function cleanupExpiredSessions() {
+  await prisma.session.deleteMany({
+    where: {
+      expires: { lt: new Date() },
+    },
+  });
+}
+```
+
+---
+
+## Environment-Specific Issues
+
+### Development vs Production
+
+| Issue | Development | Production |
+|-------|-------------|------------|
+| NEXTAUTH_URL | `http://localhost:3000` | `https://your-domain.com` |
+| Cookie secure | `false` | `true` |
+| HTTPS | Not required | Required |
+| Redirect URIs | localhost | Production domain |
+
+---
+
+### Vercel Deployment Issues
+
+**Session not working on Vercel:**
+
+1. Set environment variables in Vercel dashboard:
+
+```
+NEXTAUTH_URL=https://your-app.vercel.app
+NEXTAUTH_SECRET=your-secret
+```
+
+2. For custom domains, update NEXTAUTH_URL
+
+3. Check function logs for errors:
+
+```bash
+vercel logs
+```
+
+---
+
+## Quick Diagnosis
+
+```bash
+# 1. Check environment variables
+node -e "console.log({
+  url: process.env.NEXTAUTH_URL,
+  secret: process.env.NEXTAUTH_SECRET ? 'SET' : 'NOT SET',
+  google: process.env.GOOGLE_CLIENT_ID ? 'SET' : 'NOT SET',
+  github: process.env.GITHUB_CLIENT_ID ? 'SET' : 'NOT SET',
+})"
+
+# 2. Test database connection
+npx prisma db push
+
+# 3. Check auth logs
+DEBUG=next-auth:* npm run dev
+```
+
+---
+
+## Common Fixes Checklist
+
+- [ ] NEXTAUTH_URL matches your domain
+- [ ] NEXTAUTH_SECRET is set (32+ characters)
+- [ ] OAuth redirect URIs configured correctly
+- [ ] Database accessible and schema synced
+- [ ] Cookies enabled in browser
+- [ ] HTTPS configured for production
+- [ ] Environment variables set in deployment platform

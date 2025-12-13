@@ -1,0 +1,169 @@
+---
+title: Authentication Setup
+description: Configure authentication with NextAuth.js, Supabase Auth, or Better Auth.
+---
+
+# Authentication Setup
+
+The auth setup command helps you configure your authentication provider and OAuth credentials.
+
+## Quick Start
+
+```bash
+npm run setup:auth
+```
+
+## Supported Providers
+
+### NextAuth.js
+
+Full-featured authentication with multiple providers, sessions, and JWT support.
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider next-auth
+```
+
+**Required environment variables:**
+- `AUTH_SECRET` - Session encryption key (auto-generated)
+- `AUTH_GOOGLE_ID` - Google OAuth client ID
+- `AUTH_GOOGLE_SECRET` - Google OAuth client secret
+- `AUTH_GITHUB_ID` - GitHub OAuth client ID
+- `AUTH_GITHUB_SECRET` - GitHub OAuth client secret
+
+### Supabase Auth
+
+Authentication powered by Supabase with Row Level Security.
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider supabase
+```
+
+**Required environment variables:**
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
+- `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key
+
+### Better Auth
+
+Modern, type-safe authentication library.
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider better-auth
+```
+
+**Required environment variables:**
+- `AUTH_SECRET` - Session encryption key
+- OAuth credentials for your chosen providers
+
+## OAuth Provider Setup
+
+### Google OAuth
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. Create a new project or select existing
+3. Navigate to **Credentials > Create Credentials > OAuth 2.0 Client ID**
+4. Select **Web application**
+5. Add authorized redirect URI:
+   ```
+   http://localhost:3000/api/auth/callback/google
+   ```
+6. Copy **Client ID** and **Client Secret** to your `.env`
+
+### GitHub OAuth
+
+1. Go to [GitHub Developer Settings](https://github.com/settings/applications/new)
+2. Fill in application details:
+   - **Application name**: Your app name
+   - **Homepage URL**: `http://localhost:3000`
+   - **Authorization callback URL**: `http://localhost:3000/api/auth/callback/github`
+3. Copy **Client ID** and generate **Client Secret**
+4. Add to your `.env`
+
+### Discord OAuth
+
+1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
+2. Create a new application
+3. Navigate to **OAuth2 > General**
+4. Add redirect URL:
+   ```
+   http://localhost:3000/api/auth/callback/discord
+   ```
+5. Copy **Client ID** and **Client Secret**
+
+## What the Setup Does
+
+1. **Prompts for provider** - Select NextAuth, Supabase, or Better Auth
+2. **Updates `.env`** - Sets `AUTH_PROVIDER` variable
+3. **Checks credentials** - Identifies missing environment variables
+4. **Guides configuration** - Provides setup instructions
+5. **Validates format** - Checks API key formats where possible
+
+## Switching Providers
+
+To switch between auth providers:
+
+1. Run the setup command:
+   ```bash
+   npm run setup:auth
+   ```
+
+2. Select your new provider
+
+3. The `AUTH_PROVIDER` environment variable controls which provider is active:
+   ```bash
+   AUTH_PROVIDER="next-auth"  # or "supabase" or "better-auth"
+   ```
+
+4. Restart your development server
+
+## Production Considerations
+
+### Update Callback URLs
+
+Before deploying, update all OAuth callback URLs to your production domain:
+
+```
+https://yourdomain.com/api/auth/callback/google
+https://yourdomain.com/api/auth/callback/github
+```
+
+### Generate New Secrets
+
+Generate a new `AUTH_SECRET` for production:
+
+```bash
+openssl rand -base64 32
+```
+
+### Secure Environment Variables
+
+Never commit secrets to git. Use your hosting provider's environment variable management:
+
+- Vercel: Project Settings > Environment Variables
+- Railway: Variables tab
+- Fly.io: `fly secrets set`
+
+## Troubleshooting
+
+### "Invalid redirect URI"
+
+Make sure your callback URL exactly matches what's configured in the OAuth provider.
+
+### "Session not persisting"
+
+Check that `AUTH_SECRET` is set and consistent across deployments.
+
+### "CORS errors"
+
+Ensure `NEXT_PUBLIC_APP_URL` is set correctly:
+
+```bash
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+### "Supabase auth not working"
+
+Verify all three Supabase variables are set:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`

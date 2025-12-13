@@ -1,0 +1,280 @@
+---
+title: Docker
+description: Production-ready Docker configuration for containerized deployments.
+---
+
+# Docker
+
+ShipKit includes Docker configuration for both development and production deployments.
+
+## Files Included
+
+- `Dockerfile` - Multi-stage production build
+- `docker-compose.yml` - Production deployment
+- `docker-compose.dev.yml` - Development environment
+- `.dockerignore` - Optimized build context
+- `nginx/nginx.conf` - Reverse proxy configuration
+
+## Quick Start
+
+### Development
+
+```bash
+# Start development environment
+docker-compose -f docker-compose.dev.yml up
+
+# With hot reloading
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+### Production
+
+```bash
+# Build and start
+docker-compose up --build -d
+
+# View logs
+docker-compose logs -f app
+```
+
+## Dockerfile
+
+Multi-stage build for optimized production images:
+
+```dockerfile
+# Dependencies stage
+FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --only=production
+
+# Builder stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npx prisma generate
+RUN npm run build
+
+# Runner stage
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3000
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["node", "server.js"]
+```
+
+## Docker Compose
+
+### Production Configuration
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/shipkit
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=shipkit
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis_data:/data
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+
+volumes:
+  postgres_data:
+  redis_data:
+```
+
+### Development Configuration
+
+```yaml
+# docker-compose.dev.yml
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/shipkit
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=shipkit
+```
+
+## Nginx Configuration
+
+```nginx
+# nginx/nginx.conf
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream nextjs {
+        server app:3000;
+    }
+
+    server {
+        listen 80;
+        server_name localhost;
+
+        location / {
+            proxy_pass http://nextjs;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+    }
+}
+```
+
+## Health Check
+
+ShipKit includes a health check endpoint at `/api/health`:
+
+```typescript
+// src/app/api/health/route.ts
+export async function GET() {
+  return Response.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+  });
+}
+```
+
+Use in Docker Compose:
+
+```yaml
+app:
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+```
+
+## Next.js Configuration
+
+Enable standalone output in `next.config.ts`:
+
+```typescript
+const config = {
+  output: 'standalone',
+  // ... other config
+};
+```
+
+## Commands
+
+```bash
+# Build image
+docker build -t shipkit .
+
+# Run container
+docker run -p 3000:3000 shipkit
+
+# Build with compose
+docker-compose build
+
+# Start services
+docker-compose up -d
+
+# Stop services
+docker-compose down
+
+# View logs
+docker-compose logs -f
+
+# Shell into container
+docker-compose exec app sh
+
+# Run migrations
+docker-compose exec app npx prisma migrate deploy
+```
+
+## Environment Variables
+
+Create a `.env.docker` file for Docker-specific variables:
+
+```bash
+DATABASE_URL=postgresql://user:pass@db:5432/shipkit
+REDIS_URL=redis://redis:6379
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-here
+```
+
+Reference in Docker Compose:
+
+```yaml
+services:
+  app:
+    env_file:
+      - .env.docker
+```
+
+## Production Tips
+
+1. **Use secrets management**: Don't commit secrets to version control
+2. **Enable health checks**: Monitor container health
+3. **Set resource limits**: Prevent runaway containers
+4. **Use volumes for data**: Persist database data
+5. **Configure logging**: Centralize logs for debugging

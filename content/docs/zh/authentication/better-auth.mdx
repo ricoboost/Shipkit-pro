@@ -1,0 +1,97 @@
+---
+title: Better Auth
+description: 为现代TypeScript优先的身份验证配置Better Auth。
+---
+
+# Better Auth设置
+
+Better Auth是一个现代身份验证库，具有出色的TypeScript支持和简单的API。
+
+## 配置
+
+```bash
+AUTH_PROVIDER="betterauth"
+BETTER_AUTH_SECRET="your-secret-key"
+```
+
+## 实现
+
+```typescript
+// src/lib/auth/betterauth.ts
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { db } from '@/lib/db';
+
+export const auth = betterAuth({
+  database: prismaAdapter(db, {
+    provider: 'postgresql',
+  }),
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: true,
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    },
+  },
+});
+```
+
+## 客户端设置
+
+```typescript
+// src/lib/auth/client.ts
+import { createAuthClient } from 'better-auth/react';
+
+export const authClient = createAuthClient({
+  baseURL: process.env.NEXT_PUBLIC_APP_URL,
+});
+```
+
+## 使用方法
+
+```tsx
+import { authClient } from '@/lib/auth/client';
+
+// Sign up
+await authClient.signUp.email({
+  email: 'user@example.com',
+  password: 'password',
+  name: 'User Name',
+});
+
+// Sign in
+await authClient.signIn.email({
+  email: 'user@example.com',
+  password: 'password',
+});
+
+// OAuth
+await authClient.signIn.social({
+  provider: 'google',
+});
+
+// Get session
+const session = await authClient.getSession();
+```
+
+## React Hook
+
+```tsx
+import { useSession } from '@/lib/auth/client';
+
+function Profile() {
+  const { data: session, isPending } = useSession();
+
+  if (isPending) return <Loading />;
+  if (!session) return <LoginButton />;
+
+  return <div>Welcome, {session.user.name}</div>;
+}
+```

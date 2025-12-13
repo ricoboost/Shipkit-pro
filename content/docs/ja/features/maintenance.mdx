@@ -1,0 +1,142 @@
+---
+title: メンテナンスモード
+description: アップデートやメンテナンス中に一時的にパブリックアクセスをブロックします。
+---
+
+# メンテナンスモード
+
+ShipKitには、アップデート、デプロイメント、または重要なメンテナンスタスク中にアプリケーションへのアクセスを一時的にブロックできるメンテナンスモード機能が含まれています。
+
+## 概要
+
+メンテナンスモードが有効な場合：
+
+- すべての非管理者ユーザーはメンテナンスページにリダイレクトされます
+- 管理者はアプリケーション全体にアクセスできます
+- APIルートは内部操作のためにアクセス可能なままです
+- 環境変数による緊急バイパスが利用可能です
+
+## メンテナンスモードの有効化
+
+### 管理パネルから
+
+1. **Admin** > **設定** > **Feature Flags** に移動
+2. **メンテナンスモード**を有効にする
+3. すべての非管理者訪問者はすぐにメンテナンスページを見ることになります
+
+### API経由
+
+```typescript
+// メンテナンスモードを有効にする
+const response = await fetch('/api/admin/settings/flags', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ maintenanceMode: true }),
+});
+```
+
+### データベース経由
+
+```typescript
+import { db } from '@/lib/db';
+
+await db.appConfig.upsert({
+  where: { id: 'default' },
+  update: { maintenanceMode: true },
+  create: { id: 'default', maintenanceMode: true },
+});
+```
+
+## 仕組み
+
+### ミドルウェアの適用
+
+ミドルウェアはすべてのリクエストでメンテナンスモードをチェックします：
+
+```typescript
+// src/middleware.ts
+if (flags.maintenanceMode && !isAdmin) {
+  if (!shouldBypassMaintenance(pathname)) {
+    return NextResponse.redirect(new URL('/maintenance', request.url));
+  }
+}
+```
+
+### バイパスパス
+
+これらのパスはメンテナンス中も常にアクセス可能です：
+
+- `/maintenance` - メンテナンスページ自体
+- `/login` - 認証ページ（管理者がログインできるように）
+- `/api/auth/*` - 認証APIルート
+- `/onboarding` - 初期設定（管理者が存在しない場合）
+
+### 管理者検出
+
+管理者ステータスは、ユーザーがログイン時に設定されるCookie（`shipkit-is-admin`）によって判断されます。
+
+## 緊急復旧
+
+誤ってメンテナンスモードを有効にし、管理パネルにアクセスできない場合：
+
+### オプション1：環境変数によるバイパス
+
+`.env`ファイルに追加：
+
+```bash
+BYPASS_MAINTENANCE=true
+```
+
+### オプション2：データベースの直接更新
+
+```bash
+npx prisma db execute --stdin <<< "UPDATE app_config SET \"maintenanceMode\" = false WHERE id = 'default';"
+```
+
+### オプション3：Prisma Studio
+
+```bash
+npx prisma studio
+```
+
+`AppConfig`に移動し、`maintenanceMode`を`false`に設定します。
+
+## メンテナンスページのカスタマイズ
+
+### ページの場所
+
+```
+src/app/[locale]/maintenance/page.tsx
+```
+
+### 翻訳
+
+メンテナンスページのテキストは`maintenance`名前空間を介して翻訳されます：
+
+```json
+{
+  "maintenance": {
+    "title": "メンテナンス中",
+    "description": "現在、定期メンテナンスを実施しています。",
+    "checkBack": "しばらくしてからもう一度お試しください。",
+    "backToHome": "ホームに戻る"
+  }
+}
+```
+
+## ベストプラクティス
+
+1. **事前にユーザーに通知** - 予定されたメンテナンスを告知する
+2. **メンテナンスは短く** - ユーザーへの影響を最小限に
+3. **まず管理者アクセスをテスト** - 管理者としてログインできることを確認
+4. **復旧計画を持つ** - `BYPASS_MAINTENANCE`の使い方を知っておく
+5. **まずステージングで使用** - 本番前にステージングでメンテナンスモードをテスト
+
+## 比較：メンテナンス vs ウェイトリストモード
+
+| 機能 | メンテナンスモード | ウェイトリストモード |
+|------|-------------------|---------------------|
+| 既存ユーザーをブロック | はい | いいえ |
+| 新規登録をブロック | はい | はい |
+| 管理者バイパス | はい | はい |
+| 用途 | アップデート、緊急事態 | プレローンチ、制限付きアクセス |

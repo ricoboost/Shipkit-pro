@@ -1,0 +1,74 @@
+---
+title: Panel de Administración
+description: Panel de administración integrado para gestionar tu SaaS.
+---
+
+# Panel de Administración
+
+ShipKit incluye un panel de administración completo en `/admin`.
+
+## Características
+
+- Gestión de usuarios
+- Análisis de suscripciones
+- Seguimiento de ingresos
+- Configuración del sistema
+
+## Control de Acceso
+
+Solo los usuarios con `role: ADMIN` pueden acceder al panel de administración.
+
+## Páginas
+
+### Vista General (`/admin`)
+
+- Total de usuarios
+- Suscripciones activas
+- Ingresos mensuales
+- Registros recientes
+
+### Usuarios (`/admin/users`)
+
+- Listar todos los usuarios
+- Buscar y filtrar
+- Editar detalles de usuario
+- Gestionar roles
+
+### Análisis (`/admin/analytics`)
+
+- Gráficos de crecimiento de usuarios
+- Tendencias de ingresos
+- Tasas de conversión
+- Análisis de abandono
+
+### Suscripciones (`/admin/subscriptions`)
+
+- Suscripciones activas
+- Distribución de planes
+- Seguimiento de MRR
+- Cancelaciones
+
+## Uso
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// Get dashboard stats
+const stats = await admin.getStats();
+
+// List users with pagination
+const users = await admin.getUsers({ page: 1, limit: 20 });
+
+// Update user
+await admin.updateUser(userId, { role: 'ADMIN' });
+```
+
+## Componentes
+
+```tsx
+import { AdminStats } from '@/components/admin/stats';
+import { UsersTable } from '@/components/admin/users-table';
+
+<AdminStats />
+<UsersTable users={users} />
+```

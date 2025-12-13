@@ -1,0 +1,68 @@
+---
+title: Newsletter
+description: Système de newsletter par email avec double opt-in.
+---
+
+# Système de Newsletter
+
+ShipKit comprend un système de newsletter avec intégration Resend.
+
+## Configuration
+
+```bash
+RESEND_API_KEY="re_xxx"
+EMAIL_FROM="noreply@yourdomain.com"
+```
+
+## Fonctionnalités
+
+- Confirmation double opt-in
+- Gestion des désinscriptions
+- Modèles d'email
+- Gestion des abonnés
+
+## Routes API
+
+### S'abonner
+
+```typescript
+POST /api/newsletter/subscribe
+{ "email": "user@example.com" }
+```
+
+### Confirmer
+
+```typescript
+POST /api/newsletter/confirm
+{ "token": "confirmation-token" }
+```
+
+### Se désabonner
+
+```typescript
+POST /api/newsletter/unsubscribe
+{ "token": "unsubscribe-token" }
+```
+
+## Utilisation
+
+```typescript
+import { newsletter } from '@/lib/newsletter';
+
+// Subscribe
+await newsletter.subscribe('user@example.com');
+
+// Send to all subscribers
+await newsletter.sendToAll({
+  subject: 'Monthly Update',
+  html: '<h1>Hello!</h1>',
+});
+```
+
+## Composant de Formulaire d'Abonnement
+
+```tsx
+import { SubscribeForm } from '@/components/newsletter/subscribe-form';
+
+<SubscribeForm />
+```

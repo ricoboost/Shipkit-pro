@@ -1,0 +1,86 @@
+---
+title: Credits System
+description: Usage-based billing with the ShipKit credits system.
+---
+
+# Credits System
+
+ShipKit includes a flexible credits system for usage-based billing.
+
+## Overview
+
+Credits allow you to:
+- Charge for AI generations
+- Limit API calls
+- Offer pay-as-you-go pricing
+- Bundle with subscriptions
+
+## Usage
+
+```typescript
+import { credits } from '@/lib/payments/credits';
+
+// Check balance
+const balance = await credits.getBalance(userId);
+
+// Deduct credits
+const success = await credits.deduct(userId, 10, 'AI chat message');
+
+if (!success) {
+  throw new Error('Insufficient credits');
+}
+
+// Add credits
+await credits.add(userId, 100, 'Monthly subscription refill');
+
+// Get history
+const history = await credits.getHistory(userId);
+```
+
+## API Routes
+
+```typescript
+// GET /api/credits/balance
+const balance = await fetch('/api/credits/balance');
+
+// GET /api/credits/history
+const history = await fetch('/api/credits/history');
+```
+
+## Database Schema
+
+```prisma
+model CreditTransaction {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int      // positive = add, negative = deduct
+  reason    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+```
+
+## Subscription Integration
+
+Automatically refill credits on subscription renewal:
+
+```typescript
+// In webhook handler
+case 'invoice.paid':
+  const plan = getPlanFromSubscription(event.data);
+  await credits.add(userId, plan.monthlyCredits, 'Monthly refill');
+  break;
+```
+
+## Credit Costs
+
+Configure costs in your app:
+
+```typescript
+export const creditCosts = {
+  'ai-chat': 1,
+  'ai-image': 10,
+  'api-call': 1,
+  'export': 5,
+};
+```

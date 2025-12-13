@@ -1,0 +1,1345 @@
+{
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "search": "検索",
+    "filter": "フィルター",
+    "back": "戻る",
+    "next": "次へ",
+    "previous": "前へ",
+    "submit": "送信",
+    "confirm": "確認",
+    "close": "閉じる"
+  },
+  "auth": {
+    "signIn": "ログイン",
+    "signUp": "新規登録",
+    "signOut": "ログアウト",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "confirmPassword": "パスワード確認",
+    "name": "氏名",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "noAccount": "アカウントをお持ちでないですか？",
+    "hasAccount": "すでにアカウントをお持ちですか？",
+    "createAccount": "アカウント作成",
+    "orContinueWith": "または以下で続ける",
+    "invalidCredentials": "メールアドレスまたはパスワードが無効です",
+    "emailRequired": "メールアドレスは必須です",
+    "passwordRequired": "パスワードは必須です",
+    "passwordMinLength": "パスワードは8文字以上である必要があります",
+    "passwordsMatch": "パスワードが一致する必要があります",
+    "verifyEmail": "メールアドレスを確認してください",
+    "verifyEmailSent": "確認リンクをメールで送信しました",
+    "resetPassword": "パスワードをリセット",
+    "resetPasswordSent": "リセットリンクをメールで送信しました",
+    "newPassword": "新しいパスワード",
+    "referralCode": "紹介コード（任意）",
+    "twoFactor": {
+      "title": "二要素認証",
+      "description": "アカウントにセキュリティの追加レイヤーを追加",
+      "enabled": "2FAが有効です",
+      "disabled": "2FAが無効です",
+      "enable": "2FAを有効にする",
+      "disable": "2FAを無効にする",
+      "setup": {
+        "title": "二要素認証の設定",
+        "step1": "認証アプリをインストール",
+        "step1Desc": "Google Authenticator、Authy、または他のTOTP対応アプリをダウンロード",
+        "step2": "QRコードをスキャン",
+        "step2Desc": "認証アプリでこのQRコードをスキャン",
+        "step3": "確認コードを入力",
+        "step3Desc": "認証アプリの6桁のコードを入力",
+        "manualEntry": "スキャンできませんか？このコードを手動で入力：",
+        "backupCodes": "バックアップコード",
+        "backupCodesDesc": "これらのコードを安全な場所に保存してください。各コードは一度だけ使用できます。",
+        "backupCodesWarning": "これらのコードは再表示されません！",
+        "verify": "確認して有効にする",
+        "verifying": "確認中..."
+      },
+      "verify": {
+        "title": "確認コードを入力",
+        "description": "認証アプリの6桁のコードを入力",
+        "code": "確認コード",
+        "codePlaceholder": "000000",
+        "useBackupCode": "バックアップコードを使用",
+        "useAuthenticator": "認証アプリを使用",
+        "backupCode": "バックアップコード",
+        "backupCodePlaceholder": "バックアップコードを入力",
+        "submit": "確認",
+        "submitting": "確認中...",
+        "invalidCode": "無効な確認コード",
+        "invalidBackupCode": "無効なバックアップコード"
+      },
+      "disable": {
+        "title": "二要素認証を無効にする",
+        "description": "2FAを無効にするには確認コードを入力",
+        "warning": "これによりアカウントのセキュリティが低下します",
+        "confirm": "2FAを無効にする",
+        "confirming": "無効化中..."
+      },
+      "success": {
+        "enabled": "二要素認証が有効になりました",
+        "disabled": "二要素認証が無効になりました"
+      },
+      "error": {
+        "setupFailed": "2FAの設定に失敗しました",
+        "verifyFailed": "コードの確認に失敗しました",
+        "disableFailed": "2FAの無効化に失敗しました"
+      }
+    }
+  },
+  "nav": {
+    "home": "ホーム",
+    "features": "機能",
+    "pricing": "料金",
+    "docs": "ドキュメント",
+    "blog": "ブログ",
+    "dashboard": "ダッシュボード",
+    "settings": "設定",
+    "profile": "プロフィール",
+    "billing": "請求",
+    "team": "チーム",
+    "admin": "管理"
+  },
+  "landing": {
+    "hero": {
+      "title": "SaaSをより速く構築",
+      "subtitle": "モダンなWebアプリケーションのための究極のAIネイティブボイラープレート",
+      "cta": "始める",
+      "secondaryCta": "デモを見る"
+    },
+    "features": {
+      "title": "必要なものすべて",
+      "subtitle": "最高のツールとプラクティスで構築",
+      "auth": {
+        "title": "認証",
+        "description": "OAuth、マジックリンク、クレデンシャルによる複数の認証プロバイダー"
+      },
+      "payments": {
+        "title": "決済",
+        "description": "Stripe、LemonSqueezy、またはPolar - 1つの環境変数で切り替え可能"
+      },
+      "ai": {
+        "title": "AI統合",
+        "description": "OpenRouterとVercel AI SDKによるクレジットベースの利用"
+      },
+      "teams": {
+        "title": "組織",
+        "description": "チーム、ロール、権限によるマルチテナンシー"
+      },
+      "security": {
+        "title": "エンタープライズセキュリティ",
+        "description": "二要素認証、暗号化されたシークレット、安全なセッション"
+      },
+      "testing": {
+        "title": "テストスイート",
+        "description": "ユニットテスト用Vitest、E2Eテスト用Playwright"
+      },
+      "cicd": {
+        "title": "CI/CDパイプライン",
+        "description": "自動テスト、リンティング、デプロイメント用GitHub Actions"
+      },
+      "monitoring": {
+        "title": "エラーモニタリング",
+        "description": "セッションリプレイとパフォーマンストラッキング付きSentry統合"
+      },
+      "docker": {
+        "title": "Docker対応",
+        "description": "マルチステージビルドによる本番環境対応Docker設定"
+      },
+      "seo": {
+        "title": "SEO最適化",
+        "description": "検索エンジン用の動的サイトマップ、robots.txt、メタタグ"
+      }
+    },
+    "pricing": {
+      "title": "シンプルで透明な料金",
+      "subtitle": "ニーズに合ったプランを選択",
+      "monthly": "月額",
+      "yearly": "年額",
+      "popular": "人気",
+      "perMonth": "/月",
+      "getStarted": "始める"
+    },
+    "testimonials": {
+      "title": "開発者に愛されています",
+      "subtitle": "他の方々の声をご覧ください"
+    },
+    "cta": {
+      "title": "ローンチの準備はできましたか？",
+      "subtitle": "今日からSaaSの構築を始めましょう",
+      "button": "ShipKitを入手"
+    }
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "welcome": "おかえりなさい",
+    "welcomeBack": "おかえりなさい、{name}さん！",
+    "there": "さん",
+    "overview": "概要",
+    "accountOverview": "今日のアカウントの状況をご覧ください。",
+    "stats": {
+      "totalUsers": "総ユーザー数",
+      "revenue": "収益",
+      "activeSubscriptions": "アクティブなサブスクリプション",
+      "creditsUsed": "使用クレジット",
+      "creditsRemaining": "残りクレジット",
+      "aiRequests": "AIリクエスト",
+      "teamMembers": "チームメンバー",
+      "currentPlan": "現在のプラン"
+    },
+    "fromLastMonth": "先月から",
+    "quickActions": "クイックアクション",
+    "actions": {
+      "aiPlayground": "AIプレイグラウンド",
+      "aiPlaygroundDesc": "AIモデルとプロンプトをテスト",
+      "documentation": "ドキュメント",
+      "documentationDesc": "ShipKitの使い方を学ぶ",
+      "settings": "設定",
+      "settingsDesc": "アカウントを管理",
+      "getHelp": "ヘルプを取得",
+      "getHelpDesc": "サポートに連絡"
+    },
+    "goTo": "{page}へ移動",
+    "recentActivity": "最近のアクティビティ",
+    "recentActivityDesc": "最新のアクションと更新",
+    "noRecentActivity": "最近のアクティビティはありません",
+    "startUsing": "ShipKitを使用してここでアクティビティを確認しましょう",
+    "tryAiPlayground": "AIプレイグラウンドを試す"
+  },
+  "settings": {
+    "title": "設定",
+    "description": "アカウント設定と環境設定を管理",
+    "manage": "{section}を管理",
+    "sections": {
+      "profile": "プロフィール",
+      "profileDesc": "個人情報を管理",
+      "billing": "請求",
+      "billingDesc": "サブスクリプションと支払い方法を管理",
+      "apiKeys": "APIキー",
+      "apiKeysDesc": "外部統合用のAPIキーを管理",
+      "security": "セキュリティ",
+      "securityDesc": "パスワードとセキュリティ設定を管理"
+    },
+    "security": {
+      "title": "セキュリティ",
+      "description": "パスワードとセキュリティ設定を管理",
+      "password": {
+        "title": "パスワード",
+        "description": "アカウントを安全に保つためにパスワードを変更",
+        "current": "現在のパスワード",
+        "new": "新しいパスワード",
+        "confirm": "新しいパスワードを確認",
+        "update": "パスワードを更新",
+        "updating": "更新中...",
+        "updated": "パスワードが正常に更新されました",
+        "error": "パスワードの更新に失敗しました",
+        "mismatch": "パスワードが一致しません",
+        "requirements": "パスワードは8文字以上である必要があります"
+      },
+      "twoFactor": {
+        "title": "二要素認証",
+        "description": "認証アプリを使用してアカウントにセキュリティの追加レイヤーを追加",
+        "status": "ステータス",
+        "enabled": "有効",
+        "disabled": "無効",
+        "enable": "2FAを有効にする",
+        "disable": "2FAを無効にする",
+        "manage": "2FAを管理"
+      },
+      "sessions": {
+        "title": "アクティブセッション",
+        "description": "すべてのデバイスでのアクティブセッションを管理",
+        "current": "現在のセッション",
+        "lastActive": "最終アクティブ {time}",
+        "revoke": "取り消す",
+        "revokeAll": "他のすべてのセッションを取り消す",
+        "revokeSuccess": "セッションが正常に取り消されました",
+        "revokeAllSuccess": "他のすべてのセッションが取り消されました"
+      },
+      "activityLog": {
+        "title": "セキュリティアクティビティ",
+        "description": "アカウントの最近のセキュリティイベント",
+        "loginSuccess": "ログイン成功",
+        "loginFailed": "ログイン試行失敗",
+        "passwordChanged": "パスワード変更",
+        "twoFactorEnabled": "2FA有効化",
+        "twoFactorDisabled": "2FA無効化",
+        "noActivity": "最近のセキュリティアクティビティなし"
+      }
+    },
+    "notifications": {
+      "title": "通知",
+      "description": "受け取る通知を選択",
+      "email": "メール通知",
+      "emailDesc": "アカウントに関するメール更新を受信",
+      "marketing": "マーケティングメール",
+      "marketingDesc": "新機能とオファーに関するメールを受信",
+      "security": "セキュリティアラート",
+      "securityDesc": "セキュリティイベントの通知を受信",
+      "updates": "製品アップデート"
+    },
+    "dangerZone": {
+      "title": "危険なゾーン",
+      "description": "取り消し不可能で破壊的な操作",
+      "deleteAccount": "アカウントを削除",
+      "deleteAccountDesc": "アカウントとすべてのデータを完全に削除",
+      "deleteButton": "アカウントを削除"
+    },
+    "profile": {
+      "title": "プロフィール",
+      "description": "個人情報を管理",
+      "avatar": "アバター",
+      "avatarDesc": "アバターをクリックしてファイルからカスタムアバターをアップロード。",
+      "changeAvatar": "アバターを変更",
+      "avatarFormats": "JPG、GIF、またはPNG。最大1MB。",
+      "details": "プロフィール詳細",
+      "detailsDesc": "個人情報を更新",
+      "displayName": "表示名",
+      "fullName": "氏名",
+      "namePlaceholder": "山田太郎",
+      "email": "メールアドレス",
+      "emailPlaceholder": "taro@example.com",
+      "emailDisabled": "メールアドレスはここでは変更できません",
+      "bio": "自己紹介",
+      "bioPlaceholder": "自己紹介を入力してください",
+      "saveChanges": "変更を保存",
+      "saved": "プロフィールを更新しました",
+      "updateSuccess": "プロフィールを更新しました",
+      "updateError": "プロフィールの更新に失敗しました"
+    },
+    "account": {
+      "title": "アカウント",
+      "description": "アカウント設定を管理",
+      "email": "メールアドレス",
+      "changeEmail": "メールを変更",
+      "password": "パスワード",
+      "changePassword": "パスワードを変更",
+      "deleteAccount": "アカウントを削除",
+      "deleteWarning": "この操作は取り消せません"
+    },
+    "billing": {
+      "title": "請求",
+      "description": "サブスクリプションと支払い方法を管理",
+      "currentPlan": "現在のプラン",
+      "currentPlanDesc": "現在{plan}プランをご利用中です",
+      "status": {
+        "active": "アクティブ",
+        "canceled": "キャンセル済み",
+        "past_due": "支払い遅延",
+        "trialing": "トライアル中"
+      },
+      "changePlan": "プランを変更",
+      "cancel": "キャンセル",
+      "nextBilling": "次回請求日: {date}",
+      "creditsUsage": "クレジット使用状況",
+      "creditsUsageDesc": "この請求期間のAIクレジット使用状況",
+      "creditsUsed": "{used} / {total} クレジット使用",
+      "buyMoreCredits": "クレジットを追加購入",
+      "viewUsageHistory": "使用履歴を表示",
+      "paymentMethod": "支払い方法",
+      "paymentMethodDesc": "支払い方法を管理",
+      "expires": "有効期限 {date}",
+      "update": "更新",
+      "updatePayment": "支払い方法を更新",
+      "billingHistory": "請求履歴",
+      "billingHistoryDesc": "過去の請求書をダウンロード",
+      "invoiceStatus": {
+        "paid": "支払い済み",
+        "pending": "保留中",
+        "failed": "失敗"
+      },
+      "viewAllInvoices": "すべての請求書を表示",
+      "viewInvoices": "請求書を見る",
+      "cancelSubscription": "サブスクリプションをキャンセル",
+      "upgrade": "プランをアップグレード",
+      "usage": "使用状況",
+      "credits": "残りクレジット"
+    },
+    "apiKeys": {
+      "title": "APIキー",
+      "description": "外部統合用のAPIキーを管理",
+      "createNewKey": "新しいキーを作成",
+      "createApiKey": "APIキーを作成",
+      "createKeyDesc": "アプリケーション用の新しいAPIキーを作成。",
+      "keyCreatedDesc": "APIキーが作成されました。今すぐコピーしてください - 再度表示することはできません。",
+      "copyApiKey": "APIキーをコピー",
+      "keyName": "キー名",
+      "keyNamePlaceholder": "例: 本番環境APIキー",
+      "done": "完了",
+      "cancel": "キャンセル",
+      "createKey": "キーを作成",
+      "yourApiKeys": "APIキー",
+      "apiKeysDesc": "これらのキーを使用してAPI経由でアカウントにアクセスできます",
+      "noApiKeys": "APIキーがありません",
+      "createFirstKey": "最初のAPIキーを作成して始めましょう",
+      "neverUsed": "未使用",
+      "created": "作成日 {date}",
+      "lastUsed": "最終使用 {date}",
+      "deleteApiKey": "APIキーを削除",
+      "deleteKeyDesc": "「{name}」を削除してもよろしいですか？この操作は取り消せません。このキーを使用しているアプリケーションは動作しなくなります。",
+      "delete": "削除",
+      "copied": "クリップボードにコピーしました",
+      "enterKeyName": "キー名を入力してください",
+      "keyCreated": "APIキーを作成しました",
+      "createError": "APIキーの作成に失敗しました",
+      "keyDeleted": "APIキーを削除しました",
+      "deleteError": "APIキーの削除に失敗しました",
+      "apiUsage": "API使用方法",
+      "apiUsageDesc": "APIキーの使用方法",
+      "includeInHeaders": "リクエストヘッダーに含める:",
+      "exampleCurl": "cURLリクエストの例:"
+    },
+    "team": {
+      "title": "チーム",
+      "description": "チームメンバーを管理",
+      "members": "チームメンバー",
+      "inviteMember": "メンバーを招待",
+      "role": "ロール",
+      "owner": "オーナー",
+      "admin": "管理者",
+      "member": "メンバー",
+      "pending": "保留中",
+      "remove": "削除",
+      "leave": "チームを離れる"
+    },
+    "api": {
+      "title": "APIキー",
+      "description": "APIキーを管理",
+      "create": "新しいキーを作成",
+      "name": "キー名",
+      "key": "APIキー",
+      "created": "作成日",
+      "lastUsed": "最終使用",
+      "revoke": "取り消し"
+    }
+  },
+  "errors": {
+    "notFound": "ページが見つかりません",
+    "notFoundDescription": "お探しのページは存在しません",
+    "serverError": "サーバーエラー",
+    "serverErrorDescription": "サーバー側で問題が発生しました",
+    "unauthorized": "認証されていません",
+    "unauthorizedDescription": "このページにアクセスする権限がありません",
+    "goHome": "ホームに戻る",
+    "global": {
+      "title": "問題が発生しました！",
+      "description": "ご不便をおかけして申し訳ございません。予期しないエラーが発生しました。チームに通知され、問題の修正に取り組んでいます。",
+      "tryAgain": "再試行",
+      "goHome": "ホームに戻る",
+      "errorId": "エラーID: {digest}"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "overview": "概要",
+      "ai": "AI",
+      "team": "チーム",
+      "settings": "設定",
+      "admin": "管理者"
+    },
+    "items": {
+      "dashboard": "ダッシュボード",
+      "analytics": "分析",
+      "aiPlayground": "AIプレイグラウンド",
+      "usage": "使用状況",
+      "team": "チーム",
+      "profile": "プロフィール",
+      "billing": "請求",
+      "apiKeys": "APIキー",
+      "security": "セキュリティ",
+      "settings": "設定",
+      "adminPanel": "管理パネル",
+      "users": "ユーザー"
+    }
+  },
+  "footer": {
+    "product": "製品",
+    "company": "会社",
+    "legal": "法的情報",
+    "social": "ソーシャル",
+    "copyright": "All rights reserved"
+  },
+  "admin": {
+    "sidebar": {
+      "admin": "管理",
+      "overview": "概要",
+      "users": "ユーザー",
+      "organizations": "組織",
+      "subscriptions": "サブスクリプション",
+      "waitlist": "ウェイトリスト",
+      "pageBuilder": "ページビルダー",
+      "analytics": "アナリティクス",
+      "themeBuilder": "テーマビルダー",
+      "settings": "設定",
+      "exitAdmin": "管理を終了"
+    },
+    "settings": {
+      "title": "設定",
+      "description": "機能フラグ、サイト設定、プロバイダー構成を管理",
+      "featureFlags": {
+        "title": "機能フラグ",
+        "description": "アプリケーション全体で機能のオン/オフを切り替え",
+        "waitlistMode": "ウェイトリストモード",
+        "waitlistModeDesc": "新規登録のウェイトリストモードを有効にする",
+        "maintenanceMode": "メンテナンスモード",
+        "maintenanceModeDesc": "サイトをメンテナンスモードにする"
+      },
+      "siteSettings": {
+        "title": "サイト設定",
+        "description": "サイト名、URL、説明を設定",
+        "siteName": "サイト名",
+        "siteUrl": "サイトURL",
+        "siteDescription": "サイト説明"
+      },
+      "language": {
+        "title": "言語設定",
+        "description": "デフォルト言語を設定し、利用可能な言語を管理",
+        "defaultLanguage": "デフォルト言語",
+        "defaultLanguageDesc": "設定がない場合に使用される言語",
+        "yourLanguage": "あなたの言語",
+        "yourLanguageDesc": "現在の言語設定を変更",
+        "availableLanguages": "利用可能な言語",
+        "availableLanguagesDesc": "アプリケーションに設定された言語"
+      },
+      "providers": {
+        "title": "プロバイダー設定",
+        "description": "認証、決済、AIのプロバイダーを選択"
+      }
+    },
+    "overview": {
+      "title": "ダッシュボード",
+      "description": "アプリケーションの指標とアクティビティの概要",
+      "totalUsers": "総ユーザー数",
+      "thisWeek": "今週",
+      "activeSubscriptions": "アクティブなサブスクリプション",
+      "trialing": "トライアル中",
+      "monthlyRevenue": "月間収益",
+      "fromLastMonth": "先月から",
+      "aiRequests": "AIリクエスト",
+      "tokensUsed": "使用トークン",
+      "recentSignups": "最近の登録",
+      "viewAll": "すべて表示",
+      "anonymous": "匿名",
+      "noRecentSignups": "最近の登録はありません",
+      "recentSubscriptionChanges": "最近のサブスクリプション変更",
+      "noRecentChanges": "最近の変更はありません",
+      "recentAIUsage": "最近のAI使用状況",
+      "latestAIRequests": "全ユーザーの最新AIリクエスト",
+      "tokens": "トークン",
+      "credits": "クレジット",
+      "noRecentAIUsage": "最近のAI使用はありません"
+    },
+    "users": {
+      "title": "ユーザー",
+      "description": "ユーザーアカウントと権限を管理",
+      "searchPlaceholder": "メールまたは名前でユーザーを検索...",
+      "allRoles": "すべてのロール",
+      "allStatus": "すべてのステータス",
+      "allPlans": "すべてのプラン",
+      "noUsersFound": "ユーザーが見つかりません",
+      "showing": "{start}-{end} / {total}件を表示",
+      "previous": "前へ",
+      "next": "次へ",
+      "user": "ユーザー",
+      "status": "ステータス",
+      "plan": "プラン",
+      "credits": "クレジット",
+      "aiUsage": "AI使用量",
+      "role": "ロール",
+      "joined": "登録日",
+      "view": "表示",
+      "usersCount": "ユーザー ({count})",
+      "manageAccounts": "ユーザーアカウントを管理",
+      "selected": "{count}件選択中",
+      "bulkActions": "一括操作",
+      "activateSelected": "選択を有効化",
+      "suspendSelected": "選択を停止",
+      "banSelected": "選択をBAN",
+      "exportSelected": "選択をエクスポート (CSV)",
+      "anonymous": "匿名",
+      "apply": "適用",
+      "clear": "クリア",
+      "active": "アクティブ",
+      "suspended": "停止中",
+      "banned": "BAN済み",
+      "admin": "管理者",
+      "free": "無料",
+      "starter": "スターター",
+      "pro": "Pro",
+      "enterprise": "エンタープライズ",
+      "banSelectedUsers": "選択したユーザーをBAN",
+      "suspendSelectedUsers": "選択したユーザーを停止",
+      "activateSelectedUsers": "選択したユーザーを有効化",
+      "banDescription": "{count}名のユーザーを永久にBANします。ログインできなくなります。",
+      "suspendDescription": "{count}名のユーザーを一時停止します。後で再有効化できます。",
+      "activateDescription": "{count}名のユーザーを再有効化し、アクセスを復元します。",
+      "cancel": "キャンセル",
+      "processing": "処理中...",
+      "confirmActivate": "有効化を確認",
+      "confirmSuspend": "停止を確認",
+      "confirmBan": "BANを確認"
+    },
+    "organizations": {
+      "title": "組織",
+      "description": "組織、メンバー、サブスクリプションを管理",
+      "searchPlaceholder": "組織を検索...",
+      "allPlans": "すべてのプラン",
+      "noOrganizationsFound": "組織が見つかりません"
+    },
+    "subscriptions": {
+      "title": "サブスクリプション",
+      "description": "顧客のサブスクリプションを表示・管理",
+      "subscriptionsCount": "サブスクリプション ({count})",
+      "manageSubscriptions": "顧客サブスクリプションを管理",
+      "customer": "顧客",
+      "plan": "プラン",
+      "status": "ステータス",
+      "provider": "プロバイダー",
+      "currentPeriod": "現在の期間",
+      "created": "作成日",
+      "manage": "管理",
+      "noSubscriptions": "サブスクリプションが見つかりません",
+      "allStatus": "すべてのステータス",
+      "active": "アクティブ",
+      "trialing": "トライアル中",
+      "pastDue": "支払い遅延",
+      "canceled": "キャンセル済み",
+      "allPlans": "すべてのプラン",
+      "starter": "スターター",
+      "pro": "Pro",
+      "enterprise": "エンタープライズ",
+      "anonymous": "匿名",
+      "showing": "{start}-{end} / {total}件を表示",
+      "previous": "前へ",
+      "next": "次へ"
+    },
+    "waitlist": {
+      "title": "ウェイトリスト",
+      "description": "ニュースレター登録者とウェイトリストを管理",
+      "totalSubscribers": "総登録者数",
+      "confirmed": "確認済み",
+      "pending": "保留中",
+      "unsubscribed": "登録解除",
+      "thisWeek": "今週",
+      "searchPlaceholder": "登録者を検索...",
+      "allStatus": "すべてのステータス",
+      "allSources": "すべてのソース",
+      "allTags": "すべてのタグ"
+    },
+    "analytics": {
+      "title": "アナリティクス",
+      "description": "使用状況の指標とビジネスインサイト",
+      "aiUsage": "AI使用状況",
+      "apiUsageStats": "API使用統計",
+      "totalRequests": "総リクエスト数",
+      "totalTokens": "総トークン数",
+      "creditsUsed": "使用クレジット",
+      "topAIModels": "上位AIモデル",
+      "topModelsDesc": "過去30日間で最も使用されたモデル",
+      "requests": "リクエスト",
+      "noData": "データがありません",
+      "newsletter": "ニュースレター",
+      "subscriberStats": "登録者統計",
+      "totalSubscribers": "総登録者数",
+      "confirmed": "確認済み",
+      "unconfirmed": "未確認",
+      "newThisWeek": "今週の新規",
+      "bySource": "ソース別",
+      "userGrowth": "ユーザー成長",
+      "userAcquisition": "ユーザー獲得指標",
+      "totalUsers": "総ユーザー数",
+      "newThisMonth": "今月の新規",
+      "conversionRate": "コンバージョン率",
+      "revenue": "収益",
+      "monthlyRecurring": "月間経常収益",
+      "mrr": "MRR",
+      "lastMonth": "先月",
+      "growth": "成長率",
+      "activeSubscriptionsByPlan": "プラン別アクティブサブスクリプション",
+      "active": "アクティブ",
+      "trialing": "トライアル中"
+    },
+    "theme": {
+      "title": "テーマビルダー",
+      "description": "アプリケーションの外観をカスタマイズ",
+      "copy": "コピー",
+      "copied": "コピーしました！",
+      "export": "エクスポート",
+      "reset": "リセット",
+      "saveTheme": "テーマを保存",
+      "saving": "保存中...",
+      "unsavedChanges": "未保存の変更があります。「テーマを保存」をクリックしてグローバルに適用してください。",
+      "presets": "プリセット",
+      "themeInfo": "テーマ情報",
+      "themeName": "テーマ名",
+      "editingMode": "編集モード",
+      "light": "ライト",
+      "dark": "ダーク",
+      "customize": "カスタマイズ",
+      "fineTuneColors": "モードの色とスタイルを調整",
+      "mode": "モード",
+      "colors": "カラー",
+      "borderRadius": "角丸",
+      "brandColors": "ブランドカラー",
+      "primary": "プライマリ",
+      "primaryDesc": "ボタンとリンクのメインカラー",
+      "secondary": "セカンダリ",
+      "secondaryDesc": "目立たない要素のサポートカラー",
+      "accent": "アクセント",
+      "accentDesc": "特別な要素のハイライトカラー",
+      "semanticColors": "セマンティックカラー",
+      "destructive": "危険",
+      "destructiveDesc": "エラーと危険なアクションの色",
+      "muted": "ミュート",
+      "mutedDesc": "非アクティブ要素の微妙な背景",
+      "surfaceColors": "サーフェスカラー",
+      "background": "背景",
+      "backgroundDesc": "メインページの背景",
+      "foreground": "前景",
+      "foregroundDesc": "メインテキストの色",
+      "card": "カード",
+      "cardDesc": "カードとパネルの背景",
+      "popover": "ポップオーバー",
+      "popoverDesc": "ドロップダウンとポップオーバーの背景",
+      "uiColors": "UIカラー",
+      "border": "ボーダー",
+      "borderDesc": "入力と区切り線のボーダー色",
+      "input": "インプット",
+      "inputDesc": "入力フィールドのボーダー色",
+      "ring": "リング",
+      "ringDesc": "フォーカスリングの色",
+      "radiusSharp": "シャープ",
+      "radiusSubtle": "控えめ",
+      "radiusMedium": "ミディアム",
+      "radiusRounded": "丸み",
+      "radiusFull": "フル",
+      "livePreview": "ライブプレビュー",
+      "livePreviewDesc": "実際のコンポーネントでテーマの見た目を確認",
+      "buttons": "ボタン",
+      "badges": "バッジ",
+      "formElements": "フォーム要素",
+      "textInput": "テキスト入力",
+      "toggleSwitch": "トグルスイッチ",
+      "alerts": "アラート",
+      "alertMessage": "これは情報アラートメッセージです。",
+      "cards": "カード",
+      "defaultCard": "デフォルトカード",
+      "defaultCardDesc": "デフォルト背景の標準カード。",
+      "primaryCard": "プライマリカード",
+      "primaryCardDesc": "プライマリ背景のカード。",
+      "mutedCard": "ミュートカード",
+      "mutedCardDesc": "ミュート背景のカード。",
+      "themeSaved": "テーマを保存しました！",
+      "themeSaveFailed": "テーマの保存に失敗しました",
+      "themeReset": "テーマをデフォルトにリセットしました",
+      "themeResetFailed": "テーマのリセットに失敗しました",
+      "themeExported": "テーマをエクスポートしました！",
+      "cssCopied": "CSSをクリップボードにコピーしました！"
+    },
+    "common": {
+      "loading": "読み込み中...",
+      "search": "検索",
+      "filter": "フィルター",
+      "actions": "アクション",
+      "edit": "編集",
+      "delete": "削除",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "confirm": "確認",
+      "showing": "表示中",
+      "of": "/",
+      "previous": "前へ",
+      "next": "次へ",
+      "noResults": "結果が見つかりません",
+      "anonymous": "匿名"
+    }
+  },
+  "home": {
+    "nav": {
+      "docs": "ドキュメント",
+      "dashboard": "ダッシュボード"
+    },
+    "welcome": {
+      "badge": "セットアップ完了",
+      "title": "ShipKitへようこそ",
+      "titlePrefix": "ようこそ",
+      "titleWithName": "ようこそ、{name}さん！",
+      "description": "素晴らしいものを作る準備ができました。お気に入りのAIアシスタントでコーディングするか、ドキュメントを探索して始めましょう。"
+    },
+    "bento": {
+      "quickActions": {
+        "title": "クイックアクション",
+        "dashboard": {
+          "title": "ダッシュボード",
+          "description": "アプリケーションの指標とアクティビティを表示"
+        },
+        "docs": {
+          "title": "ドキュメント",
+          "description": "ShipKitのカスタマイズと拡張方法を学ぶ"
+        },
+        "settings": {
+          "title": "設定",
+          "description": "アカウントと設定を構成"
+        },
+        "adminPanel": {
+          "title": "管理パネル",
+          "description": "ユーザー、設定、システムを管理"
+        },
+        "themeBuilder": {
+          "title": "テーマビルダー",
+          "description": "アプリの色とスタイルをカスタマイズ"
+        },
+        "waitlistBuilder": {
+          "title": "ウェイトリストビルダー",
+          "description": "ウェイトリストページを作成・管理"
+        }
+      },
+      "features": {
+        "title": "含まれる機能",
+        "auth": {
+          "title": "マルチプロバイダー認証",
+          "description": "複数のプロバイダーに対応した柔軟な認証",
+          "h1": "NextAuth、Supabase、Better Auth",
+          "h2": "OAuth、マジックリンク、認証情報",
+          "h3": "TOTP対応の2FA内蔵"
+        },
+        "payments": {
+          "title": "柔軟な決済",
+          "description": "お好みのプロバイダーで決済を受付",
+          "h1": "Stripe、LemonSqueezy、Polar",
+          "h2": "サブスクリプションと単発決済",
+          "h3": "使用量ベースのクレジットシステム"
+        },
+        "ai": {
+          "title": "AI統合",
+          "description": "すぐに使えるAI機能",
+          "h1": "OpenRouter + Vercel AI SDK",
+          "h2": "クレジットベースの使用状況追跡"
+        },
+        "teams": {
+          "title": "組織",
+          "description": "マルチテナントアーキテクチャ",
+          "h1": "ロールと権限付きチーム",
+          "h2": "メンバー招待"
+        },
+        "database": {
+          "title": "データベース対応",
+          "description": "本番環境対応のDB設定",
+          "h1": "Prisma ORM内蔵",
+          "h2": "Supabase、Neon、PlanetScale"
+        },
+        "i18n": {
+          "title": "国際化",
+          "description": "グローバル対応を標準装備",
+          "h1": "7言語を内蔵",
+          "h2": "追加も簡単"
+        },
+        "theming": {
+          "title": "ビジュアルテーマ",
+          "description": "カスタマイズ可能なデザインシステム",
+          "h1": "テーマビルダー内蔵",
+          "h2": "shadcn/uiコンポーネント"
+        },
+        "api": {
+          "title": "APIルート",
+          "description": "セキュアなAPIインフラ",
+          "h1": "レート制限付きRESTful API",
+          "h2": "APIキー管理"
+        },
+        "security": {
+          "title": "エンタープライズセキュリティ",
+          "description": "セキュリティベストプラクティス内蔵",
+          "h1": "二要素認証",
+          "h2": "暗号化されたシークレットとセッション"
+        },
+        "testing": {
+          "title": "テストスイート",
+          "description": "包括的なテスト設定",
+          "h1": "ユニットテスト用Vitest",
+          "h2": "E2E用Playwright"
+        },
+        "cicd": {
+          "title": "CI/CDパイプライン",
+          "description": "自動デプロイ対応",
+          "h1": "GitHub Actionsワークフロー",
+          "h2": "自動テストとリント"
+        },
+        "monitoring": {
+          "title": "エラーモニタリング",
+          "description": "本番環境の問題を追跡",
+          "h1": "Sentry統合",
+          "h2": "セッションリプレイとパフォーマンス"
+        },
+        "docker": {
+          "title": "Docker対応",
+          "description": "コンテナでどこにでもデプロイ",
+          "h1": "本番用Dockerfile",
+          "h2": "マルチステージビルド"
+        },
+        "seo": {
+          "title": "SEO最適化",
+          "description": "検索エンジン対応済み",
+          "h1": "動的サイトマップとrobots.txt",
+          "h2": "メタタグ管理"
+        },
+        "email": {
+          "title": "メールシステム",
+          "description": "トランザクションメール対応",
+          "h1": "React Emailテンプレート",
+          "h2": "Resend統合"
+        },
+        "analytics": {
+          "title": "アナリティクスダッシュボード",
+          "description": "ユーザーを理解する",
+          "h1": "管理者アナリティクス内蔵",
+          "h2": "ユーザーと収益の指標"
+        }
+      },
+      "gettingStarted": {
+        "title": "カスタマイズの準備はできましたか？",
+        "description": "ドキュメントをご覧になり、ShipKitをニーズに合わせてカスタマイズする方法を学んでください。",
+        "viewDocs": "ドキュメントを見る",
+        "viewSource": "ソースコード"
+      }
+    },
+    "footer": {
+      "tagline": "ShipKit - SaaSをより速く出荷"
+    }
+  },
+  "onboarding": {
+    "meta": {
+      "title": "セットアップ - ShipKit",
+      "description": "ShipKitアプリケーションを設定"
+    },
+    "sidebar": {
+      "setup": "セットアップ",
+      "complete": "完了",
+      "step": "ステップ",
+      "of": "/",
+      "completed": "完了"
+    },
+    "navigation": {
+      "back": "戻る",
+      "next": "続ける",
+      "finish": "セットアップを完了",
+      "skip": "スキップ",
+      "stepOf": "ステップ {current}/{total}"
+    },
+    "steps": {
+      "env": "環境",
+      "envDesc": ".envファイルを設定",
+      "database": "データベース",
+      "databaseDesc": "データベースに接続",
+      "auth": "認証",
+      "authDesc": "認証を設定",
+      "payments": "決済",
+      "paymentsDesc": "決済を設定",
+      "admin": "管理者",
+      "adminDesc": "管理者ユーザーを作成"
+    },
+    "env": {
+      "badge": "環境",
+      "title": "環境設定",
+      "description": "環境変数を設定して開始します。",
+      "status": {
+        "checking": "環境を確認中...",
+        "checkingDesc": ".env.localファイルを確認中",
+        "valid": "環境設定完了",
+        "validDesc": "必要な環境変数がすべて設定されています。",
+        "missing": "設定が不足",
+        "missingDesc": "一部の必須環境変数が不足しています。"
+      },
+      "missing": {
+        "title": "不足している変数"
+      },
+      "configured": {
+        "title": "設定済み"
+      },
+      "template": {
+        "title": "環境テンプレート",
+        "copy": "テンプレートをコピー",
+        "copied": "コピーしました！",
+        "instruction": "このテンプレートを.env.localファイルにコピーして値を入力してください。"
+      },
+      "providers": {
+        "title": "データベースを取得",
+        "getDb": "開始"
+      },
+      "refresh": "再確認",
+      "help": {
+        "title": "ヘルプが必要ですか？",
+        "description": "詳細なセットアップ手順についてはドキュメントをご覧ください。"
+      }
+    },
+    "database": {
+      "badge": "データベース",
+      "title": "データベース接続",
+      "description": "アプリケーションデータを保存するためにデータベースに接続します。",
+      "status": {
+        "checking": "接続をテスト中...",
+        "checkingDesc": "データベースへの接続を試行中",
+        "connected": "データベース接続済み",
+        "connectedDesc": "データベースへの接続に成功しました。",
+        "notConnected": "接続失敗",
+        "notConnectedDesc": "データベースに接続できませんでした。"
+      },
+      "testConnection": "接続をテスト",
+      "troubleshooting": {
+        "title": "トラブルシューティング"
+      },
+      "migration": {
+        "title": "マイグレーションを実行",
+        "description": "スキーマをデータベースにプッシュして必要なテーブルを作成します。"
+      },
+      "docs": "ドキュメント",
+      "docsDesc": "データベース設定について詳しく学ぶ",
+      "success": {
+        "title": "データベース準備完了",
+        "description": "データベースが接続され、使用準備ができています。"
+      }
+    },
+    "auth": {
+      "badge": "認証",
+      "title": "認証設定",
+      "description": "アプリケーションを保護するために認証を設定します。",
+      "status": {
+        "checking": "認証設定を確認中...",
+        "checkingDesc": "認証設定を確認中",
+        "configured": "認証設定完了",
+        "configuredDesc": "認証が正しく設定されています。",
+        "notConfigured": "認証未設定",
+        "notConfiguredDesc": "認証にはAUTH_SECRETが必要です。"
+      },
+      "refresh": "再確認",
+      "methods": {
+        "title": "認証方法",
+        "email": {
+          "title": "メールとパスワード",
+          "desc": "従来のメールとパスワードによる認証"
+        },
+        "2fa": {
+          "title": "二要素認証",
+          "desc": "TOTPベースの二要素認証"
+        },
+        "available": "利用可能",
+        "builtin": "組み込み"
+      },
+      "oauth": {
+        "title": "OAuthプロバイダー",
+        "configured": "設定済み",
+        "notConfigured": "未設定",
+        "optional": "OAuthプロバイダーはオプションです。ソーシャルログインを有効にするには設定してください。"
+      },
+      "info": {
+        "title": "セキュリティノート",
+        "description": "安全なAUTH_SECRETを生成: openssl rand -base64 32"
+      }
+    },
+    "payments": {
+      "badge": "決済",
+      "optional": "オプション",
+      "title": "決済設定",
+      "description": "顧客からの支払いを受け入れるために決済処理を設定します。",
+      "skip": {
+        "title": "今はスキップ",
+        "description": "決済は後から設定ページで設定できます。",
+        "button": "スキップ"
+      },
+      "providers": {
+        "title": "決済プロバイダー",
+        "configured": "設定済み",
+        "required": "必要な環境変数",
+        "getKeys": "APIキーを取得"
+      },
+      "refresh": "再確認",
+      "warning": {
+        "title": "テストモード",
+        "description": "開発中はテストAPIキーを使用してください。本番環境では本番キーに切り替えてください。"
+      },
+      "status": {
+        "ready": "決済準備完了",
+        "readyDesc": "{count}個の決済プロバイダーが設定済み",
+        "notConfigured": "決済プロバイダーなし",
+        "notConfiguredDesc": "支払いを受け入れるには少なくとも1つのプロバイダーを設定してください。"
+      }
+    },
+    "admin": {
+      "badge": "管理者設定",
+      "title": "管理者アカウントを作成",
+      "description": "アプリケーションを管理するための最初の管理者ユーザーを作成します。",
+      "form": {
+        "name": "氏名",
+        "namePlaceholder": "山田太郎",
+        "email": "メール",
+        "emailPlaceholder": "admin@example.com",
+        "password": "パスワード",
+        "passwordPlaceholder": "強力なパスワードを作成",
+        "confirmPassword": "パスワードを確認",
+        "confirmPasswordPlaceholder": "パスワードを確認",
+        "submit": "管理者アカウントを作成",
+        "creating": "アカウントを作成中..."
+      },
+      "password": {
+        "weak": "弱い",
+        "medium": "普通",
+        "strong": "強い"
+      },
+      "errors": {
+        "nameTooShort": "名前は2文字以上である必要があります",
+        "invalidEmail": "有効なメールアドレスを入力してください",
+        "passwordTooShort": "パスワードは6文字以上である必要があります",
+        "passwordMismatch": "パスワードが一致しません",
+        "general": "管理者アカウントの作成に失敗しました。もう一度お試しください。"
+      },
+      "success": {
+        "title": "管理者アカウントを作成しました！",
+        "description": "管理者アカウントが正常に作成されました。",
+        "redirecting": "ホームページにリダイレクト中..."
+      },
+      "info": {
+        "title": "最初の管理者",
+        "description": "このアカウントはアプリケーションへの完全な管理アクセス権を持ちます。"
+      }
+    }
+  },
+  "tour": {
+    "meta": {
+      "title": "プロダクトツアー - ShipKit",
+      "description": "インタラクティブツアーでShipKitの機能を探索"
+    },
+    "sidebar": {
+      "productTour": "プロダクトツアー",
+      "complete": "完了",
+      "step": "ステップ",
+      "of": "/",
+      "visited": "訪問済み"
+    },
+    "navigation": {
+      "back": "戻る",
+      "next": "続ける",
+      "finish": "始める",
+      "stepOf": "ステップ {current} / {total}",
+      "goToStep": "ステップへ移動"
+    },
+    "steps": {
+      "welcome": "ようこそ",
+      "welcomeDesc": "ShipKitを発見",
+      "database": "データベース",
+      "databaseDesc": "データベースを選択",
+      "auth": "認証",
+      "authDesc": "アプリを保護",
+      "payments": "決済",
+      "paymentsDesc": "決済を受け付ける",
+      "launch": "ローンチ",
+      "launchDesc": "アプリをデプロイ"
+    },
+    "welcome": {
+      "badge": "ようこそ",
+      "title": "ShipKitへようこそ",
+      "description": "究極のNext.js SaaSボイラープレート。数ヶ月ではなく数日でプロダクトを構築・ローンチ。",
+      "features": {
+        "fast": {
+          "title": "超高速",
+          "description": "Next.js 16とTurbopackで超高速開発を実現"
+        },
+        "secure": {
+          "title": "デフォルトで安全",
+          "description": "2FA、暗号化セッション、エンタープライズグレードのセキュリティを標準搭載"
+        },
+        "deploy": {
+          "title": "どこでもデプロイ",
+          "description": "Vercelへワンクリックデプロイ、またはDockerで任意のプラットフォームへ"
+        }
+      },
+      "whatYouLearn": {
+        "title": "このツアーで学ぶこと",
+        "database": "データベースの接続（Supabase、Neon、PlanetScale）",
+        "auth": "複数プロバイダーでの認証設定",
+        "payments": "Stripe、LemonSqueezy、Polarでの決済受付",
+        "launch": "アプリをデプロイして構築開始"
+      },
+      "help": {
+        "title": "ヘルプが必要ですか？",
+        "description": "ドキュメントを確認するか、Discordコミュニティに参加してください。"
+      }
+    },
+    "database": {
+      "badge": "ステップ 2 / 5",
+      "title": "データベースを接続",
+      "description": "ニーズに合ったデータベースプロバイダーを選択。すべてのオプションはPrisma ORMで完全サポート。",
+      "recommended": "推奨",
+      "providers": {
+        "supabase": {
+          "features": {
+            "postgres": "PostgreSQL",
+            "realtime": "リアルタイム",
+            "auth": "組み込み認証"
+          }
+        },
+        "neon": {
+          "features": {
+            "serverless": "サーバーレス",
+            "branching": "ブランチング",
+            "scaling": "オートスケーリング"
+          }
+        },
+        "planetscale": {
+          "features": {
+            "mysql": "MySQL",
+            "branching": "ブランチング",
+            "vitess": "Vitess"
+          }
+        }
+      },
+      "nextSteps": {
+        "title": "次のステップ",
+        "step1": "{provider}アカウントとプロジェクトを作成",
+        "step2": "接続文字列をコピー",
+        "step3": ".env.localファイルに追加"
+      },
+      "envPreview": "プレビュー"
+    },
+    "auth": {
+      "badge": "ステップ 3 / 5",
+      "title": "認証を設定",
+      "description": "認証プロバイダーを選択。すべてのオプションはOAuth、マジックリンクなどをサポート。",
+      "providers": {
+        "nextauth": {
+          "features": {
+            "oauth": "OAuth",
+            "credentials": "認証情報",
+            "jwt": "JWTセッション"
+          }
+        },
+        "supabase": {
+          "features": {
+            "magic_link": "マジックリンク",
+            "oauth": "OAuth",
+            "mfa": "MFA"
+          }
+        },
+        "betterauth": {
+          "features": {
+            "passkeys": "パスキー",
+            "oauth": "OAuth",
+            "session": "セッション"
+          }
+        }
+      },
+      "oauthProviders": {
+        "title": "対応OAuthプロバイダー",
+        "more": "他10件"
+      },
+      "twoFactor": {
+        "title": "二要素認証を標準搭載",
+        "description": "ShipKitはセキュリティ強化のためTOTPサポート付きの2FAを組み込み。"
+      },
+      "envPreview": "プレビュー"
+    },
+    "payments": {
+      "badge": "ステップ 4 / 5",
+      "title": "決済を受け付ける",
+      "description": "決済プロバイダーを選択。1つの環境変数でプロバイダーを切り替え可能。",
+      "providers": {
+        "stripe": {
+          "features": {
+            "subscriptions": "サブスクリプション",
+            "one_time": "単発決済",
+            "webhooks": "Webhook"
+          }
+        },
+        "lemonsqueezy": {
+          "features": {
+            "subscriptions": "サブスクリプション",
+            "licenses": "ライセンス",
+            "taxes": "税金処理"
+          }
+        },
+        "polar": {
+          "features": {
+            "subscriptions": "サブスクリプション",
+            "donations": "寄付",
+            "github": "GitHub連携"
+          }
+        }
+      },
+      "pricingFeatures": {
+        "title": "組み込み料金機能",
+        "subscriptions": {
+          "title": "サブスクリプション",
+          "description": "プラン管理付き定期課金"
+        },
+        "credits": {
+          "title": "使用クレジット",
+          "description": "従量課金AIクレジットシステム"
+        },
+        "webhooks": {
+          "title": "Webhook",
+          "description": "サブスクリプション自動同期"
+        }
+      },
+      "nextSteps": {
+        "title": "次のステップ",
+        "step1": "{provider}アカウントを作成",
+        "step2": "製品と価格を設定",
+        "step3": "APIキーを.env.localに追加"
+      },
+      "envPreview": "プレビュー"
+    },
+    "launch": {
+      "badge": "ステップ 5 / 5",
+      "title": "ローンチ準備完了！",
+      "description": "おめでとうございます！主要機能をすべて探索しました。素晴らしいものを構築する時です。",
+      "celebration": {
+        "title": "おめでとうございます！",
+        "description": "プロダクトツアーを完了しました。SaaSの構築を始める準備ができました。"
+      },
+      "checklist": {
+        "title": "セットアップ完了",
+        "database": "データベース設定を理解",
+        "auth": "認証オプションを探索",
+        "payments": "決済統合を確認",
+        "ready": "ローンチ準備完了！"
+      },
+      "terminal": {
+        "title": "開発を開始",
+        "copy": "コピー"
+      },
+      "deploy": {
+        "vercel": "Vercelにデプロイ",
+        "github": "GitHubで見る"
+      },
+      "cta": {
+        "title": "構築を始めますか？",
+        "description": "ShipKitで今日からSaaSの構築を始めましょう。",
+        "getStarted": "始める",
+        "readDocs": "ドキュメント"
+      }
+    }
+  },
+  "maintenance": {
+    "title": "メンテナンス中",
+    "description": "現在、サービス向上のための定期メンテナンスを実施しています。",
+    "checkBack": "しばらくしてからもう一度お試しください。まもなく復旧いたします。",
+    "backToHome": "ホームに戻る"
+  },
+  "joinWaitlist": {
+    "title": "ウェイトリストに参加",
+    "description": "現在、招待制で新規ユーザーを受け付けています。オープン時に通知を受け取るにはウェイトリストにご参加ください。",
+    "emailPlaceholder": "メールアドレスを入力",
+    "joinButton": "参加する",
+    "submitting": "登録中...",
+    "invalidEmail": "有効なメールアドレスを入力してください",
+    "successTitle": "リストに登録されました！",
+    "successDescription": "空きが出た際にお知らせいたします。ご関心をお寄せいただきありがとうございます！",
+    "errorMessage": "エラーが発生しました。もう一度お試しください。",
+    "backToHome": "ホームに戻る"
+  }
+}

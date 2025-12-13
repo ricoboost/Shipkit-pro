@@ -1,0 +1,146 @@
+---
+title: Zahlungen Übersicht
+description: ShipKit unterstützt mehrere Zahlungsanbieter mit einer einheitlichen Schnittstelle.
+---
+
+# Zahlungen
+
+ShipKit bietet eine einheitliche Zahlungsebene, die mehrere Anbieter unterstützt. Wechseln Sie zwischen ihnen mit einer einzigen Umgebungsvariable.
+
+## Unterstützte Anbieter
+
+<Cards>
+  <Card title="Stripe" href="/docs/payments/stripe">
+    Volle Kontrolle über Zahlungen mit globaler Reichweite. 2,9% + 30¢ pro Transaktion.
+  </Card>
+  <Card title="LemonSqueezy" href="/docs/payments/lemonsqueezy">
+    Merchant of Record - kümmert sich um Steuern und Compliance. 5% + 50¢ pro Transaktion.
+  </Card>
+  <Card title="Polar" href="/docs/payments/polar">
+    Open Source fokussierte Zahlungslösung. 5% pro Transaktion.
+  </Card>
+</Cards>
+
+## Anbieter Wechseln
+
+```bash
+# .env
+PAYMENT_PROVIDER="stripe"  # oder "lemonsqueezy" oder "polar"
+```
+
+## Einheitliche Schnittstelle
+
+```typescript
+// src/lib/payments/types.ts
+export interface PaymentProvider {
+  createCheckout(params: CheckoutParams): Promise<CheckoutResult>;
+  createPortalSession(customerId: string): Promise<string>;
+  handleWebhook(payload: any, signature: string): Promise<WebhookEvent>;
+  getSubscription(subscriptionId: string): Promise<Subscription>;
+  cancelSubscription(subscriptionId: string): Promise<void>;
+}
+```
+
+## Checkout-Sitzungen Erstellen
+
+```typescript
+import { payments } from '@/lib/payments';
+
+// Checkout-Sitzung erstellen
+const checkout = await payments.createCheckout({
+  priceId: 'price_xxx',
+  userId: user.id,
+  successUrl: '/dashboard?success=true',
+  cancelUrl: '/pricing',
+});
+
+// Zum Checkout umleiten
+redirect(checkout.url);
+```
+
+## Kundenportal
+
+Ermöglichen Sie Benutzern, ihr Abonnement zu verwalten:
+
+```typescript
+const portalUrl = await payments.createPortalSession(user.customerId);
+redirect(portalUrl);
+```
+
+## Webhooks
+
+Verarbeiten Sie Zahlungsereignisse:
+
+```typescript
+// src/app/api/payments/webhook/route.ts
+import { payments } from '@/lib/payments';
+
+export async function POST(req: Request) {
+  const payload = await req.text();
+  const signature = req.headers.get('stripe-signature')!;
+
+  const event = await payments.handleWebhook(payload, signature);
+
+  switch (event.type) {
+    case 'checkout.completed':
+      await activateSubscription(event.data);
+      break;
+    case 'subscription.updated':
+      await updateSubscription(event.data);
+      break;
+    case 'subscription.canceled':
+      await cancelSubscription(event.data);
+      break;
+  }
+
+  return new Response('OK');
+}
+```
+
+## Abonnementpläne
+
+Konfigurieren Sie Pläne in `src/config/plans.ts`:
+
+```typescript
+export const plans = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    description: 'Für Einzelpersonen',
+    price: { monthly: 9, yearly: 90 },
+    features: ['5 Projekte', '1GB Speicher', 'E-Mail-Support'],
+    stripePriceId: 'price_xxx',
+    lemonPriceId: 'xxx',
+    polarPriceId: 'xxx',
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    description: 'Für Teams',
+    price: { monthly: 29, yearly: 290 },
+    features: ['Unbegrenzte Projekte', '10GB Speicher', 'Prioritäts-Support'],
+    stripePriceId: 'price_yyy',
+    lemonPriceId: 'yyy',
+    polarPriceId: 'yyy',
+  },
+];
+```
+
+## Credits-System
+
+ShipKit enthält ein kreditbasiertes System für nutzungsabhängige Abrechnung:
+
+```typescript
+import { credits } from '@/lib/payments/credits';
+
+// Guthaben prüfen
+const balance = await credits.getBalance(userId);
+
+// Credits abziehen
+await credits.deduct(userId, 10, 'KI-Generierung');
+
+// Credits hinzufügen
+await credits.add(userId, 100, 'Monatliche Aufladung');
+```
+
+Siehe [Credits-System](/docs/payments/credits) für Details.

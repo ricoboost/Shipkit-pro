@@ -1,0 +1,285 @@
+---
+title: Warteliste und Seiteneditor
+description: Erstellen und passen Sie Wartelisten-Landingpages mit einem visuellen Drag-and-Drop-Editor an.
+---
+
+# Warteliste und Seiteneditor
+
+ShipKit enthält ein vollständiges Wartelisten-Verwaltungssystem mit einem visuellen Seiteneditor zum Erstellen benutzerdefinierter Landingpages.
+
+## Übersicht
+
+Die Wartelisten-Funktion ermöglicht Ihnen:
+
+- E-Mail-Anmeldungen vor dem Launch sammeln
+- Schöne Landingpages ohne Code erstellen
+- Abonnenten mit Tags und Segmentierung verwalten
+- Abonnentendaten als CSV exportieren
+- Wartelisten-Modus aktivieren, um neue Anmeldungen umzuleiten
+
+## Wartelisten-Modus Aktivieren
+
+### Über das Admin-Panel
+
+1. Gehen Sie zu **Admin** > **Einstellungen** > **Feature-Flags**
+2. Aktivieren Sie **Wartelisten-Modus**
+3. Neue Benutzer werden zur Wartelisten-Seite statt zur Registrierung weitergeleitet
+
+### Per Code
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// Wartelisten-Modus aktivieren
+await admin.toggleFeatureFlag('waitlistMode', true);
+
+// Wartelisten-Modus deaktivieren
+await admin.toggleFeatureFlag('waitlistMode', false);
+```
+
+## Seiteneditor
+
+Der visuelle Seiteneditor ermöglicht es Ihnen, benutzerdefinierte Wartelisten-Landingpages zu erstellen.
+
+### Auf den Editor Zugreifen
+
+Navigieren Sie zu **Admin** > **Warteliste** > **Seite Bearbeiten** oder gehen Sie direkt zu `/admin/waitlist/editor`.
+
+### Verfügbare Sektionen
+
+#### Hero-Sektion
+
+Die Hauptkopfzeilen-Sektion mit:
+- Badge-Text (z.B. "Demnächst")
+- Überschrift und Unterüberschrift
+- Anmeldeformular oder CTA-Button
+- Optionales Hero-Bild
+
+#### Feature-Raster (Bento)
+
+Präsentieren Sie Ihre Produktfeatures:
+- 2-, 3- oder 4-spaltige Layouts
+- Feature-Karten mit Icons
+- Anpassbare Hintergründe
+
+#### So Funktioniert's
+
+Schritt-für-Schritt-Prozesserklärung:
+- Nummerierte Schritte mit Icons
+- Horizontales oder vertikales Layout
+- Benutzerdefinierte Titel und Beschreibungen
+
+#### Fußzeile
+
+Seitenfußzeile mit:
+- Copyright-Text
+- Navigationslinks
+- Social-Media-Icons
+
+### Sektionen Anpassen
+
+Klicken Sie auf eine Sektion, um sie auszuwählen, dann verwenden Sie die rechte Seitenleiste für:
+
+- **Hintergrund**: Volltonfarbe, Verlauf oder Bild festlegen
+- **Abstände**: Padding und Margins anpassen
+- **Sichtbarkeit**: Sektionen ein-/ausblenden
+- **Benutzerdefiniertes CSS**: Benutzerdefinierte Stile hinzufügen
+
+### Inhalt Bearbeiten
+
+- Klicken Sie auf Text, um inline zu bearbeiten
+- Typografie ändern (Größe, Stärke, Farbe, Ausrichtung)
+- Button-Text und -Stile aktualisieren
+- Formular-Platzhalter und Erfolgsmeldung anpassen
+
+### Veröffentlichen
+
+1. Klicken Sie auf **Speichern**, um Ihre Änderungen zu speichern
+2. Klicken Sie auf **Veröffentlichen**, um die Seite öffentlich zu machen
+3. Vorschau Ihrer Seite unter `/waitlist`
+
+### Tastaturkürzel
+
+| Kürzel | Aktion |
+|--------|--------|
+| `Cmd/Ctrl + S` | Änderungen speichern |
+| `Cmd/Ctrl + Z` | Rückgängig |
+| `Cmd/Ctrl + Shift + Z` | Wiederholen |
+
+## Abonnenten Verwalten
+
+### Admin-Dashboard
+
+Greifen Sie auf das Abonnenten-Dashboard unter **Admin** > **Warteliste** zu.
+
+#### Statistiken
+
+- **Gesamte Abonnenten**: Alle Anmeldungen
+- **Bestätigt**: Verifizierte E-Mails
+- **Ausstehend**: Warten auf Bestätigung
+- **Abgemeldet**: Haben sich abgemeldet
+- **Diese Woche**: Aktuelle Anmeldungen
+
+#### Filtern
+
+Abonnenten filtern nach:
+- E-Mail-Suche
+- Status (bestätigt, ausstehend, abgemeldet)
+- Quelle (waitlist, footer, popup)
+- Tags
+
+### Massenoperationen
+
+Wählen Sie mehrere Abonnenten aus, um:
+- Tags für Segmentierung hinzuzufügen
+- Von der Liste zu entfernen
+- Als CSV zu exportieren
+
+### Daten Exportieren
+
+Klicken Sie auf **CSV Exportieren**, um Abonnentendaten herunterzuladen. Optionen:
+- Alle Abonnenten exportieren
+- Nur bestätigte exportieren
+- Nach Tag filtern
+
+## Anmeldeformular
+
+### Eingebettetes Formular
+
+Fügen Sie das Anmeldeformular überall hinzu:
+
+```tsx
+import { SubscribeFormBlock } from '@/components/waitlist-builder/blocks/subscribe-form-block';
+
+<SubscribeFormBlock
+  block={{
+    id: 'form-1',
+    type: 'subscribe-form',
+    placeholder: 'E-Mail eingeben',
+    buttonText: 'Liste Beitreten',
+    successMessage: 'Danke für Ihre Anmeldung!',
+    source: 'homepage',
+    tags: ['early-access'],
+  }}
+/>
+```
+
+### Konfigurationsoptionen
+
+| Eigenschaft | Typ | Beschreibung |
+|-------------|-----|--------------|
+| `placeholder` | string | Input-Platzhaltertext |
+| `buttonText` | string | Submit-Button-Text |
+| `successMessage` | string | Nachricht nach der Anmeldung |
+| `source` | string | Tracking-Quellen-Identifikator |
+| `tags` | string[] | Tags für den Abonnenten |
+| `layout` | 'inline' \| 'stacked' | Formular-Layout |
+
+## API-Referenz
+
+### Abonnieren
+
+```typescript
+POST /api/newsletter/subscribe
+
+// Anfrage
+{
+  "email": "benutzer@beispiel.de",
+  "source": "waitlist",
+  "tags": ["early-access"]
+}
+
+// Antwort
+{
+  "success": true,
+  "isNew": true,
+  "confirmed": false
+}
+```
+
+### Abmelden
+
+```typescript
+POST /api/newsletter/unsubscribe
+
+// Anfrage
+{ "email": "benutzer@beispiel.de" }
+
+// Antwort
+{ "success": true }
+```
+
+### Ein-Klick-Abmeldung
+
+```typescript
+GET /api/newsletter/unsubscribe?token=xxx
+```
+
+## Bibliotheksfunktionen
+
+```typescript
+import { newsletter } from '@/lib/newsletter';
+
+// Mit Quelle und Tags abonnieren
+await newsletter.subscribe({
+  email: 'benutzer@beispiel.de',
+  source: 'waitlist',
+  tags: ['early-access', 'beta'],
+});
+
+// Abonnentenstatistiken abrufen
+const stats = await newsletter.getStats();
+// { total, confirmed, pending, unsubscribed, thisWeek }
+
+// Tags zu Abonnent hinzufügen
+await newsletter.addTags('benutzer@beispiel.de', ['vip']);
+
+// Als CSV exportieren
+const csv = await newsletter.exportCSV({
+  confirmedOnly: true,
+  tag: 'early-access',
+});
+```
+
+## Datenbankschema
+
+```prisma
+model NewsletterSubscriber {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  confirmed     Boolean   @default(false)
+  confirmToken  String?   @unique
+  source        String?   // "waitlist", "footer", "popup"
+  tags          String[]  @default([])
+  unsubscribedAt DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+model WaitlistPage {
+  id              String   @id @default("default")
+  config          Json     // Seitenkonfiguration
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+```
+
+## Umgebungsvariablen
+
+Keine zusätzlichen Umgebungsvariablen erforderlich. Die Warteliste verwendet:
+
+- `DATABASE_URL` - Zum Speichern von Abonnenten
+- `NEXT_PUBLIC_APP_URL` - Für Abmeldelinks
+- `RESEND_API_KEY` - (Optional) Für Bestätigungs-E-Mails
+- `EMAIL_FROM` - (Optional) Absenderadresse
+
+## Best Practices
+
+1. **Verwenden Sie aussagekräftige Tags** - Segmentieren Sie Abonnenten nach Quelle, Interesse oder Kampagne
+2. **Richten Sie Bestätigungs-E-Mails ein** - Aktivieren Sie Double-Opt-in für qualitativ hochwertige Listen
+3. **Passen Sie Ihre Seite an** - Gestalten Sie Ihre Marke mit dem Seiteneditor
+4. **Überwachen Sie Statistiken** - Verfolgen Sie Konversionsraten und Engagement
+5. **Exportieren Sie regelmäßig** - Sichern Sie Ihre Abonnentenliste

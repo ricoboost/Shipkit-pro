@@ -1,0 +1,70 @@
+---
+title: Intégrations
+description: Intégrations de services tiers pour la surveillance, l'email, le stockage et plus encore.
+---
+
+# Intégrations
+
+ShipKit s'intègre avec des services tiers populaires pour fournir la surveillance, la livraison d'emails, le stockage et les capacités de mise en cache.
+
+---
+
+## Intégrations Disponibles
+
+<Cards>
+  <Card title="Sentry" href="/docs/integrations/sentry">
+    Suivi des erreurs et surveillance des performances.
+  </Card>
+  <Card title="Resend" href="/docs/integrations/resend">
+    Livraison d'emails transactionnels.
+  </Card>
+  <Card title="Analytics" href="/docs/integrations/analytics">
+    Google Analytics, PostHog et Plausible.
+  </Card>
+  <Card title="Upstash" href="/docs/integrations/upstash">
+    Cache Redis et limitation de débit.
+  </Card>
+  <Card title="Stockage" href="/docs/integrations/storage">
+    AWS S3, Cloudflare R2 et téléchargement de fichiers.
+  </Card>
+</Cards>
+
+---
+
+## Guide de Configuration Rapide
+
+### Services Essentiels
+
+| Service | Objectif | Requis |
+|---------|----------|--------|
+| [Sentry](/docs/integrations/sentry) | Suivi des erreurs | Recommandé |
+| [Resend](/docs/integrations/resend) | Livraison d'emails | Requis pour l'auth |
+| [Upstash](/docs/integrations/upstash) | Limitation de débit | Recommandé |
+| [Analytics](/docs/integrations/analytics) | Analyse utilisateurs | Optionnel |
+| [Stockage](/docs/integrations/storage) | Téléchargement de fichiers | Optionnel |
+
+---
+
+## Variables d'Environnement
+
+Ajoutez celles-ci à votre fichier `.env` selon les services que vous utilisez:
+
+```bash
+# Sentry - Suivi des Erreurs
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+SENTRY_ORG=votre-org
+SENTRY_PROJECT=votre-projet
+SENTRY_AUTH_TOKEN=sntrys_xxx
+
+# Resend - Email
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@votre-domaine.com
+
+# Upstash - Redis
+UPSTASH_REDIS_REST_URL=https://xxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=xxx
+
+# Analytics
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+```

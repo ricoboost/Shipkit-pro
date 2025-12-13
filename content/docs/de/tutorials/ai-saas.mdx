@@ -1,0 +1,49 @@
+---
+title: Ein KI-gestütztes SaaS mit Credits erstellen
+description: Erstellen Sie eine KI-Anwendung mit OpenRouter-Integration, kreditbasierter Abrechnung und Nutzungsverfolgung.
+---
+
+# Ein KI-gestütztes SaaS mit Credits erstellen
+
+In diesem Tutorial erstellen Sie eine KI-gestützte SaaS-Anwendung mit:
+
+- Integration mit mehreren KI-Modellen über OpenRouter
+- Kreditbasiertes Abrechnungssystem
+- Nutzungsverfolgung pro Benutzer
+- Streaming-Antworten
+
+## Voraussetzungen
+
+- [Schnellstart-Tutorial](/docs/tutorials/quickstart) abgeschlossen
+- [OpenRouter API-Schlüssel](https://openrouter.ai/keys)
+
+## Schritt 1: OpenRouter konfigurieren
+
+```bash
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=sk-or-v1-xxx
+```
+
+## Schritt 2: Credit-System verstehen
+
+```typescript
+export const creditConfig = {
+  plans: {
+    free: { monthlyCredits: 100 },
+    pro: { monthlyCredits: 10000 },
+  },
+  costs: {
+    'gpt-4-turbo': 10,
+    'gpt-3.5-turbo': 1,
+    'claude-3-opus': 15,
+  },
+};
+```
+
+## Nächste Schritte
+
+<Cards>
+  <Card title="In Produktion bereitstellen" href="/docs/tutorials/deploy-production">
+    Starten Sie Ihr KI-SaaS mit richtiger Skalierung.
+  </Card>
+</Cards>

@@ -1,0 +1,467 @@
+---
+title: Authentication Overview
+description: ShipKit supports multiple authentication providers with a unified interface.
+---
+
+# Authentication
+
+ShipKit provides a unified authentication layer that supports multiple providers. Switch between them with a single environment variable.
+
+## Quick Start
+
+Get authentication running in 3 steps:
+
+```bash
+# 1. Set your auth provider
+AUTH_PROVIDER="nextauth"
+
+# 2. Run the setup wizard
+npm run setup:auth
+
+# 3. Start building!
+npm run dev
+```
+
+## Provider Comparison
+
+| Feature | NextAuth.js | Supabase | Better Auth |
+|---------|-------------|----------|-------------|
+| **OAuth Providers** | 50+ | 20+ | 30+ |
+| **Credentials** | ✅ | ✅ | ✅ |
+| **Magic Links** | ✅ | ✅ | ✅ |
+| **2FA/MFA** | Plugin | Built-in | Built-in |
+| **Phone Auth** | Plugin | ✅ | ✅ |
+| **Self-hosted** | ✅ | ✅ | ✅ |
+| **Best For** | Flexibility | Supabase users | TypeScript |
+
+## Supported Providers
+
+<Cards>
+  <Card title="NextAuth.js" href="/docs/authentication/nextauth">
+    Flexible, self-hosted authentication with OAuth, credentials, and magic links.
+  </Card>
+  <Card title="Supabase Auth" href="/docs/authentication/supabase">
+    Integrated with Supabase database, supports OAuth, email, and phone auth.
+  </Card>
+  <Card title="Better Auth" href="/docs/authentication/better-auth">
+    Modern authentication library with excellent TypeScript support.
+  </Card>
+</Cards>
+
+## Switching Providers
+
+Change the `AUTH_PROVIDER` environment variable:
+
+```bash
+# .env
+AUTH_PROVIDER="nextauth"  # or "supabase" or "betterauth"
+```
+
+That's it! The unified interface handles the rest.
+
+## Unified Interface
+
+All providers implement the same interface:
+
+```typescript
+// src/lib/auth/types.ts
+export interface AuthProvider {
+  signIn(credentials: SignInCredentials): Promise<AuthResult>;
+  signUp(credentials: SignUpCredentials): Promise<AuthResult>;
+  signOut(): Promise<void>;
+  getSession(): Promise<Session | null>;
+  getUser(): Promise<User | null>;
+}
+```
+
+## Usage in Components
+
+```tsx
+'use client';
+
+import { useAuth } from '@/hooks/use-auth';
+
+export function ProfileButton() {
+  const { user, signOut, isLoading } = useAuth();
+
+  if (isLoading) return <Skeleton />;
+  if (!user) return <LoginButton />;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Avatar src={user.image} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => signOut()}>
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+```
+
+## Usage in Server Components
+
+```tsx
+import { auth } from '@/lib/auth';
+
+export default async function DashboardPage() {
+  const session = await auth.getSession();
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  return <Dashboard user={session.user} />;
+}
+```
+
+## API Routes
+
+```typescript
+// src/app/api/protected/route.ts
+import { auth } from '@/lib/auth';
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  const session = await auth.getSession();
+
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  return NextResponse.json({ data: 'Protected data' });
+}
+```
+
+## Middleware Protection
+
+```typescript
+// src/middleware.ts
+import { auth } from '@/lib/auth';
+
+export async function middleware(request: NextRequest) {
+  const session = await auth.getSession();
+
+  if (!session && request.nextUrl.pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+}
+```
+
+## OAuth Providers
+
+Configure OAuth providers in your `.env`:
+
+```bash
+# Google
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+
+# GitHub
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+
+# Discord
+DISCORD_CLIENT_ID=""
+DISCORD_CLIENT_SECRET=""
+```
+
+## Role-Based Access Control
+
+ShipKit includes built-in role management:
+
+```typescript
+// src/lib/auth/roles.ts
+export enum Role {
+  USER = 'user',
+  ADMIN = 'admin',
+  SUPER_ADMIN = 'super_admin',
+}
+
+// Check role in components
+import { useAuth } from '@/hooks/use-auth';
+
+export function AdminPanel() {
+  const { user, hasRole } = useAuth();
+
+  if (!hasRole(Role.ADMIN)) {
+    return <AccessDenied />;
+  }
+
+  return <AdminDashboard />;
+}
+```
+
+### Server-Side Role Check
+
+```typescript
+// src/app/api/admin/users/route.ts
+import { auth, requireRole } from '@/lib/auth';
+import { Role } from '@/lib/auth/roles';
+
+export async function GET() {
+  const session = await auth.getSession();
+
+  // Throws if user doesn't have admin role
+  await requireRole(session, Role.ADMIN);
+
+  const users = await db.user.findMany();
+  return NextResponse.json(users);
+}
+```
+
+## Common Use Cases
+
+### Protected Dashboard with User Data
+
+```tsx
+// src/app/[locale]/(dashboard)/dashboard/page.tsx
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
+
+export default async function DashboardPage() {
+  const t = await getTranslations('dashboard');
+  const session = await auth.getSession();
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  const userStats = await db.userStats.findUnique({
+    where: { userId: session.user.id },
+  });
+
+  return (
+    <div>
+      <h1>{t('welcome', { name: session.user.name })}</h1>
+      <StatsCards stats={userStats} />
+      <RecentActivity userId={session.user.id} />
+    </div>
+  );
+}
+```
+
+### Custom Login Page with Social Providers
+
+```tsx
+// src/app/[locale]/(auth)/login/page.tsx
+'use client';
+
+import { useAuth } from '@/hooks/use-auth';
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Icons } from '@/components/icons';
+
+export default function LoginPage() {
+  const t = useTranslations('auth');
+  const { signIn, isLoading } = useAuth();
+
+  const handleSocialLogin = async (provider: string) => {
+    await signIn(provider, { callbackUrl: '/dashboard' });
+  };
+
+  return (
+    <div className="mx-auto max-w-sm space-y-6">
+      <div className="space-y-2 text-center">
+        <h1 className="text-2xl font-bold">{t('login.title')}</h1>
+        <p className="text-muted-foreground">{t('login.description')}</p>
+      </div>
+
+      {/* Social Login Buttons */}
+      <div className="grid gap-2">
+        <Button
+          variant="outline"
+          onClick={() => handleSocialLogin('google')}
+          disabled={isLoading}
+        >
+          <Icons.google className="mr-2 h-4 w-4" />
+          {t('login.continueWithGoogle')}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => handleSocialLogin('github')}
+          disabled={isLoading}
+        >
+          <Icons.github className="mr-2 h-4 w-4" />
+          {t('login.continueWithGitHub')}
+        </Button>
+      </div>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">
+            {t('login.orContinueWith')}
+          </span>
+        </div>
+      </div>
+
+      {/* Email/Password Form */}
+      <form onSubmit={handleEmailLogin} className="space-y-4">
+        <Input type="email" placeholder={t('login.emailPlaceholder')} />
+        <Input type="password" placeholder={t('login.passwordPlaceholder')} />
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? <Icons.spinner className="animate-spin" /> : t('login.submit')}
+        </Button>
+      </form>
+    </div>
+  );
+}
+```
+
+### Account Settings with Profile Update
+
+```tsx
+// src/app/[locale]/(dashboard)/settings/profile/page.tsx
+'use client';
+
+import { useAuth } from '@/hooks/use-auth';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { toast } from 'sonner';
+
+export default function ProfileSettingsPage() {
+  const t = useTranslations('settings.profile');
+  const { user, updateProfile } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+
+    try {
+      await updateProfile({
+        name: formData.get('name') as string,
+        bio: formData.get('bio') as string,
+      });
+      toast.success(t('updateSuccess'));
+    } catch (error) {
+      toast.error(t('updateError'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="name">{t('nameLabel')}</Label>
+        <Input id="name" name="name" defaultValue={user?.name ?? ''} />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="bio">{t('bioLabel')}</Label>
+        <Textarea id="bio" name="bio" defaultValue={user?.bio ?? ''} />
+      </div>
+      <Button type="submit" disabled={isLoading}>
+        {t('saveChanges')}
+      </Button>
+    </form>
+  );
+}
+```
+
+## Security Best Practices
+
+### 1. Always Validate Server-Side
+
+Never trust client-side auth checks alone:
+
+```typescript
+// ❌ BAD: Only client-side check
+export function AdminButton() {
+  const { user } = useAuth();
+  if (user?.role !== 'admin') return null;
+  return <Button onClick={deleteUser}>Delete User</Button>;
+}
+
+// ✅ GOOD: Server validates the action
+export async function deleteUser(userId: string) {
+  'use server';
+
+  const session = await auth.getSession();
+  if (session?.user.role !== 'admin') {
+    throw new Error('Unauthorized');
+  }
+
+  await db.user.delete({ where: { id: userId } });
+}
+```
+
+### 2. Use Secure Session Configuration
+
+```typescript
+// src/lib/auth/config.ts
+export const authConfig = {
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  cookies: {
+    sessionToken: {
+      name: '__Secure-authjs.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
+};
+```
+
+### 3. Rate Limit Authentication Endpoints
+
+```typescript
+// src/app/api/auth/[...nextauth]/route.ts
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(5, '1 m'), // 5 requests per minute
+});
+
+export async function POST(req: Request) {
+  const ip = req.headers.get('x-forwarded-for') ?? 'anonymous';
+  const { success } = await ratelimit.limit(ip);
+
+  if (!success) {
+    return new Response('Too many requests', { status: 429 });
+  }
+
+  // Continue with auth...
+}
+```
+
+### 4. Implement CSRF Protection
+
+ShipKit includes CSRF protection by default. Ensure it's enabled:
+
+```typescript
+// src/lib/auth/config.ts
+export const authConfig = {
+  csrf: {
+    enabled: true,
+    cookieName: '__Host-csrf',
+  },
+};
+```
+
+## Next Steps
+
+Choose your preferred authentication provider:
+
+- [NextAuth.js Setup](/docs/authentication/nextauth) - Most flexible option
+- [Supabase Auth Setup](/docs/authentication/supabase) - Best with Supabase DB
+- [Better Auth Setup](/docs/authentication/better-auth) - Modern TypeScript-first
+- [Two-Factor Authentication](/docs/authentication/two-factor) - Add 2FA to your app

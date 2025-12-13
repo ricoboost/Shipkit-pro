@@ -1,0 +1,271 @@
+---
+title: Theme Builder
+description: Visual theme customization interface for creating and exporting custom color schemes
+---
+
+# Theme Builder
+
+The Theme Builder component provides a visual interface for customizing your application's theme colors, with live preview and CSS export capabilities.
+
+## Overview
+
+Key features:
+- **5 Pre-built Presets**: Start with a professionally designed color scheme
+- **HSL Color Picker**: Fine-tune any color with Hue, Saturation, and Lightness controls
+- **Light/Dark Mode**: Customize colors for both modes independently
+- **Live Preview**: See changes instantly with preview components
+- **CSS Export**: Download your custom theme as CSS
+
+## Usage
+
+### Basic Implementation
+
+```tsx
+import { ThemeBuilder } from '@/components/theme/theme-builder';
+
+export default function ThemeSettingsPage() {
+  return (
+    <div className="container py-8">
+      <h1 className="text-3xl font-bold mb-8">Customize Theme</h1>
+      <ThemeBuilder />
+    </div>
+  );
+}
+```
+
+The Theme Builder is also available in the admin dashboard at `/admin/theme`.
+
+---
+
+## Theme Presets
+
+Five professionally designed presets are included:
+
+| Preset | Primary Color | Style |
+|--------|---------------|-------|
+| Default | Purple | Modern, neutral |
+| Ocean | Blue | Professional, calm |
+| Forest | Green | Natural, organic |
+| Sunset | Orange | Warm, energetic |
+| Midnight | Deep Blue | Dark, elegant |
+
+### Selecting a Preset
+
+Presets serve as starting points. Click any preset card to apply it, then customize individual colors as needed.
+
+```tsx
+// Presets are defined in src/lib/theme.ts
+export const themePresets = {
+  default: {
+    name: 'Default',
+    light: { primary: '262 83% 58%', /* ... */ },
+    dark: { primary: '263 70% 50%', /* ... */ },
+    radius: '0.5rem',
+  },
+  ocean: { /* ... */ },
+  forest: { /* ... */ },
+  sunset: { /* ... */ },
+  midnight: { /* ... */ },
+};
+```
+
+---
+
+## Color Groups
+
+Colors are organized into four groups:
+
+### Base Colors
+- `background` - Page background
+- `foreground` - Primary text color
+- `card` - Card backgrounds
+- `cardForeground` - Text on cards
+
+### Primary & Secondary
+- `primary` - Main brand color
+- `primaryForeground` - Text on primary backgrounds
+- `secondary` - Secondary brand color
+- `secondaryForeground` - Text on secondary backgrounds
+
+### UI Elements
+- `muted` - Subdued backgrounds
+- `mutedForeground` - Subdued text
+- `accent` - Accent highlights
+- `accentForeground` - Text on accents
+
+### Feedback & Borders
+- `destructive` - Error/danger color
+- `destructiveForeground` - Text on destructive
+- `border` - Border color
+- `input` - Input border color
+- `ring` - Focus ring color
+
+---
+
+## HSL Color Picker
+
+Each color is controlled with HSL (Hue, Saturation, Lightness) sliders:
+
+| Slider | Range | Description |
+|--------|-------|-------------|
+| H (Hue) | 0-360 | The base color (red=0, green=120, blue=240) |
+| S (Saturation) | 0-100% | Color intensity (0=gray, 100=vivid) |
+| L (Lightness) | 0-100% | Brightness (0=black, 50=pure, 100=white) |
+
+### Why HSL?
+
+HSL makes it easy to create consistent color palettes:
+- Keep the same **Hue** for color consistency
+- Adjust **Saturation** for intensity
+- Adjust **Lightness** for contrast (foreground colors are typically opposite ends)
+
+---
+
+## Border Radius
+
+Control the roundness of UI elements globally:
+
+| Value | Style | Best For |
+|-------|-------|----------|
+| 0rem | Sharp corners | Minimal, modern |
+| 0.25rem | Subtle rounding | Professional |
+| 0.5rem | Moderate rounding | Balanced (default) |
+| 0.75rem | More rounded | Friendly |
+| 1rem+ | Very rounded | Playful, soft |
+
+---
+
+## Live Preview
+
+The preview panel shows:
+- **Buttons**: All variants (primary, secondary, outline, destructive)
+- **Badges**: Different badge styles
+- **Muted Section**: Text on muted backgrounds
+- **Nested Cards**: Card-on-card appearance
+
+Use this to verify contrast and visual harmony before exporting.
+
+---
+
+## Exporting Your Theme
+
+Click **Export CSS** to download your custom theme:
+
+```css
+/* Generated theme.css */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --primary: 262 83% 58%;
+  --primary-foreground: 210 40% 98%;
+  /* ... all colors */
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  /* ... dark mode colors */
+}
+```
+
+### Applying Exported Theme
+
+1. Copy the exported CSS into your `src/app/globals.css`
+2. Replace the existing `:root` and `.dark` color variables
+3. The theme will apply automatically
+
+---
+
+## Theme Persistence
+
+Themes are saved to localStorage automatically:
+
+```typescript
+// Theme selection is persisted
+const saved = getSavedTheme();  // Returns preset name or 'default'
+
+// Manual save
+saveTheme('ocean');
+
+// Apply theme
+applyTheme(themeConfig);
+```
+
+---
+
+## Programmatic Usage
+
+You can also use the theme utilities directly:
+
+```tsx
+import {
+  themePresets,
+  applyTheme,
+  saveTheme,
+  getSavedTheme,
+  exportThemeCSS,
+  type ThemeConfig,
+} from '@/lib/theme';
+
+// Apply a preset
+applyTheme(themePresets.ocean);
+
+// Save user preference
+saveTheme('ocean');
+
+// Get CSS for custom implementation
+const css = exportThemeCSS(customTheme);
+```
+
+---
+
+## Server-Side Theme Loading
+
+For SSR, use the `ServerThemeLoader` component to prevent flash of unstyled content:
+
+```tsx
+// In your root layout
+import { ServerThemeLoader } from '@/components/theme/server-theme-loader';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <head>
+        <ServerThemeLoader />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+This injects a script that applies the saved theme before the page renders.
+
+---
+
+## Best Practices
+
+### Contrast Ratios
+Ensure sufficient contrast between foreground and background colors:
+- **Normal text**: Minimum 4.5:1 contrast ratio
+- **Large text**: Minimum 3:1 contrast ratio
+
+### Dark Mode Considerations
+- Don't just invert colors - dark mode needs different saturation levels
+- Reduce saturation slightly for dark backgrounds
+- Ensure borders remain visible
+
+### Brand Consistency
+- Use your brand's primary color for the `primary` variable
+- Keep `secondary` and `accent` complementary
+- Test with real content, not just the preview
+
+---
+
+## Related
+
+- [Theming Feature](/docs/features/theming) - Overview of the theming system
+- [UI Primitives](/docs/components/ui-primitives) - Customize base components

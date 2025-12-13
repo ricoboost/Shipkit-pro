@@ -1,0 +1,108 @@
+---
+title: Supabase Auth
+description: ShipKitでSupabase認証を設定します。
+---
+
+# Supabase Authのセットアップ
+
+SupabaseはPostgreSQLデータベースと統合された認証を提供します。
+
+## 設定
+
+```bash
+AUTH_PROVIDER="supabase"
+
+NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+```
+
+## 認証情報の取得
+
+1. [supabase.com](https://supabase.com)でプロジェクトを作成
+2. Settings > APIに移動
+3. URLとanon/serviceキーをコピー
+
+## OAuthの設定
+
+Supabaseダッシュボードで OAuthを設定します：
+
+1. Authentication > Providersに移動
+2. 希望するプロバイダー（Google、GitHubなど）を有効化
+3. 各プロバイダーのクライアントIDとシークレットを追加
+4. コールバックURLはSupabaseによって自動的に設定されます
+
+## 実装
+
+```typescript
+// src/lib/auth/supabase.ts
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+
+export function createClient() {
+  const cookieStore = cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name, value, options) {
+          cookieStore.set({ name, value, ...options });
+        },
+        remove(name, options) {
+          cookieStore.set({ name, value: '', ...options });
+        },
+      },
+    }
+  );
+}
+```
+
+## サインイン
+
+```typescript
+const supabase = createClient();
+
+// Email/Password
+const { data, error } = await supabase.auth.signInWithPassword({
+  email: 'user@example.com',
+  password: 'password',
+});
+
+// OAuth
+const { data, error } = await supabase.auth.signInWithOAuth({
+  provider: 'google',
+  options: {
+    redirectTo: `${origin}/auth/callback`,
+  },
+});
+
+// Magic Link
+const { data, error } = await supabase.auth.signInWithOtp({
+  email: 'user@example.com',
+});
+```
+
+## セッションの取得
+
+```typescript
+const supabase = createClient();
+const { data: { session } } = await supabase.auth.getSession();
+```
+
+## 行レベルセキュリティ
+
+Supabaseはデータ保護のためにRLSを使用します：
+
+```sql
+-- Enable RLS
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+
+-- Users can only see their own posts
+CREATE POLICY "Users can view own posts"
+ON posts FOR SELECT
+USING (auth.uid() = user_id);
+```

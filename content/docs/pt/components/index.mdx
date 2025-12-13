@@ -1,0 +1,128 @@
+---
+title: Visão Geral dos Componentes
+description: Biblioteca abrangente de componentes de marketing e UI pré-construídos e personalizáveis para ShipKit
+---
+
+# Visão Geral dos Componentes
+
+O ShipKit inclui uma biblioteca abrangente de componentes pré-construídos e personalizáveis projetados para aplicações SaaS modernas. Todos os componentes suportam:
+
+- **Esquemas de Cores**: `primary`, `secondary`, `accent`, `muted`, `destructive`
+- **Animações**: Animações opcionais com Framer Motion
+- **Design Responsivo**: Mobile-first, totalmente responsivo
+- **TypeScript**: Segurança de tipos completa com interfaces exportadas
+
+## Componentes de Marketing
+
+Construa páginas de destino bonitas com nossa biblioteca de componentes de marketing:
+
+| Categoria | Variantes | Descrição |
+|----------|----------|-------------|
+| [Hero](/docs/components/hero) | 5 variantes | Seções hero de página de destino |
+| [CTA](/docs/components/cta) | 4 variantes | Seções de chamada para ação |
+| [Features](/docs/components/features) | 6 variantes | Vitrines de recursos |
+| [Pricing](/docs/components/pricing) | 4 variantes | Tabelas e cartões de preços |
+| [Testimonials](/docs/components/testimonials) | 4 variantes | Exibições de prova social |
+| [FAQ](/docs/components/faq) | 3 variantes | Perguntas frequentes |
+| [Problem/Solution](/docs/components/problem) | 3 variantes | Seções do framework PAS |
+| [Comparison](/docs/components/comparison) | 2 variantes | Comparações com concorrentes |
+| [Stats](/docs/components/stats) | 3 variantes | Métricas e conquistas |
+| [Logo Cloud](/docs/components/logos) | 3 variantes | Logos de clientes/parceiros |
+| [Dividers](/docs/components/dividers) | 4 variantes | Separadores de seções |
+
+## Primitivos de UI
+
+O ShipKit usa [shadcn/ui](https://ui.shadcn.com) como base para componentes de UI. Todos os primitivos são totalmente personalizáveis e seguem os padrões de design do Radix UI.
+
+Consulte a documentação de [Primitivos de UI](/docs/components/ui-primitives) para a lista completa.
+
+## Componentes de Recursos
+
+Componentes especializados para recursos específicos:
+
+| Componente | Descrição |
+|-----------|-------------|
+| [Theme Builder](/docs/components/theme-builder) | Interface de customização visual de tema |
+
+## Padrões de Importação
+
+### Componentes de Marketing
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+import { CTASimple } from '@/components/marketing/cta/cta-simple';
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+```
+
+### Primitivos de UI
+
+```tsx
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+```
+
+## Tipos Compartilhados
+
+Todos os componentes de marketing compartilham tipos comuns definidos em `@/components/marketing/types`:
+
+```typescript
+export type ColorScheme = 'primary' | 'secondary' | 'accent' | 'muted' | 'destructive';
+
+export interface CTAButton {
+  label: string;
+  href: string;
+  variant?: 'default' | 'outline' | 'ghost';
+}
+
+export interface BaseMarketingProps {
+  className?: string;
+  colorScheme?: ColorScheme;
+}
+
+export interface FeatureItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+}
+```
+
+## Início Rápido
+
+Veja como construir uma página de destino completa:
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+import { CTASimple } from '@/components/marketing/cta/cta-simple';
+import { Zap, Shield, Rocket } from 'lucide-react';
+
+export default function LandingPage() {
+  return (
+    <>
+      <HeroCentered
+        title="Construa Produtos SaaS Mais Rápido"
+        description="O kit inicial completo para aplicações web modernas"
+        primaryCTA={{ label: 'Começar', href: '/register' }}
+        secondaryCTA={{ label: 'Ver Demo', href: '/demo' }}
+        badge="Agora em v3.0"
+      />
+
+      <FeaturesGrid
+        title="Tudo o Que Você Precisa"
+        features={[
+          { title: 'Rápido', description: 'Construído para velocidade', icon: <Zap /> },
+          { title: 'Seguro', description: 'Segurança empresarial', icon: <Shield /> },
+          { title: 'Escalável', description: 'Cresce com você', icon: <Rocket /> },
+        ]}
+      />
+
+      <CTASimple
+        title="Pronto para Começar?"
+        description="Junte-se a milhares de desenvolvedores construindo com ShipKit"
+        primaryCTA={{ label: 'Iniciar Teste Gratuito', href: '/register' }}
+      />
+    </>
+  );
+}
+```

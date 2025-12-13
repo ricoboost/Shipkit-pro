@@ -1,0 +1,167 @@
+---
+title: Stack-Selektor
+description: Reduzieren Sie Boilerplate-Bloat, indem Sie nur die KI-Coding-Tools und Deployment-Strategie auswahlen, die Sie benotigen.
+---
+
+# Stack-Selektor
+
+Der Stack-Selektor ist ein optionaler Onboarding-Schritt, der hilft, Boilerplate-Bloat zu reduzieren, indem ungenutzte Konfigurationen in git ignoriert werden. Anstatt alle KI-Tool-Konfigurationen und Deployment-Dateien zu behalten, wahlen Sie aus, was Sie tatsachlich verwenden.
+
+## Warum Verwenden
+
+ShipKit enthalt Konfigurationsdateien fur mehrere KI-Coding-Tools und Deployment-Strategien:
+
+| Kategorie | Dateien | Grosse |
+|-----------|---------|--------|
+| Claude Code | `.claude/`, `CLAUDE.md` | ~265KB |
+| Cursor | `.cursor/` | ~8KB |
+| Windsurf | `.windsurfrules` | ~1KB |
+| Docker | `Dockerfile`, `docker-compose*.yml`, `nginx/` | ~15KB |
+
+Wenn Sie nur Claude Code verwenden und auf Vercel deployen, konnen Sie den Rest ignorieren und Ihr Projekt sauber halten.
+
+## Stack-Selektor Ausfuhren
+
+### Interaktiver Modus
+
+```bash
+npm run setup:stack
+```
+
+Dies offnet eine interaktive Eingabeaufforderung:
+
+```
+Stack-Selektor (Optional)
+
+Dieser Schritt hilft, Boilerplate-Bloat zu reduzieren, indem
+ungenutzte Konfigurationen ignoriert werden. Sie konnen uberspringen, um alle Optionen zu behalten.
+
+Welche(s) KI-Coding-Tool(s) werden Sie verwenden? (mehrere mit Kommas auswahlen)
+   [1] Claude Code
+   [2] Cursor
+   [3] Windsurf
+   [a] Alle / Alle behalten (Standard)
+   [s] Diesen Schritt uberspringen
+
+Ihre Wahl: 1,2
+
+Welche Deployment-Strategie werden Sie verwenden?
+   [1] Vercel (empfohlen fur Next.js)
+   [2] Docker / Selbst-gehostet
+   [s] Diesen Schritt uberspringen
+
+Ihre Wahl: 1
+```
+
+### Aktuelle Konfiguration Prufen
+
+```bash
+npm run setup:stack -- --list
+```
+
+### Alle Dateien Wiederherstellen
+
+Wenn Sie Ihre Meinung andern, stellen Sie alle ignorierten Dateien wieder her:
+
+```bash
+npm run setup:stack -- --restore
+```
+
+## Was Wird in Git Ignoriert
+
+Basierend auf Ihren Auswahlen fugt der Stack-Selektor Eintrage zu Ihrer `.gitignore` hinzu:
+
+### KI-Coding-Tools
+
+| Tool | Ignorierte Dateien |
+|------|-------------------|
+| Claude Code | `.claude/`, `CLAUDE.md` |
+| Cursor | `.cursor/` |
+| Windsurf | `.windsurfrules` |
+
+**Hinweis:** `AGENTS.md` wird beibehalten, wenn ein KI-Tool ausgewahlt ist.
+
+### Deployment-Strategie
+
+| Auswahl | Ignorierte Dateien |
+|---------|-------------------|
+| Vercel | `Dockerfile`, `docker-compose.yml`, `docker-compose.dev.yml`, `.dockerignore`, `nginx/` |
+| Docker | Keine (alle Docker-Dateien werden beibehalten) |
+
+**Hinweis:** `.github/`-Workflows werden immer fur beide Strategien beibehalten.
+
+## Konfigurationsdatei
+
+Der Stack-Selektor erstellt `.stack-config.json`, um Ihre Auswahlen zu verfolgen:
+
+```json
+{
+  "selectedAt": "2024-12-13T10:30:00.000Z",
+  "codingTools": ["claude", "cursor"],
+  "deployment": "vercel",
+  "gitignored": [
+    ".windsurfrules",
+    "Dockerfile",
+    "docker-compose.yml",
+    "docker-compose.dev.yml",
+    ".dockerignore",
+    "nginx/"
+  ]
+}
+```
+
+Diese Datei ermoglicht es dem `--restore`-Befehl, ordnungsgemas zu funktionieren.
+
+## Integration mit dem Setup-Assistenten
+
+Der Stack-Selektor ist der erste optionale Schritt beim Ausfuhren des vollstandigen Setup-Assistenten:
+
+```bash
+npm run setup
+```
+
+Der Assistenten-Ablauf ist:
+
+1. **Stack-Selektor** (Optional) - Wahlen Sie Ihre Tools
+2. Umgebungsvariablen (Erforderlich)
+3. Datenbank (Erforderlich)
+4. Authentifizierung (Erforderlich)
+5. Zahlungen (Optional)
+6. KI-Anbieter (Optional)
+7. Administrator-Benutzer (Optional)
+
+## Best Practices
+
+### Wann den Stack-Selektor Verwenden
+
+- Starten eines neuen Projekts mit spezifischen Tools
+- Aufraumen nach dem Klonen des Boilerplates
+- Reduzierung von Rauschen in Ihrem Datei-Explorer
+
+### Wann Uberspringen
+
+- Evaluierung mehrerer KI-Coding-Tools
+- Planung zum Wechsel der Deployment-Strategien
+- Arbeit in einem Team mit gemischten Tool-Praferenzen
+
+## Fehlerbehebung
+
+### Dateien Erscheinen Nach der Auswahl Immer Noch
+
+Der Stack-Selektor fugt nur Dateien zu `.gitignore` hinzu - er loscht sie nicht. Die Dateien bleiben in Ihrem Arbeitsverzeichnis, werden aber nicht in git committet.
+
+### Dateien Stattdessen Loschen Wollen
+
+Nach dem Ausfuhren des Stack-Selektors konnen Sie die ignorierten Dateien manuell loschen:
+
+```bash
+# Sehen, was ignoriert wird
+npm run setup:stack -- --list
+
+# Manuell loschen, wenn gewunscht
+rm -rf .cursor .windsurfrules
+```
+
+### Wiederherstellung Funktioniert Nicht
+
+Stellen Sie sicher, dass `.stack-config.json` existiert. Wenn es geloscht wurde, mussen Sie den Stack-Selektor-Abschnitt manuell aus `.gitignore` entfernen.

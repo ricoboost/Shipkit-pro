@@ -1,0 +1,91 @@
+---
+title: Stripe
+description: Configurer les paiements Stripe dans ShipKit.
+---
+
+# Configuration de Stripe
+
+Stripe offre un contrôle total sur les paiements avec une portée mondiale.
+
+## Configuration
+
+```bash
+PAYMENT_PROVIDER="stripe"
+STRIPE_SECRET_KEY="sk_test_xxx"
+STRIPE_PUBLISHABLE_KEY="pk_test_xxx"
+STRIPE_WEBHOOK_SECRET="whsec_xxx"
+```
+
+## Obtenir les Identifiants
+
+1. Créer un compte sur [stripe.com](https://stripe.com)
+2. Aller dans Developers > API Keys
+3. Copier les clés publique et secrète
+4. Créer un endpoint webhook pour `https://votredomaine.com/api/payments/webhook`
+
+## Créer des Produits
+
+Dans le tableau de bord Stripe :
+
+1. Aller dans Products
+2. Créer des produits pour chaque plan
+3. Ajouter des prix récurrents (mensuel/annuel)
+4. Copier les IDs de prix dans `src/config/plans.ts`
+
+## Implémentation
+
+```typescript
+// src/lib/payments/stripe.ts
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+export const stripeProvider: PaymentProvider = {
+  async createCheckout({ priceId, userId, successUrl, cancelUrl }) {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      client_reference_id: userId,
+    });
+
+    return { url: session.url!, sessionId: session.id };
+  },
+
+  async createPortalSession(customerId) {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings/billing`,
+    });
+    return session.url;
+  },
+
+  async handleWebhook(payload, signature) {
+    const event = stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+    return normalizeEvent(event);
+  },
+};
+```
+
+## Tests
+
+Utiliser les cartes de test Stripe :
+
+- Succès : `4242 4242 4242 4242`
+- Refus : `4000 0000 0000 0002`
+- 3D Secure : `4000 0025 0000 3155`
+
+## Événements Webhook
+
+Gérer ces événements :
+
+- `checkout.session.completed` - Nouvel abonnement
+- `customer.subscription.updated` - Changement de plan
+- `customer.subscription.deleted` - Annulation
+- `invoice.payment_failed` - Échec du paiement

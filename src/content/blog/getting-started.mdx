@@ -1,0 +1,94 @@
+---
+title: "Getting Started with ShipKit"
+description: "Learn how to quickly set up your SaaS project with ShipKit, the ultimate starter kit for modern web applications."
+date: "2024-12-01"
+author:
+  name: "ShipKit Team"
+  image: "/images/team-avatar.png"
+  twitter: "@shipkit"
+image: "/images/blog/getting-started.png"
+tags:
+  - Guide
+  - Setup
+  - Tutorial
+published: true
+---
+
+# Getting Started with ShipKit
+
+Welcome to ShipKit! This guide will walk you through setting up your first SaaS project in minutes.
+
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- Node.js 18.17 or later
+- npm, yarn, or pnpm
+- A PostgreSQL database (or use a cloud provider like Supabase)
+
+## Quick Start
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/your-org/shipkit.git
+cd shipkit
+npm install
+```
+
+## Environment Setup
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env.local
+```
+
+<Callout type="info" title="Environment Variables">
+  Make sure to configure all required environment variables before starting the development server.
+</Callout>
+
+## Database Setup
+
+Run Prisma migrations to set up your database schema:
+
+```bash
+npx prisma migrate dev
+```
+
+## Start Development
+
+Launch the development server:
+
+```bash
+npm run dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) to see your app.
+
+## Project Structure
+
+Here's an overview of the key directories:
+
+| Directory | Description |
+|-----------|-------------|
+| `src/app` | Next.js App Router pages |
+| `src/components` | Reusable React components |
+| `src/lib` | Utility functions and business logic |
+| `prisma` | Database schema and migrations |
+
+## Next Steps
+
+Now that you have ShipKit running, explore these guides:
+
+1. [Authentication Setup](/docs/auth) - Configure OAuth providers
+2. [Payment Integration](/docs/payments) - Set up Stripe or LemonSqueezy
+3. [AI Features](/docs/ai) - Add AI capabilities to your app
+
+<Callout type="success" title="You're all set!">
+  Congratulations! You now have a fully functional SaaS starter. Happy building!
+</Callout>
+
+---
+
+Have questions? Join our [Discord community](https://discord.gg/shipkit) or check out the [documentation](/docs).

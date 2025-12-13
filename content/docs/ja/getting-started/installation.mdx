@@ -1,0 +1,93 @@
+---
+title: インストール
+description: このステップバイステップのインストールガイドで、数分でShipKitを起動して実行できます。
+---
+
+# インストール
+
+このガイドは、ローカルマシンでShipKitをセットアップするのに役立ちます。
+
+## 前提条件
+
+始める前に、以下がインストールされていることを確認してください:
+
+- **Node.js 20+** - [Node.jsをダウンロード](https://nodejs.org/)
+- **npm** または **pnpm** - パッケージマネージャー
+- **Git** - バージョン管理
+
+## クイックスタート
+
+### 1. リポジトリのクローン
+
+```bash
+git clone https://github.com/your-org/shipkit.git my-saas-app
+cd my-saas-app
+```
+
+### 2. 依存関係のインストール
+
+```bash
+npm install
+```
+
+### 3. 環境変数の設定
+
+環境変数のサンプルファイルをコピーします:
+
+```bash
+cp .env.example .env
+```
+
+次に、`.env`を設定で編集します。詳細については[設定](/docs/getting-started/configuration)を参照してください。
+
+### 4. データベースの設定
+
+Prismaを初期化してデータベースを作成します:
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### 5. 開発サーバーの起動
+
+```bash
+npm run dev
+```
+
+アプリは[http://localhost:3000](http://localhost:3000)で実行されています!
+
+## 次のステップ
+
+<Cards>
+  <Card title="設定" href="/docs/getting-started/configuration">
+    プロバイダーと環境変数を設定します。
+  </Card>
+  <Card title="プロジェクト構造" href="/docs/getting-started/project-structure">
+    コードベースの構成について学びます。
+  </Card>
+</Cards>
+
+## トラブルシューティング
+
+### npm install が失敗する
+
+Node.js 20以上を使用していることを確認してください:
+
+```bash
+node --version
+```
+
+アップグレードが必要な場合は、[nvm](https://github.com/nvm-sh/nvm)を使用するか、nodejs.orgからダウンロードしてください。
+
+### データベース接続エラー
+
+`.env`の`DATABASE_URL`が正しく、データベースサーバーが実行されていることを確認してください。
+
+### ポート3000が既に使用中
+
+他のプロセスを停止するか、別のポートを使用してください:
+
+```bash
+npm run dev -- -p 3001
+```

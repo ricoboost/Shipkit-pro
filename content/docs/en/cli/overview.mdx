@@ -1,0 +1,88 @@
+---
+title: CLI Tools Overview
+description: ShipKit provides powerful CLI tools for setup, scaffolding, and development automation.
+---
+
+# CLI Tools
+
+ShipKit includes a comprehensive suite of CLI tools to streamline your development workflow. From initial setup to code generation, these tools help you move fast.
+
+## Quick Start
+
+Run the interactive setup wizard to configure your entire application:
+
+```bash
+npm run setup
+```
+
+Or for a quick setup with sensible defaults:
+
+```bash
+npm run setup:quick
+```
+
+## Available Tools
+
+### Setup Commands
+
+Configure your application step by step:
+
+| Command | Description |
+|---------|-------------|
+| `npm run setup` | Interactive setup wizard |
+| `npm run setup:quick` | Quick setup with defaults |
+| `npm run setup:stack` | Stack selector (reduce bloat) |
+| `npm run setup:env` | Configure environment variables |
+| `npm run setup:db` | Configure database connection |
+| `npm run setup:auth` | Configure authentication provider |
+| `npm run setup:payments` | Configure payment provider |
+| `npm run setup:ai` | Configure AI provider |
+| `npm run setup:admin` | Create admin user |
+
+### Generator Commands
+
+Scaffold new code with best practices built-in:
+
+| Command | Description |
+|---------|-------------|
+| `npm run generate:page` | Generate a new page with i18n |
+| `npm run generate:api` | Generate a new API route |
+| `npm run generate:component` | Generate a new component |
+
+### Database Commands
+
+Manage your database schema:
+
+| Command | Description |
+|---------|-------------|
+| `npm run db:generate` | Generate Prisma client |
+| `npm run db:push` | Push schema changes to database |
+| `npm run db:migrate` | Run database migrations |
+| `npm run db:studio` | Open Prisma Studio GUI |
+
+## Claude Code Integration
+
+ShipKit includes slash commands for Claude Code users. These provide contextual help and can execute setup tasks:
+
+- `/setup` - Full setup wizard documentation
+- `/setup-env` - Environment configuration guide
+- `/setup-db` - Database setup guide
+- `/setup-auth` - Authentication setup guide
+- `/setup-payments` - Payments setup guide
+- `/setup-ai` - AI provider setup guide
+- `/create-admin` - Admin user creation guide
+- `/scaffold-page` - Generate a new page
+- `/scaffold-api` - Generate an API route
+- `/scaffold-component` - Generate a component
+- `/add-test` - Generate test files
+
+## Next Steps
+
+<Cards>
+  <Card title="Setup Wizard" href="/docs/cli/setup-wizard">
+    Get started with the interactive setup wizard.
+  </Card>
+  <Card title="Code Generators" href="/docs/cli/generators">
+    Learn how to scaffold pages, APIs, and components.
+  </Card>
+</Cards>

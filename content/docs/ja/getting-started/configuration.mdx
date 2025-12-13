@@ -1,0 +1,141 @@
+---
+title: 設定
+description: ShipKitの環境変数とプロバイダー設定を構成します。
+---
+
+# 設定
+
+ShipKitは環境変数を使用して設定を行い、プロバイダーや環境の切り替えを簡単にします。
+
+## 環境変数
+
+プロジェクトのルートに`.env`ファイルを作成し、以下の変数を設定します:
+
+### アプリケーション設定
+
+```bash
+# アプリケーションURL（必須）
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_APP_NAME="ShipKit"
+```
+
+### データベース
+
+```bash
+# PostgreSQL（推奨）
+DATABASE_URL="postgresql://user:password@localhost:5432/shipkit"
+
+# またはMongoDB
+# MONGODB_URI="mongodb+srv://user:password@cluster.mongodb.net/shipkit"
+```
+
+### 認証プロバイダー
+
+認証プロバイダーを1つ選択します:
+
+```bash
+# オプション: nextauth | supabase | betterauth
+AUTH_PROVIDER="nextauth"
+
+# NextAuth.js
+AUTH_SECRET="your-secret-key"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Supabase（使用する場合）
+NEXT_PUBLIC_SUPABASE_URL="your-supabase-url"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+
+# OAuthプロバイダー（オプション）
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+```
+
+### 決済プロバイダー
+
+決済プロバイダーを1つ選択します:
+
+```bash
+# オプション: stripe | lemonsqueezy | polar
+PAYMENT_PROVIDER="stripe"
+
+# Stripe
+STRIPE_SECRET_KEY=""
+STRIPE_PUBLISHABLE_KEY=""
+STRIPE_WEBHOOK_SECRET=""
+
+# LemonSqueezy
+LEMONSQUEEZY_API_KEY=""
+LEMONSQUEEZY_STORE_ID=""
+LEMONSQUEEZY_WEBHOOK_SECRET=""
+
+# Polar
+POLAR_ACCESS_TOKEN=""
+POLAR_ORGANIZATION_ID=""
+```
+
+### AIプロバイダー
+
+```bash
+# オプション: openrouter | vercel
+AI_PROVIDER="openrouter"
+
+# OpenRouter
+OPENROUTER_API_KEY=""
+
+# Vercel AI SDK / OpenAI
+OPENAI_API_KEY=""
+```
+
+### メール (Resend)
+
+```bash
+RESEND_API_KEY=""
+EMAIL_FROM="noreply@yourdomain.com"
+```
+
+## プロバイダーの選択
+
+ShipKitは統一された抽象化レイヤーを使用しています。環境変数を更新してプロバイダーを変更します:
+
+```bash
+# StripeからLemonSqueezyに切り替え
+PAYMENT_PROVIDER="lemonsqueezy"
+
+# NextAuthからSupabaseに切り替え
+AUTH_PROVIDER="supabase"
+```
+
+コードの変更は不要です - 抽象化レイヤーが残りを処理します。
+
+## 設定ファイル
+
+### `src/config/site.ts`
+
+サイト全体の設定:
+
+```typescript
+export const siteConfig = {
+  name: "ShipKit",
+  description: "Your SaaS description",
+  url: process.env.NEXT_PUBLIC_APP_URL,
+  // ...
+};
+```
+
+### `src/config/plans.ts`
+
+サブスクリプションプランの設定。詳細は[決済](/docs/payments/overview)を参照してください。
+
+## 次のステップ
+
+<Cards>
+  <Card title="認証" href="/docs/authentication/overview">
+    ユーザー認証を設定します。
+  </Card>
+  <Card title="決済" href="/docs/payments/overview">
+    決済処理を設定します。
+  </Card>
+</Cards>

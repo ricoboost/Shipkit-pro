@@ -1,0 +1,158 @@
+---
+title: Setup Wizard
+description: The interactive setup wizard guides you through configuring your ShipKit application.
+---
+
+# Setup Wizard
+
+The setup wizard is the fastest way to configure your ShipKit application. It walks you through each configuration step interactively.
+
+## Running the Wizard
+
+Start the interactive wizard:
+
+```bash
+npm run setup
+```
+
+For quick setup with sensible defaults:
+
+```bash
+npm run setup:quick
+```
+
+To skip optional configuration steps:
+
+```bash
+npx tsx scripts/setup/wizard.ts --skip-optional
+```
+
+## What the Wizard Configures
+
+The wizard guides you through these steps in order:
+
+### 0. Stack Selector (Optional)
+
+Choose which AI coding tools and deployment strategy you'll use. This step gitignores unused configuration files to reduce bloat:
+
+- **AI Tools**: Claude Code, Cursor, Windsurf (select multiple)
+- **Deployment**: Vercel or Docker/Self-hosted
+
+[Learn more about the Stack Selector](/docs/cli/setup-stack)
+
+### 1. Environment Variables (Required)
+
+Generates your `.env` file with all required configuration:
+
+- `DATABASE_URL` - Database connection string
+- `AUTH_SECRET` - Auto-generated encryption key
+- `NEXT_PUBLIC_APP_URL` - Your application URL
+
+### 2. Database (Required)
+
+Configures your database connection. Supported providers:
+
+- **PostgreSQL** - Standard PostgreSQL
+- **MySQL** - MySQL database
+- **SQLite** - File-based (great for development)
+- **Supabase** - PostgreSQL with Supabase
+- **Neon** - Serverless PostgreSQL
+- **PlanetScale** - Serverless MySQL
+
+### 3. Authentication (Required)
+
+Sets up your auth provider:
+
+- **NextAuth.js** - Flexible, self-hosted authentication
+- **Supabase Auth** - Integrated with Supabase
+- **Better Auth** - Modern, type-safe authentication
+
+### 4. Payments (Optional)
+
+Configures payment processing:
+
+- **Stripe** - Industry-standard payments
+- **Lemon Squeezy** - All-in-one with tax handling
+- **Polar** - Open-source friendly payments
+
+### 5. AI Provider (Optional)
+
+Sets up AI/LLM integration:
+
+- **OpenAI** - GPT-4, GPT-3.5
+- **Anthropic** - Claude models
+- **Google AI** - Gemini models
+- **OpenRouter** - Access 100+ models
+
+### 6. Admin User (Optional)
+
+Creates your first admin account for accessing the admin panel.
+
+## Individual Setup Commands
+
+You can also run each setup step individually:
+
+```bash
+# Stack selector (reduce bloat)
+npm run setup:stack
+
+# Environment variables
+npm run setup:env
+
+# Database
+npm run setup:db
+
+# Authentication
+npm run setup:auth
+
+# Payments
+npm run setup:payments
+
+# AI Provider
+npm run setup:ai
+
+# Admin user
+npm run setup:admin
+```
+
+## After Setup
+
+Once the wizard completes:
+
+1. Review your `.env` file
+2. Start the development server:
+
+```bash
+npm run dev
+```
+
+3. Open [http://localhost:3000](http://localhost:3000)
+4. Sign in and explore the dashboard
+
+## Troubleshooting
+
+### Database Connection Failed
+
+Make sure your database is running and the connection string is correct:
+
+```bash
+# Test with Prisma
+npx prisma db pull
+```
+
+### Missing Environment Variables
+
+Re-run the environment setup:
+
+```bash
+npm run setup:env --interactive
+```
+
+### Prisma Client Not Generated
+
+Generate the Prisma client manually:
+
+```bash
+npm run db:generate
+npm run db:push
+```

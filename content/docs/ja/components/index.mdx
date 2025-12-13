@@ -1,0 +1,128 @@
+---
+title: コンポーネント概要
+description: ShipKit向けに事前構築されたカスタマイズ可能なマーケティングおよびUIコンポーネントの包括的なライブラリ
+---
+
+# コンポーネント概要
+
+ShipKitには、モダンなSaaSアプリケーション向けに設計された、事前構築されたカスタマイズ可能なコンポーネントの包括的なライブラリが含まれています。すべてのコンポーネントは以下をサポートします:
+
+- **カラースキーム**: `primary`、`secondary`、`accent`、`muted`、`destructive`
+- **アニメーション**: オプションのFramer Motionアニメーション
+- **レスポンシブデザイン**: モバイルファースト、完全レスポンシブ
+- **TypeScript**: エクスポートされたインターフェースによる完全な型安全性
+
+## マーケティングコンポーネント
+
+マーケティングコンポーネントライブラリで美しいランディングページを構築:
+
+| カテゴリ | バリアント | 説明 |
+|----------|----------|-------------|
+| [Hero](/docs/components/hero) | 5バリアント | ランディングページのヒーローセクション |
+| [CTA](/docs/components/cta) | 4バリアント | コールトゥアクションセクション |
+| [Features](/docs/components/features) | 6バリアント | 機能紹介 |
+| [Pricing](/docs/components/pricing) | 4バリアント | 料金表とカード |
+| [Testimonials](/docs/components/testimonials) | 4バリアント | お客様の声表示 |
+| [FAQ](/docs/components/faq) | 3バリアント | よくある質問 |
+| [Problem/Solution](/docs/components/problem) | 3バリアント | PASフレームワークセクション |
+| [Comparison](/docs/components/comparison) | 2バリアント | 競合比較 |
+| [Stats](/docs/components/stats) | 3バリアント | メトリクスと実績 |
+| [Logo Cloud](/docs/components/logos) | 3バリアント | クライアント/パートナーロゴ |
+| [Dividers](/docs/components/dividers) | 4バリアント | セクション区切り |
+
+## UIプリミティブ
+
+ShipKitは、UIコンポーネントの基盤として[shadcn/ui](https://ui.shadcn.com)を使用しています。すべてのプリミティブは完全にカスタマイズ可能で、Radix UIのデザインパターンに従っています。
+
+完全なリストについては、[UIプリミティブ](/docs/components/ui-primitives)のドキュメントを参照してください。
+
+## 機能コンポーネント
+
+特定の機能のための専用コンポーネント:
+
+| コンポーネント | 説明 |
+|-----------|-------------|
+| [Theme Builder](/docs/components/theme-builder) | ビジュアルテーマカスタマイズインターフェース |
+
+## インポートパターン
+
+### マーケティングコンポーネント
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+import { CTASimple } from '@/components/marketing/cta/cta-simple';
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+```
+
+### UIプリミティブ
+
+```tsx
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+```
+
+## 共通型
+
+すべてのマーケティングコンポーネントは、`@/components/marketing/types`で定義された共通型を共有します:
+
+```typescript
+export type ColorScheme = 'primary' | 'secondary' | 'accent' | 'muted' | 'destructive';
+
+export interface CTAButton {
+  label: string;
+  href: string;
+  variant?: 'default' | 'outline' | 'ghost';
+}
+
+export interface BaseMarketingProps {
+  className?: string;
+  colorScheme?: ColorScheme;
+}
+
+export interface FeatureItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+}
+```
+
+## クイックスタート
+
+完全なランディングページの構築方法:
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+import { CTASimple } from '@/components/marketing/cta/cta-simple';
+import { Zap, Shield, Rocket } from 'lucide-react';
+
+export default function LandingPage() {
+  return (
+    <>
+      <HeroCentered
+        title="Build SaaS Products Faster"
+        description="The complete starter kit for modern web applications"
+        primaryCTA={{ label: 'Get Started', href: '/register' }}
+        secondaryCTA={{ label: 'View Demo', href: '/demo' }}
+        badge="Now in v3.0"
+      />
+
+      <FeaturesGrid
+        title="Everything You Need"
+        features={[
+          { title: 'Fast', description: 'Built for speed', icon: <Zap /> },
+          { title: 'Secure', description: 'Enterprise security', icon: <Shield /> },
+          { title: 'Scalable', description: 'Grows with you', icon: <Rocket /> },
+        ]}
+      />
+
+      <CTASimple
+        title="Ready to Start?"
+        description="Join thousands of developers building with ShipKit"
+        primaryCTA={{ label: 'Start Free Trial', href: '/register' }}
+      />
+    </>
+  );
+}
+```

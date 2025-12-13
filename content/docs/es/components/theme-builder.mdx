@@ -1,0 +1,129 @@
+---
+title: Constructor de Temas
+description: Interfaz visual para personalizar el tema de tu aplicación ShipKit.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Constructor de Temas
+
+El Constructor de Temas de ShipKit proporciona una interfaz visual para personalizar los colores, tipografía y otros aspectos visuales de tu aplicación.
+
+## Características
+
+### Personalización de Colores
+
+- **Colores primarios**: Define el color principal de tu marca
+- **Colores secundarios**: Colores complementarios
+- **Colores de acento**: Para elementos destacados
+- **Modo oscuro**: Personalización automática para tema oscuro
+
+### Sistema de Colores
+
+El Constructor de Temas usa variables CSS HSL para máxima flexibilidad:
+
+```css
+:root {
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+}
+```
+
+## Uso del Constructor
+
+### 1. Acceder al Constructor
+
+Navega a `/theme-builder` en tu aplicación de desarrollo para acceder a la interfaz visual.
+
+### 2. Seleccionar Colores
+
+Usa los selectores de color para elegir:
+- Color primario de marca
+- Color secundario
+- Color de acento
+- Colores de fondo
+- Colores de texto
+
+### 3. Vista Previa en Tiempo Real
+
+Todos los cambios se reflejan instantáneamente en la vista previa para que puedas ver cómo se verá tu tema.
+
+### 4. Exportar Configuración
+
+Una vez satisfecho, exporta tu configuración como:
+- Variables CSS
+- Configuración de Tailwind
+- JSON de configuración
+
+## Presets de Tema
+
+ShipKit incluye varios presets de tema predefinidos:
+
+| Preset | Descripción |
+|--------|-------------|
+| Default | Tema neutral y profesional |
+| Ocean | Tonos azules y verdes |
+| Forest | Verdes naturales |
+| Sunset | Naranjas y rojos cálidos |
+| Midnight | Tema oscuro elegante |
+| Rose | Tonos rosados suaves |
+
+## Integración con Componentes
+
+Todos los componentes de marketing respetan automáticamente el tema configurado:
+
+```tsx
+// Los colores se aplican automáticamente
+<HeroCentered colorScheme="primary" />
+<FeaturesGrid colorScheme="secondary" />
+<CTASimple colorScheme="accent" />
+```
+
+## Modo Oscuro
+
+El Constructor de Temas genera automáticamente variantes para modo oscuro:
+
+```css
+.dark {
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  /* ... más variables */
+}
+```
+
+<Callout type="info">
+El modo oscuro se activa automáticamente basado en las preferencias del sistema del usuario o puede ser controlado manualmente.
+</Callout>
+
+## Mejores Prácticas
+
+1. **Mantén consistencia**: Usa los mismos colores en toda la aplicación
+2. **Contraste accesible**: Asegúrate de que el texto sea legible
+3. **Prueba ambos modos**: Verifica en modo claro y oscuro
+4. **Usa colores semánticos**: Primary para acciones principales, destructive para eliminar, etc.
+
+## API del Constructor
+
+```tsx
+import { ThemeBuilder } from '@/components/theme-builder';
+
+<ThemeBuilder
+  defaultTheme="default"
+  onExport={(config) => console.log(config)}
+  showPreview
+/>
+```
+
+### Props
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `defaultTheme` | `string` | `'default'` | Preset inicial |
+| `onExport` | `(config) => void` | - | Callback al exportar |
+| `showPreview` | `boolean` | `true` | Mostrar vista previa |

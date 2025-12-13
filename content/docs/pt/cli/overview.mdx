@@ -1,0 +1,88 @@
+---
+title: Visão Geral das Ferramentas CLI
+description: ShipKit fornece ferramentas CLI poderosas para configuração, scaffolding e automação de desenvolvimento.
+---
+
+# Ferramentas CLI
+
+ShipKit inclui um conjunto completo de ferramentas CLI para otimizar seu fluxo de trabalho de desenvolvimento. Da configuração inicial à geração de código, essas ferramentas ajudam você a avançar rapidamente.
+
+## Início Rápido
+
+Execute o assistente de configuração interativo para configurar toda sua aplicação:
+
+```bash
+npm run setup
+```
+
+Ou para uma configuração rápida com valores padrão sensatos:
+
+```bash
+npm run setup:quick
+```
+
+## Ferramentas Disponíveis
+
+### Comandos de Configuração
+
+Configure sua aplicação passo a passo:
+
+| Comando | Descrição |
+|---------|-----------|
+| `npm run setup` | Assistente de configuração interativo |
+| `npm run setup:quick` | Configuração rápida com valores padrão |
+| `npm run setup:stack` | Seletor de stack (reduzir excesso) |
+| `npm run setup:env` | Configurar variáveis de ambiente |
+| `npm run setup:db` | Configurar conexão com banco de dados |
+| `npm run setup:auth` | Configurar provedor de autenticação |
+| `npm run setup:payments` | Configurar provedor de pagamentos |
+| `npm run setup:ai` | Configurar provedor de IA |
+| `npm run setup:admin` | Criar usuário administrador |
+
+### Comandos de Geração
+
+Gere novo código com melhores práticas integradas:
+
+| Comando | Descrição |
+|---------|-----------|
+| `npm run generate:page` | Gerar uma nova página com i18n |
+| `npm run generate:api` | Gerar uma nova rota de API |
+| `npm run generate:component` | Gerar um novo componente |
+
+### Comandos de Banco de Dados
+
+Gerencie seu esquema de banco de dados:
+
+| Comando | Descrição |
+|---------|-----------|
+| `npm run db:generate` | Gerar cliente Prisma |
+| `npm run db:push` | Enviar alterações de esquema para o banco de dados |
+| `npm run db:migrate` | Executar migrações de banco de dados |
+| `npm run db:studio` | Abrir Prisma Studio GUI |
+
+## Integração com Claude Code
+
+ShipKit inclui comandos slash para usuários do Claude Code. Estes fornecem ajuda contextual e podem executar tarefas de configuração:
+
+- `/setup` - Documentação completa do assistente de configuração
+- `/setup-env` - Guia de configuração de ambiente
+- `/setup-db` - Guia de configuração de banco de dados
+- `/setup-auth` - Guia de configuração de autenticação
+- `/setup-payments` - Guia de configuração de pagamentos
+- `/setup-ai` - Guia de configuração de provedor de IA
+- `/create-admin` - Guia de criação de usuário administrador
+- `/scaffold-page` - Gerar uma nova página
+- `/scaffold-api` - Gerar uma rota de API
+- `/scaffold-component` - Gerar um componente
+- `/add-test` - Gerar arquivos de teste
+
+## Próximos Passos
+
+<Cards>
+  <Card title="Assistente de Configuração" href="/docs/cli/setup-wizard">
+    Comece com o assistente de configuração interativo.
+  </Card>
+  <Card title="Geradores de Código" href="/docs/cli/generators">
+    Aprenda como gerar páginas, APIs e componentes.
+  </Card>
+</Cards>

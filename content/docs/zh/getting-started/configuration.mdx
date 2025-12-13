@@ -1,0 +1,141 @@
+---
+title: 配置
+description: 配置ShipKit环境变量和提供商设置。
+---
+
+# 配置
+
+ShipKit使用环境变量进行配置，使在提供商和环境之间切换变得容易。
+
+## 环境变量
+
+在项目根目录创建一个`.env`文件，包含以下变量：
+
+### 应用配置
+
+```bash
+# 应用URL（必需）
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_APP_NAME="ShipKit"
+```
+
+### 数据库
+
+```bash
+# PostgreSQL（推荐）
+DATABASE_URL="postgresql://user:password@localhost:5432/shipkit"
+
+# 或 MongoDB
+# MONGODB_URI="mongodb+srv://user:password@cluster.mongodb.net/shipkit"
+```
+
+### 身份验证提供商
+
+选择一个身份验证提供商：
+
+```bash
+# 选项：nextauth | supabase | betterauth
+AUTH_PROVIDER="nextauth"
+
+# NextAuth.js
+AUTH_SECRET="your-secret-key"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Supabase（如果使用）
+NEXT_PUBLIC_SUPABASE_URL="your-supabase-url"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+
+# OAuth提供商（可选）
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+```
+
+### 支付提供商
+
+选择一个支付提供商：
+
+```bash
+# 选项：stripe | lemonsqueezy | polar
+PAYMENT_PROVIDER="stripe"
+
+# Stripe
+STRIPE_SECRET_KEY=""
+STRIPE_PUBLISHABLE_KEY=""
+STRIPE_WEBHOOK_SECRET=""
+
+# LemonSqueezy
+LEMONSQUEEZY_API_KEY=""
+LEMONSQUEEZY_STORE_ID=""
+LEMONSQUEEZY_WEBHOOK_SECRET=""
+
+# Polar
+POLAR_ACCESS_TOKEN=""
+POLAR_ORGANIZATION_ID=""
+```
+
+### AI提供商
+
+```bash
+# 选项：openrouter | vercel
+AI_PROVIDER="openrouter"
+
+# OpenRouter
+OPENROUTER_API_KEY=""
+
+# Vercel AI SDK / OpenAI
+OPENAI_API_KEY=""
+```
+
+### 电子邮件 (Resend)
+
+```bash
+RESEND_API_KEY=""
+EMAIL_FROM="noreply@yourdomain.com"
+```
+
+## 提供商选择
+
+ShipKit使用统一的抽象层。通过更新环境变量来更改提供商：
+
+```bash
+# 从Stripe切换到LemonSqueezy
+PAYMENT_PROVIDER="lemonsqueezy"
+
+# 从NextAuth切换到Supabase
+AUTH_PROVIDER="supabase"
+```
+
+无需更改代码 - 抽象层处理其余部分。
+
+## 配置文件
+
+### `src/config/site.ts`
+
+站点范围的配置：
+
+```typescript
+export const siteConfig = {
+  name: "ShipKit",
+  description: "Your SaaS description",
+  url: process.env.NEXT_PUBLIC_APP_URL,
+  // ...
+};
+```
+
+### `src/config/plans.ts`
+
+订阅计划配置。详情请参阅[支付](/docs/payments/overview)。
+
+## 下一步
+
+<Cards>
+  <Card title="身份验证" href="/docs/authentication/overview">
+    设置用户身份验证。
+  </Card>
+  <Card title="支付" href="/docs/payments/overview">
+    配置支付处理。
+  </Card>
+</Cards>

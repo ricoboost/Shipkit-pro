@@ -1,0 +1,97 @@
+---
+title: API d'Authentification
+description: Référence API pour les endpoints d'authentification.
+---
+
+# API d'Authentification
+
+## Endpoints
+
+### Inscription
+
+Créer un nouveau compte utilisateur.
+
+```http
+POST /api/auth/signup
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword",
+  "name": "John Doe"
+}
+```
+
+**Réponse:**
+
+```json
+{
+  "user": {
+    "id": "cuid",
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+### Connexion
+
+Authentifier un utilisateur.
+
+```http
+POST /api/auth/signin
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+**Réponse:**
+
+```json
+{
+  "user": { ... },
+  "session": { ... }
+}
+```
+
+### Déconnexion
+
+Terminer la session actuelle.
+
+```http
+POST /api/auth/signout
+```
+
+### Obtenir la Session
+
+Obtenir la session authentifiée actuelle.
+
+```http
+GET /api/auth/session
+```
+
+**Réponse:**
+
+```json
+{
+  "user": {
+    "id": "cuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "image": "https://..."
+  },
+  "expires": "2024-02-15T00:00:00.000Z"
+}
+```
+
+## Codes d'Erreur
+
+| Code | Description |
+|------|-------------|
+| 400 | Corps de requête invalide |
+| 401 | Identifiants invalides |
+| 409 | L'email existe déjà |
+| 429 | Trop de requêtes |

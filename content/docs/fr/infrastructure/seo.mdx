@@ -1,0 +1,273 @@
+---
+title: SEO
+description: Search engine optimization with sitemaps, robots.txt, and metadata.
+---
+
+# SEO
+
+ShipKit includes built-in SEO features for better search engine visibility.
+
+## Features
+
+- Dynamic sitemap generation
+- Configurable robots.txt
+- Metadata API integration
+- Open Graph support
+- Twitter cards
+- Structured data ready
+
+## Sitemap
+
+### Dynamic Sitemap Generation
+
+```typescript
+// src/app/sitemap.ts
+import { MetadataRoute } from 'next';
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://example.com';
+
+  // Static pages
+  const staticPages = [
+    '',
+    '/pricing',
+    '/blog',
+    '/docs',
+  ].map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: route === '' ? 1 : 0.8,
+  }));
+
+  // Dynamic pages (e.g., blog posts)
+  const posts = await getBlogPosts();
+  const blogPages = posts.map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: post.updatedAt,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }));
+
+  return [...staticPages, ...blogPages];
+}
+```
+
+### Multilingual Sitemap
+
+```typescript
+import { locales } from '@/i18n/config';
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+  const pages = ['', '/pricing', '/blog'];
+
+  return pages.flatMap((page) =>
+    locales.map((locale) => ({
+      url: `${baseUrl}/${locale}${page}`,
+      lastModified: new Date(),
+      alternates: {
+        languages: Object.fromEntries(
+          locales.map((l) => [l, `${baseUrl}/${l}${page}`])
+        ),
+      },
+    }))
+  );
+}
+```
+
+## Robots.txt
+
+### Configuration
+
+```typescript
+// src/app/robots.ts
+import { MetadataRoute } from 'next';
+
+export default function robots(): MetadataRoute.Robots {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://example.com';
+
+  return {
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: [
+          '/api/',
+          '/admin/',
+          '/dashboard/',
+          '/settings/',
+        ],
+      },
+    ],
+    sitemap: `${baseUrl}/sitemap.xml`,
+  };
+}
+```
+
+### Environment-Based Rules
+
+```typescript
+export default function robots(): MetadataRoute.Robots {
+  // Block all crawlers in non-production
+  if (process.env.NODE_ENV !== 'production') {
+    return {
+      rules: {
+        userAgent: '*',
+        disallow: '/',
+      },
+    };
+  }
+
+  return {
+    rules: {
+      userAgent: '*',
+      allow: '/',
+    },
+    sitemap: `${process.env.NEXT_PUBLIC_APP_URL}/sitemap.xml`,
+  };
+}
+```
+
+## Metadata
+
+### Root Layout Metadata
+
+```typescript
+// src/app/layout.tsx
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL!),
+  title: {
+    default: 'ShipKit - SaaS Boilerplate',
+    template: '%s | ShipKit',
+  },
+  description: 'The ultimate Next.js SaaS starter kit',
+  keywords: ['saas', 'nextjs', 'boilerplate', 'starter'],
+  authors: [{ name: 'Your Name' }],
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: process.env.NEXT_PUBLIC_APP_URL,
+    siteName: 'ShipKit',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    creator: '@yourhandle',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+```
+
+### Page-Specific Metadata
+
+```typescript
+// src/app/[locale]/pricing/page.tsx
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Pricing',
+  description: 'Simple, transparent pricing for everyone',
+  openGraph: {
+    title: 'Pricing - ShipKit',
+    description: 'Simple, transparent pricing for everyone',
+  },
+};
+```
+
+### Dynamic Metadata
+
+```typescript
+// src/app/[locale]/blog/[slug]/page.tsx
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const post = await getPost(params.slug);
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      type: 'article',
+      publishedTime: post.publishedAt,
+      authors: [post.author.name],
+      images: [{ url: post.coverImage }],
+    },
+  };
+}
+```
+
+## Structured Data
+
+### Organization Schema
+
+```typescript
+// src/app/layout.tsx
+export default function RootLayout({ children }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'ShipKit',
+    url: process.env.NEXT_PUBLIC_APP_URL,
+    logo: `${process.env.NEXT_PUBLIC_APP_URL}/logo.png`,
+    sameAs: [
+      'https://twitter.com/shipkit',
+      'https://github.com/shipkit',
+    ],
+  };
+
+  return (
+    <html>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+### Article Schema
+
+```typescript
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.title,
+  description: post.excerpt,
+  image: post.coverImage,
+  datePublished: post.publishedAt,
+  dateModified: post.updatedAt,
+  author: {
+    '@type': 'Person',
+    name: post.author.name,
+  },
+};
+```
+
+## Best Practices
+
+1. **Unique titles**: Every page should have a unique title
+2. **Meta descriptions**: 150-160 characters, include keywords
+3. **Canonical URLs**: Prevent duplicate content issues
+4. **Image alt text**: Describe images for accessibility and SEO
+5. **Internal linking**: Link between related pages
+6. **Page speed**: Optimize for Core Web Vitals
+7. **Mobile-friendly**: Ensure responsive design

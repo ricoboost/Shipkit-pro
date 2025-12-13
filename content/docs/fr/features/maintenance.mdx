@@ -1,0 +1,142 @@
+---
+title: Mode Maintenance
+description: Bloquez temporairement l'accès public pendant les mises à jour ou la maintenance.
+---
+
+# Mode Maintenance
+
+ShipKit inclut une fonctionnalité de mode maintenance qui vous permet de bloquer temporairement l'accès à votre application pendant les mises à jour, déploiements ou tâches de maintenance critiques.
+
+## Aperçu
+
+Lorsque le mode maintenance est activé :
+
+- Tous les utilisateurs non-administrateurs sont redirigés vers une page de maintenance
+- Les administrateurs peuvent toujours accéder à l'ensemble de l'application
+- Les routes API restent accessibles pour les opérations internes
+- Un bypass d'urgence est disponible via variable d'environnement
+
+## Activer le Mode Maintenance
+
+### Via le Panneau d'Administration
+
+1. Allez dans **Admin** > **Paramètres** > **Feature Flags**
+2. Activez **Mode Maintenance**
+3. Tous les visiteurs non-administrateurs verront immédiatement la page de maintenance
+
+### Via API
+
+```typescript
+// Activer le mode maintenance
+const response = await fetch('/api/admin/settings/flags', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ maintenanceMode: true }),
+});
+```
+
+### Via Base de Données
+
+```typescript
+import { db } from '@/lib/db';
+
+await db.appConfig.upsert({
+  where: { id: 'default' },
+  update: { maintenanceMode: true },
+  create: { id: 'default', maintenanceMode: true },
+});
+```
+
+## Fonctionnement
+
+### Application du Middleware
+
+Le middleware vérifie le mode maintenance à chaque requête :
+
+```typescript
+// src/middleware.ts
+if (flags.maintenanceMode && !isAdmin) {
+  if (!shouldBypassMaintenance(pathname)) {
+    return NextResponse.redirect(new URL('/maintenance', request.url));
+  }
+}
+```
+
+### Chemins de Bypass
+
+Ces chemins sont toujours accessibles pendant la maintenance :
+
+- `/maintenance` - La page de maintenance elle-même
+- `/login` - Page d'authentification (pour que les admins puissent se connecter)
+- `/api/auth/*` - Routes API d'authentification
+- `/onboarding` - Configuration initiale (si aucun admin n'existe)
+
+### Détection d'Administrateur
+
+Le statut d'administrateur est déterminé via un cookie (`shipkit-is-admin`) défini lors de la connexion.
+
+## Récupération d'Urgence
+
+Si vous activez accidentellement le mode maintenance et ne pouvez pas accéder au panneau d'administration :
+
+### Option 1 : Bypass par Variable d'Environnement
+
+Ajoutez à votre fichier `.env` :
+
+```bash
+BYPASS_MAINTENANCE=true
+```
+
+### Option 2 : Mise à Jour Directe de la Base de Données
+
+```bash
+npx prisma db execute --stdin <<< "UPDATE app_config SET \"maintenanceMode\" = false WHERE id = 'default';"
+```
+
+### Option 3 : Prisma Studio
+
+```bash
+npx prisma studio
+```
+
+Naviguez vers `AppConfig` et définissez `maintenanceMode` à `false`.
+
+## Personnaliser la Page de Maintenance
+
+### Emplacement de la Page
+
+```
+src/app/[locale]/maintenance/page.tsx
+```
+
+### Traductions
+
+Le texte de la page de maintenance est traduit via le namespace `maintenance` :
+
+```json
+{
+  "maintenance": {
+    "title": "En Maintenance",
+    "description": "Nous effectuons une maintenance programmée.",
+    "checkBack": "Veuillez revenir bientôt.",
+    "backToHome": "Retour à l'Accueil"
+  }
+}
+```
+
+## Bonnes Pratiques
+
+1. **Prévenez les utilisateurs à l'avance** - Annoncez la maintenance programmée
+2. **Gardez la maintenance courte** - Minimisez la perturbation des utilisateurs
+3. **Testez l'accès admin d'abord** - Vérifiez que vous pouvez vous connecter en tant qu'admin
+4. **Ayez un plan de récupération** - Sachez utiliser `BYPASS_MAINTENANCE`
+5. **Utilisez staging d'abord** - Testez le mode maintenance en staging
+
+## Comparaison : Maintenance vs Mode Waitlist
+
+| Fonctionnalité | Mode Maintenance | Mode Waitlist |
+|----------------|------------------|---------------|
+| Bloque les utilisateurs existants | Oui | Non |
+| Bloque les nouvelles inscriptions | Oui | Oui |
+| Bypass admin | Oui | Oui |
+| Cas d'usage | Mises à jour, urgences | Pré-lancement, accès contrôlé |

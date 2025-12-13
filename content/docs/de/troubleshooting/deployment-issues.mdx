@@ -1,0 +1,416 @@
+---
+title: Deployment Issues
+description: Solutions for Vercel, Railway, Docker, and other deployment problems.
+---
+
+# Deployment Issues
+
+Troubleshoot common deployment problems across different platforms.
+
+---
+
+## Vercel Deployment
+
+### Build Failing on Vercel
+
+**Error: Build failed**
+
+**Diagnosis:**
+
+1. Check build logs in Vercel dashboard
+2. Common causes:
+   - Missing environment variables
+   - TypeScript errors
+   - ESLint errors
+   - Memory issues
+
+**Solutions:**
+
+```bash
+# Test build locally first
+npm run build
+
+# If local build passes, check env vars on Vercel
+```
+
+---
+
+### Environment Variables Not Loading
+
+**Symptoms:**
+- `undefined` values for env vars
+- Features not working in production
+
+**Checklist:**
+
+1. Add all required variables in Vercel Dashboard → Settings → Environment Variables
+2. Use correct prefixes:
+
+```bash
+# Client-side (exposed to browser)
+NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxxxx
+
+# Server-side only
+DATABASE_URL=postgresql://...
+STRIPE_SECRET_KEY=sk_live_xxxxx
+NEXTAUTH_SECRET=xxxxx
+```
+
+3. Redeploy after adding variables:
+
+```bash
+vercel --prod
+```
+
+---
+
+### Edge Function Errors
+
+**Error:** `Edge Function has crashed`
+
+**Common causes:**
+- Using Node.js APIs not available in Edge Runtime
+- Bundle size too large
+
+**Solution:** Use Node.js runtime for API routes:
+
+```typescript
+// src/app/api/example/route.ts
+export const runtime = 'nodejs'; // Not 'edge'
+
+export async function GET() {
+  // Your handler
+}
+```
+
+---
+
+### Cold Start Issues
+
+**Symptoms:** First request takes 5+ seconds
+
+**Solutions:**
+
+1. Use edge runtime where possible:
+
+```typescript
+export const runtime = 'edge';
+```
+
+2. Optimize database connections:
+
+```typescript
+// src/lib/prisma.ts
+import { PrismaClient } from '@prisma/client';
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
+```
+
+---
+
+## Railway Deployment
+
+### Database Connection Issues
+
+**Error:** `Connection refused` or `ECONNREFUSED`
+
+**Solutions:**
+
+1. Use Railway's internal URL for database:
+
+```bash
+# In Railway service settings
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+```
+
+2. Check database is in same project
+3. Verify service is running
+
+---
+
+### Port Configuration
+
+**Error:** `Application failed to respond`
+
+**Solution:** Use Railway's PORT environment variable:
+
+```typescript
+// Railway automatically sets PORT
+const port = process.env.PORT || 3000;
+```
+
+In `package.json`:
+
+```json
+{
+  "scripts": {
+    "start": "next start -p ${PORT:-3000}"
+  }
+}
+```
+
+---
+
+## Docker Deployment
+
+### Build Stage Failures
+
+**Dockerfile best practices:**
+
+```dockerfile
+# Multi-stage build for smaller images
+FROM node:20-alpine AS base
+
+# Install dependencies
+FROM base AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+
+# Build application
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Build Next.js
+RUN npm run build
+
+# Production image
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Copy built assets
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+---
+
+### Next.js Standalone Output
+
+Enable standalone output in `next.config.ts`:
+
+```typescript
+const nextConfig = {
+  output: 'standalone',
+};
+```
+
+---
+
+### Environment Variables in Docker
+
+```dockerfile
+# Don't hardcode secrets in Dockerfile
+# Pass at runtime:
+
+# docker run
+docker run -e DATABASE_URL=xxx -e STRIPE_SECRET_KEY=xxx my-app
+
+# docker-compose
+services:
+  app:
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+```
+
+---
+
+## General Deployment Issues
+
+### CORS Errors
+
+**Error:** `Access-Control-Allow-Origin` errors
+
+**Solution:** Configure CORS in middleware:
+
+```typescript
+// src/middleware.ts
+import { NextResponse } from 'next/server';
+
+export function middleware(request: Request) {
+  const response = NextResponse.next();
+
+  // Add CORS headers for API routes
+  if (request.url.includes('/api/')) {
+    response.headers.set('Access-Control-Allow-Origin', 'https://your-frontend.com');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  }
+
+  return response;
+}
+```
+
+---
+
+### SSL/TLS Issues
+
+**Error:** `CERT_HAS_EXPIRED` or SSL handshake failures
+
+**Solutions:**
+
+1. For database connections, allow self-signed certs:
+
+```bash
+DATABASE_URL=postgresql://user:pass@host:5432/db?sslmode=require
+```
+
+2. Update Node.js CA certificates
+3. Check certificate expiry dates
+
+---
+
+### Domain Configuration
+
+**Symptoms:**
+- Site works on Vercel URL but not custom domain
+- HTTPS not working
+
+**Checklist:**
+
+1. Add domain in hosting platform dashboard
+2. Configure DNS records:
+
+```
+# A Record
+@ → 76.76.21.21
+
+# CNAME Record
+www → cname.vercel-dns.com
+```
+
+3. Wait for DNS propagation (up to 48 hours)
+4. Update environment variables:
+
+```bash
+NEXTAUTH_URL=https://your-custom-domain.com
+NEXT_PUBLIC_APP_URL=https://your-custom-domain.com
+```
+
+---
+
+## Database Deployment
+
+### Prisma Migrations in Production
+
+**Run migrations on deploy:**
+
+```bash
+# In build command or release phase
+npx prisma migrate deploy
+```
+
+**For Vercel:**
+
+```json
+// package.json
+{
+  "scripts": {
+    "postinstall": "prisma generate",
+    "build": "prisma migrate deploy && next build"
+  }
+}
+```
+
+---
+
+### Connection Pooling
+
+**For serverless environments:**
+
+```bash
+# Use connection pooling URL
+DATABASE_URL=postgresql://user:pass@pooler.host:6543/db?pgbouncer=true
+
+# Direct connection for migrations
+DIRECT_DATABASE_URL=postgresql://user:pass@host:5432/db
+```
+
+Configure in `schema.prisma`:
+
+```prisma
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+```
+
+---
+
+## Monitoring Deployments
+
+### Health Check Endpoint
+
+```typescript
+// src/app/api/health/route.ts
+import { prisma } from '@/lib/prisma';
+
+export async function GET() {
+  try {
+    // Check database connection
+    await prisma.$queryRaw`SELECT 1`;
+
+    return Response.json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      database: 'connected',
+    });
+  } catch (error) {
+    return Response.json(
+      {
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        error: 'Database connection failed',
+      },
+      { status: 503 }
+    );
+  }
+}
+```
+
+---
+
+## Deployment Checklist
+
+### Pre-Deployment
+
+- [ ] Build passes locally (`npm run build`)
+- [ ] All tests pass (`npm test`)
+- [ ] Environment variables documented
+- [ ] Database migrations ready
+
+### Platform Setup
+
+- [ ] Environment variables configured
+- [ ] Custom domain added (if applicable)
+- [ ] SSL certificate active
+- [ ] Webhook URLs updated for production
+
+### Post-Deployment
+
+- [ ] Health check endpoint responding
+- [ ] Authentication working
+- [ ] Payment webhooks receiving events
+- [ ] Error monitoring active (Sentry)
+- [ ] Analytics tracking

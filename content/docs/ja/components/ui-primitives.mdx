@@ -1,0 +1,343 @@
+---
+title: UIプリミティブ
+description: shadcn/uiとRadix UIプリミティブに基づいて構築されたコアUIコンポーネント
+---
+
+# UIプリミティブ
+
+ShipKitは、UIコンポーネントの基盤として[shadcn/ui](https://ui.shadcn.com)を使用しています。これらのプリミティブは完全にカスタマイズ可能で、Radix UIデザインパターンに従っています。
+
+## 利用可能なコンポーネント
+
+すべてのコンポーネントは`src/components/ui/`にあります:
+
+### フォームコンポーネント
+
+| コンポーネント | ファイル | 説明 |
+|-----------|------|-------------|
+| Button | `button.tsx` | バリアント付きアクションボタン |
+| Input | `input.tsx` | テキスト入力フィールド |
+| Textarea | `textarea.tsx` | 複数行テキスト入力 |
+| Select | `select.tsx` | ドロップダウン選択 |
+| Checkbox | `checkbox.tsx` | ブール値選択 |
+| Switch | `switch.tsx` | トグルスイッチ |
+| Slider | `slider.tsx` | 範囲スライダー |
+| Label | `label.tsx` | フォームフィールドラベル |
+
+### レイアウトコンポーネント
+
+| コンポーネント | ファイル | 説明 |
+|-----------|------|-------------|
+| Card | `card.tsx` | ヘッダー/コンテンツ/フッター付きコンテナ |
+| Dialog | `dialog.tsx` | モーダルダイアログ |
+| Alert Dialog | `alert-dialog.tsx` | 確認ダイアログ |
+| Dropdown Menu | `dropdown-menu.tsx` | コンテキストメニュー |
+| Popover | `popover.tsx` | フローティングコンテンツ |
+| Tabs | `tabs.tsx` | タブ付きコンテンツ |
+| Scroll Area | `scroll-area.tsx` | カスタムスクロールバー |
+| Separator | `separator.tsx` | 視覚的区切り |
+| Table | `table.tsx` | データテーブル |
+
+### フィードバックコンポーネント
+
+| コンポーネント | ファイル | 説明 |
+|-----------|------|-------------|
+| Badge | `badge.tsx` | ステータス表示 |
+| Alert | `alert.tsx` | インラインメッセージ |
+| Progress | `progress.tsx` | プログレス表示 |
+| Sonner | `sonner.tsx` | トースト通知 |
+
+### データ表示
+
+| コンポーネント | ファイル | 説明 |
+|-----------|------|-------------|
+| Avatar | `avatar.tsx` | ユーザーアバター |
+| Icon Picker | `icon-picker.tsx` | Lucideアイコンセレクター |
+
+---
+
+## Button
+
+複数のバリアントとサイズを持つ最も一般的に使用されるコンポーネント。
+
+### 使用方法
+
+```tsx
+import { Button } from '@/components/ui/button';
+
+// バリアント
+<Button>Default</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="destructive">Destructive</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="link">Link</Button>
+
+// サイズ
+<Button size="sm">Small</Button>
+<Button size="default">Default</Button>
+<Button size="lg">Large</Button>
+<Button size="icon">
+  <Icon className="h-4 w-4" />
+</Button>
+
+// 状態
+<Button disabled>Disabled</Button>
+<Button asChild>
+  <Link href="/somewhere">As Link</Link>
+</Button>
+```
+
+### Props
+
+```typescript
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  asChild?: boolean;
+}
+```
+
+---
+
+## Card
+
+関連コンテンツをグループ化するためのコンテナコンポーネント。
+
+### 使用方法
+
+```tsx
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
+
+<Card>
+  <CardHeader>
+    <CardTitle>Card Title</CardTitle>
+    <CardDescription>Card description or subtitle</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>Main content goes here</p>
+  </CardContent>
+  <CardFooter>
+    <Button>Action</Button>
+  </CardFooter>
+</Card>
+```
+
+---
+
+## Dialog
+
+集中的なインタラクションのためのモーダルダイアログ。
+
+### 使用方法
+
+```tsx
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@/components/ui/dialog';
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button>Open Dialog</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Dialog Title</DialogTitle>
+      <DialogDescription>
+        This is a description of the dialog content.
+      </DialogDescription>
+    </DialogHeader>
+    <div className="py-4">
+      Dialog content goes here
+    </div>
+    <DialogFooter>
+      <Button variant="outline">Cancel</Button>
+      <Button>Confirm</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+---
+
+## Tabs
+
+タブ付きコンテンツナビゲーション。
+
+### 使用方法
+
+```tsx
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+<Tabs defaultValue="tab1">
+  <TabsList>
+    <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+    <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+    <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+  </TabsList>
+  <TabsContent value="tab1">Content for tab 1</TabsContent>
+  <TabsContent value="tab2">Content for tab 2</TabsContent>
+  <TabsContent value="tab3">Content for tab 3</TabsContent>
+</Tabs>
+```
+
+---
+
+## Select
+
+ドロップダウン選択コンポーネント。
+
+### 使用方法
+
+```tsx
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+<Select>
+  <SelectTrigger className="w-[180px]">
+    <SelectValue placeholder="Select option" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="option1">Option 1</SelectItem>
+    <SelectItem value="option2">Option 2</SelectItem>
+    <SelectItem value="option3">Option 3</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+---
+
+## Badge
+
+ステータス表示とラベル。
+
+### 使用方法
+
+```tsx
+import { Badge } from '@/components/ui/badge';
+
+<Badge>Default</Badge>
+<Badge variant="secondary">Secondary</Badge>
+<Badge variant="outline">Outline</Badge>
+<Badge variant="destructive">Destructive</Badge>
+```
+
+---
+
+## Alert
+
+インライン情報メッセージ。
+
+### 使用方法
+
+```tsx
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal } from 'lucide-react';
+
+<Alert>
+  <Terminal className="h-4 w-4" />
+  <AlertTitle>Heads up!</AlertTitle>
+  <AlertDescription>
+    You can add components to your app using the CLI.
+  </AlertDescription>
+</Alert>
+
+<Alert variant="destructive">
+  <AlertTitle>Error</AlertTitle>
+  <AlertDescription>Something went wrong.</AlertDescription>
+</Alert>
+```
+
+---
+
+## Table
+
+データテーブルコンポーネント。
+
+### 使用方法
+
+```tsx
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
+<Table>
+  <TableCaption>A list of users</TableCaption>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+      <TableHead>Email</TableHead>
+      <TableHead>Role</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>John Doe</TableCell>
+      <TableCell>john@example.com</TableCell>
+      <TableCell>Admin</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+---
+
+## コンポーネントの追加
+
+ShipKitはshadcn/ui上に構築されているため、さらにコンポーネントを簡単に追加できます:
+
+```bash
+npx shadcn@latest add [component-name]
+```
+
+利用可能なコンポーネント: accordion、breadcrumb、calendar、carousel、chart、collapsible、command、context-menu、drawer、form、hover-card、menubar、navigation-menu、pagination、radio-group、resizable、sheet、skeleton、tooltipなど。
+
+完全なリストについては、[shadcn/uiドキュメント](https://ui.shadcn.com/docs/components)を参照してください。
+
+---
+
+## カスタマイズ
+
+すべてのコンポーネントはテーマ設定にCSS変数を使用します。`globals.css`でカスタマイズ:
+
+```css
+:root {
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  /* ... */
+}
+
+.dark {
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  /* ... */
+}
+```
+
+または視覚的カスタマイズには[テーマビルダー](/docs/components/theme-builder)を使用してください。

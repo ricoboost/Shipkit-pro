@@ -1,0 +1,86 @@
+---
+title: クレジットシステム
+description: ShipKitクレジットシステムによる使用量ベースの課金。
+---
+
+# クレジットシステム
+
+ShipKitには使用量ベースの課金のための柔軟なクレジットシステムが含まれています。
+
+## 概要
+
+クレジットにより次のことが可能:
+- AI生成の課金
+- API呼び出しの制限
+- 従量課金の提供
+- サブスクリプションとのバンドル
+
+## 使用方法
+
+```typescript
+import { credits } from '@/lib/payments/credits';
+
+// 残高を確認
+const balance = await credits.getBalance(userId);
+
+// クレジットを差し引く
+const success = await credits.deduct(userId, 10, 'AIチャットメッセージ');
+
+if (!success) {
+  throw new Error('クレジット不足');
+}
+
+// クレジットを追加
+await credits.add(userId, 100, '月次サブスクリプション補充');
+
+// 履歴を取得
+const history = await credits.getHistory(userId);
+```
+
+## APIルート
+
+```typescript
+// GET /api/credits/balance
+const balance = await fetch('/api/credits/balance');
+
+// GET /api/credits/history
+const history = await fetch('/api/credits/history');
+```
+
+## データベーススキーマ
+
+```prisma
+model CreditTransaction {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int      // 正 = 追加、負 = 差し引き
+  reason    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+```
+
+## サブスクリプション統合
+
+サブスクリプション更新時にクレジットを自動補充:
+
+```typescript
+// Webhookハンドラーで
+case 'invoice.paid':
+  const plan = getPlanFromSubscription(event.data);
+  await credits.add(userId, plan.monthlyCredits, '月次補充');
+  break;
+```
+
+## クレジットコスト
+
+アプリでコストを設定:
+
+```typescript
+export const creditCosts = {
+  'ai-chat': 1,
+  'ai-image': 10,
+  'api-call': 1,
+  'export': 5,
+};
+```

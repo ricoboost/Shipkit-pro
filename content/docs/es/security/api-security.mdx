@@ -1,0 +1,370 @@
+---
+title: API Security
+description: Rate limiting, API keys, input validation, and API security best practices.
+---
+
+# API Security
+
+Protect your API endpoints from abuse and unauthorized access with these security measures.
+
+---
+
+## Rate Limiting
+
+### Setup with Upstash
+
+```bash
+npm install @upstash/ratelimit @upstash/redis
+```
+
+```typescript
+// src/lib/security/rate-limit.ts
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+// Create rate limiter
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+// Different rate limits for different endpoints
+export const rateLimiters = {
+  // General API: 100 requests per minute
+  api: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(100, '1 m'),
+    prefix: 'ratelimit:api',
+  }),
+
+  // Auth endpoints: 5 requests per minute
+  auth: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(5, '1 m'),
+    prefix: 'ratelimit:auth',
+  }),
+
+  // AI endpoints: 20 requests per minute
+  ai: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(20, '1 m'),
+    prefix: 'ratelimit:ai',
+  }),
+
+  // Expensive operations: 10 per hour
+  expensive: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, '1 h'),
+    prefix: 'ratelimit:expensive',
+  }),
+};
+```
+
+### Rate Limit Middleware
+
+```typescript
+// src/middleware/rate-limit.ts
+import { rateLimiters } from '@/lib/security/rate-limit';
+import { NextResponse } from 'next/server';
+
+export async function rateLimit(
+  req: Request,
+  type: keyof typeof rateLimiters = 'api'
+) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ?? 'anonymous';
+  const limiter = rateLimiters[type];
+
+  const { success, limit, remaining, reset } = await limiter.limit(ip);
+
+  const headers = {
+    'X-RateLimit-Limit': limit.toString(),
+    'X-RateLimit-Remaining': remaining.toString(),
+    'X-RateLimit-Reset': reset.toString(),
+  };
+
+  if (!success) {
+    return NextResponse.json(
+      { error: 'RATE_LIMITED', message: 'Too many requests' },
+      { status: 429, headers }
+    );
+  }
+
+  return { success: true, headers };
+}
+
+// Usage in API route
+export async function POST(req: Request) {
+  const rateLimitResult = await rateLimit(req, 'ai');
+  if (rateLimitResult instanceof NextResponse) {
+    return rateLimitResult;
+  }
+
+  // Continue with request...
+}
+```
+
+---
+
+## Input Validation
+
+### Zod Schemas
+
+Always validate input with Zod schemas:
+
+```typescript
+// src/lib/validations/api.ts
+import { z } from 'zod';
+
+export const createUserSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  name: z.string().min(1).max(100),
+  password: z.string().min(8).max(100),
+});
+
+export const updateProfileSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  bio: z.string().max(500).optional(),
+  website: z.string().url().optional(),
+});
+
+export const paginationSchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+```
+
+### Validation Helper
+
+```typescript
+// src/lib/api/validate.ts
+import { z } from 'zod';
+import { NextResponse } from 'next/server';
+
+export async function validateRequest<T extends z.ZodSchema>(
+  req: Request,
+  schema: T
+): Promise<z.infer<T> | NextResponse> {
+  try {
+    const body = await req.json();
+    return schema.parse(body);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          error: 'VALIDATION_ERROR',
+          message: 'Invalid request body',
+          details: error.errors,
+        },
+        { status: 400 }
+      );
+    }
+    throw error;
+  }
+}
+
+// Usage
+export async function POST(req: Request) {
+  const data = await validateRequest(req, createUserSchema);
+  if (data instanceof NextResponse) return data;
+
+  // data is now typed and validated
+  const user = await createUser(data);
+}
+```
+
+---
+
+## API Keys
+
+### Key Generation
+
+```typescript
+// src/lib/api-keys/generate.ts
+import { randomBytes, createHash } from 'crypto';
+
+export function generateApiKey(): {
+  key: string;
+  hash: string;
+  prefix: string;
+} {
+  // Generate random key
+  const key = `sk_live_${randomBytes(24).toString('base64url')}`;
+
+  // Create hash for storage (never store plain key)
+  const hash = createHash('sha256').update(key).digest('hex');
+
+  // Prefix for identification
+  const prefix = key.slice(0, 12);
+
+  return { key, hash, prefix };
+}
+
+// Usage
+const { key, hash, prefix } = generateApiKey();
+await prisma.apiKey.create({
+  data: {
+    userId,
+    hash,
+    prefix,
+    name: 'Production API Key',
+  },
+});
+// Return key to user ONCE, then never show again
+```
+
+### Key Verification
+
+```typescript
+// src/lib/api-keys/verify.ts
+import { createHash } from 'crypto';
+
+export async function verifyApiKey(key: string): Promise<{
+  valid: boolean;
+  userId?: string;
+  scopes?: string[];
+}> {
+  const hash = createHash('sha256').update(key).digest('hex');
+
+  const apiKey = await prisma.apiKey.findUnique({
+    where: { hash },
+    include: { user: true },
+  });
+
+  if (!apiKey || apiKey.revokedAt) {
+    return { valid: false };
+  }
+
+  // Update last used
+  await prisma.apiKey.update({
+    where: { id: apiKey.id },
+    data: { lastUsedAt: new Date() },
+  });
+
+  return {
+    valid: true,
+    userId: apiKey.userId,
+    scopes: apiKey.scopes,
+  };
+}
+```
+
+### API Key Middleware
+
+```typescript
+// src/middleware/api-key.ts
+import { verifyApiKey } from '@/lib/api-keys/verify';
+
+export async function authenticateApiKey(req: Request) {
+  const authHeader = req.headers.get('authorization');
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json(
+      { error: 'UNAUTHORIZED', message: 'Missing API key' },
+      { status: 401 }
+    );
+  }
+
+  const key = authHeader.slice(7);
+  const result = await verifyApiKey(key);
+
+  if (!result.valid) {
+    return NextResponse.json(
+      { error: 'UNAUTHORIZED', message: 'Invalid API key' },
+      { status: 401 }
+    );
+  }
+
+  return { userId: result.userId, scopes: result.scopes };
+}
+```
+
+---
+
+## Request Signing
+
+For webhook security, sign requests:
+
+```typescript
+// src/lib/webhooks/sign.ts
+import { createHmac } from 'crypto';
+
+export function signPayload(payload: string, secret: string): string {
+  return createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+}
+
+export function verifySignature(
+  payload: string,
+  signature: string,
+  secret: string
+): boolean {
+  const expected = signPayload(payload, secret);
+  return signature === `sha256=${expected}`;
+}
+```
+
+---
+
+## Security Headers for API
+
+```typescript
+// src/lib/api/headers.ts
+export const securityHeaders = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Content-Security-Policy': "default-src 'none'",
+  'Cache-Control': 'no-store',
+  'Pragma': 'no-cache',
+};
+
+// Apply to responses
+export function withSecurityHeaders(response: NextResponse) {
+  Object.entries(securityHeaders).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+  return response;
+}
+```
+
+---
+
+## CORS Configuration
+
+```typescript
+// src/lib/api/cors.ts
+const ALLOWED_ORIGINS = [
+  'https://your-app.com',
+  'https://admin.your-app.com',
+];
+
+export function cors(req: Request) {
+  const origin = req.headers.get('origin');
+
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+    return new Response(null, { status: 403 });
+  }
+
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Max-Age': '86400',
+  };
+}
+```
+
+---
+
+## API Security Checklist
+
+- [ ] Rate limiting on all endpoints
+- [ ] Input validation with Zod
+- [ ] Authentication required for protected routes
+- [ ] API key rotation capability
+- [ ] Request logging for audit trail
+- [ ] CORS properly configured
+- [ ] No sensitive data in error messages
+- [ ] HTTPS only in production
+- [ ] Request size limits configured
+- [ ] SQL injection prevention (use Prisma)

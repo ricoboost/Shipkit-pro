@@ -1,0 +1,194 @@
+---
+title: Configuration des Paiements
+description: Configurez le traitement des paiements avec Stripe, Lemon Squeezy ou Polar.
+---
+
+# Configuration des Paiements
+
+La commande de configuration des paiements vous aide à configurer votre fournisseur de paiement et les endpoints webhook.
+
+## Démarrage Rapide
+
+```bash
+npm run setup:payments
+```
+
+## Fournisseurs Supportés
+
+### Stripe
+
+Traitement de paiements standard de l'industrie avec abonnements.
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider stripe
+```
+
+**Variables d'environnement requises :**
+- `STRIPE_SECRET_KEY` - Clé secrète (`sk_test_...` ou `sk_live_...`)
+- `STRIPE_PUBLISHABLE_KEY` - Clé publiable (`pk_test_...` ou `pk_live_...`)
+- `STRIPE_WEBHOOK_SECRET` - Secret de signature webhook (`whsec_...`)
+
+**Optionnelles :**
+- `STRIPE_PRICE_ID_BASIC` - ID de prix du plan basique
+- `STRIPE_PRICE_ID_PRO` - ID de prix du plan pro
+- `STRIPE_PRICE_ID_ENTERPRISE` - ID de prix du plan enterprise
+
+### Lemon Squeezy
+
+Paiements tout-en-un avec gestion automatique des taxes.
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider lemonsqueezy
+```
+
+**Variables d'environnement requises :**
+- `LEMONSQUEEZY_API_KEY` - Clé API des Paramètres
+- `LEMONSQUEEZY_STORE_ID` - Votre ID de boutique
+- `LEMONSQUEEZY_WEBHOOK_SECRET` - Secret de signature webhook
+
+### Polar
+
+Paiements adaptés à l'open source pour les développeurs.
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider polar
+```
+
+**Variables d'environnement requises :**
+- `POLAR_ACCESS_TOKEN` - Token d'accès personnel
+- `POLAR_ORGANIZATION_ID` - Votre ID d'organisation
+- `POLAR_WEBHOOK_SECRET` - Secret de signature webhook
+
+### Sans Paiements
+
+Ignorer entièrement la configuration des paiements :
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider none
+```
+
+## Guide de Configuration Stripe
+
+### 1. Créer un Compte Stripe
+
+1. Inscrivez-vous sur [stripe.com](https://stripe.com)
+2. Complétez la vérification de compte pour les paiements en production
+
+### 2. Obtenir les Clés API
+
+1. Allez dans **Développeurs > Clés API**
+2. Copiez votre **Clé publiable** et **Clé secrète**
+3. Utilisez les clés de test pour le développement (`sk_test_...`, `pk_test_...`)
+
+### 3. Créer des Produits
+
+1. Allez dans **Produits** dans le Tableau de bord Stripe
+2. Créez des produits pour chaque plan (Basique, Pro, Enterprise)
+3. Ajoutez des prix récurrents (mensuel/annuel)
+4. Copiez l'**ID de Prix** pour chaque plan
+
+### 4. Configurer les Webhooks
+
+#### Développement Local
+
+Utilisez Stripe CLI pour transférer les webhooks :
+
+```bash
+# Installer Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# Se connecter à Stripe
+stripe login
+
+# Transférer les webhooks vers le serveur local
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+Copiez le secret de signature webhook (`whsec_...`) dans votre `.env`.
+
+#### Production
+
+1. Allez dans **Développeurs > Webhooks**
+2. Ajoutez un endpoint : `https://votredomaine.com/api/webhooks/stripe`
+3. Sélectionnez les événements :
+   - `checkout.session.completed`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+   - `invoice.payment_succeeded`
+   - `invoice.payment_failed`
+4. Copiez le secret de signature
+
+### 5. Création Rapide de Produits
+
+Créez des produits de test avec Stripe CLI :
+
+```bash
+# Créer un plan Basique
+stripe products create \
+  --name="Plan Basique" \
+  --default-price-data.unit-amount=999 \
+  --default-price-data.currency=usd \
+  --default-price-data.recurring.interval=month
+
+# Créer un plan Pro
+stripe products create \
+  --name="Plan Pro" \
+  --default-price-data.unit-amount=2999 \
+  --default-price-data.currency=usd \
+  --default-price-data.recurring.interval=month
+```
+
+## Ce que la Configuration Fait
+
+1. **Demande le fournisseur** - Sélectionnez Stripe, Lemon Squeezy, Polar ou aucun
+2. **Met à jour `.env`** - Définit la variable `PAYMENTS_PROVIDER`
+3. **Configure les identifiants** - Aide à définir les clés API
+4. **Affiche l'URL webhook** - Fournit l'endpoint pour la configuration webhook
+
+## Changer de Fournisseur
+
+La variable d'environnement `PAYMENTS_PROVIDER` contrôle quel fournisseur est actif :
+
+```bash
+PAYMENTS_PROVIDER="stripe"  # ou "lemonsqueezy" ou "polar"
+```
+
+## Tester les Paiements
+
+### Cartes de Test Stripe
+
+| Numéro de Carte | Description |
+|-----------------|-------------|
+| `4242 4242 4242 4242` | Paiement réussi |
+| `4000 0000 0000 3220` | Authentification 3D Secure |
+| `4000 0000 0000 9995` | Refusée |
+
+Utilisez n'importe quelle date d'expiration future et n'importe quel CVC à 3 chiffres.
+
+### Tester les Webhooks
+
+Avec Stripe CLI en cours d'exécution, déclenchez des événements de test :
+
+```bash
+stripe trigger checkout.session.completed
+stripe trigger customer.subscription.created
+```
+
+## Dépannage
+
+### "Échec de vérification de signature webhook"
+
+Assurez-vous que `STRIPE_WEBHOOK_SECRET` correspond au secret de :
+- Sortie Stripe CLI (développement local)
+- Paramètres de l'endpoint webhook (production)
+
+### "Prix non trouvé"
+
+Vérifiez que les IDs de prix dans votre `.env` correspondent aux IDs dans le Tableau de bord Stripe.
+
+### "Clé API invalide"
+
+Vérifiez que vous utilisez le bon type de clé :
+- Clés de test pour le développement (`sk_test_...`)
+- Clés en production pour la production (`sk_live_...`)

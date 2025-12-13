@@ -1,0 +1,151 @@
+---
+title: Two-Factor Authentication
+description: Secure your application with TOTP-based two-factor authentication.
+---
+
+# Two-Factor Authentication
+
+ShipKit includes built-in two-factor authentication (2FA) using Time-based One-Time Passwords (TOTP).
+
+## Features
+
+- TOTP-based authentication (Google Authenticator, Authy, etc.)
+- QR code setup flow
+- Backup codes for account recovery
+- Secure session management
+- User-friendly enable/disable flow
+
+## How It Works
+
+1. User enables 2FA in security settings
+2. QR code is generated with a unique secret
+3. User scans QR code with authenticator app
+4. User enters verification code to confirm setup
+5. Backup codes are generated and displayed once
+6. Future logins require 2FA code after password
+
+## Database Schema
+
+The 2FA feature adds fields to your User model:
+
+```prisma
+model User {
+  // ... existing fields
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String?
+  backupCodes      String[] @default([])
+}
+```
+
+## API Endpoints
+
+### Setup 2FA
+
+```typescript
+POST /api/auth/2fa/setup
+
+// Response
+{
+  "qrCode": "data:image/png;base64,...",
+  "secret": "JBSWY3DPEHPK3PXP",
+  "backupCodes": ["abc123", "def456", ...]
+}
+```
+
+### Verify 2FA Setup
+
+```typescript
+POST /api/auth/2fa/verify
+{
+  "code": "123456"
+}
+
+// Response
+{
+  "success": true,
+  "message": "2FA enabled successfully"
+}
+```
+
+### Authenticate with 2FA
+
+```typescript
+POST /api/auth/2fa/authenticate
+{
+  "code": "123456"
+  // OR
+  "backupCode": "abc123"
+}
+```
+
+### Disable 2FA
+
+```typescript
+POST /api/auth/2fa/disable
+{
+  "code": "123456"
+}
+```
+
+## Usage
+
+### Enable 2FA in Security Settings
+
+```tsx
+import { TwoFactorSetup } from '@/components/auth/two-factor-setup';
+
+export default function SecuritySettings() {
+  return (
+    <div>
+      <h2>Two-Factor Authentication</h2>
+      <TwoFactorSetup />
+    </div>
+  );
+}
+```
+
+### Check 2FA Status
+
+```typescript
+import { auth } from '@/lib/auth';
+
+const session = await auth.getSession();
+const has2FA = session?.user?.twoFactorEnabled;
+```
+
+## Security Best Practices
+
+1. **Store secrets securely**: 2FA secrets are encrypted in the database
+2. **Backup codes**: Generated using cryptographically secure random values
+3. **Rate limiting**: API endpoints are rate-limited to prevent brute force
+4. **Session handling**: 2FA verification is required per session
+
+## Environment Variables
+
+No additional environment variables are required. 2FA uses your existing `NEXTAUTH_SECRET` for encryption.
+
+## Customization
+
+### Custom QR Code Styling
+
+```typescript
+// src/lib/auth/two-factor.ts
+export const generate2FASecret = async (email: string) => {
+  const secret = authenticator.generateSecret();
+  const otpauth = authenticator.keyuri(
+    email,
+    'YourAppName', // Customize app name
+    secret
+  );
+  // ...
+};
+```
+
+### Backup Code Length
+
+```typescript
+// Adjust backup code generation
+const generateBackupCodes = (count = 10, length = 8) => {
+  // ...
+};
+```

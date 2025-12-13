@@ -1,0 +1,1345 @@
+{
+  "common": {
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "create": "Criar",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "confirm": "Confirmar",
+    "close": "Fechar"
+  },
+  "auth": {
+    "signIn": "Entrar",
+    "signUp": "Cadastrar",
+    "signOut": "Sair",
+    "email": "E-mail",
+    "password": "Senha",
+    "confirmPassword": "Confirmar senha",
+    "name": "Nome completo",
+    "forgotPassword": "Esqueceu a senha?",
+    "noAccount": "Não tem uma conta?",
+    "hasAccount": "Já tem uma conta?",
+    "createAccount": "Criar conta",
+    "orContinueWith": "Ou continuar com",
+    "invalidCredentials": "E-mail ou senha inválidos",
+    "emailRequired": "E-mail é obrigatório",
+    "passwordRequired": "Senha é obrigatória",
+    "passwordMinLength": "A senha deve ter pelo menos 8 caracteres",
+    "passwordsMatch": "As senhas devem ser iguais",
+    "verifyEmail": "Verifique seu e-mail",
+    "verifyEmailSent": "Enviamos um link de verificação para seu e-mail",
+    "resetPassword": "Redefinir senha",
+    "resetPasswordSent": "Link de redefinição enviado para seu e-mail",
+    "newPassword": "Nova senha",
+    "referralCode": "Código de indicação (opcional)",
+    "twoFactor": {
+      "title": "Autenticação de Dois Fatores",
+      "description": "Adicione uma camada extra de segurança à sua conta",
+      "enabled": "2FA está ativado",
+      "disabled": "2FA está desativado",
+      "enable": "Ativar 2FA",
+      "disable": "Desativar 2FA",
+      "setup": {
+        "title": "Configurar Autenticação de Dois Fatores",
+        "step1": "Instale um app autenticador",
+        "step1Desc": "Baixe o Google Authenticator, Authy ou qualquer app compatível com TOTP",
+        "step2": "Escaneie o código QR",
+        "step2Desc": "Escaneie este código QR com seu app autenticador",
+        "step3": "Digite o código de verificação",
+        "step3Desc": "Digite o código de 6 dígitos do seu app autenticador",
+        "manualEntry": "Não consegue escanear? Digite este código manualmente:",
+        "backupCodes": "Códigos de Backup",
+        "backupCodesDesc": "Guarde estes códigos em um local seguro. Cada código só pode ser usado uma vez.",
+        "backupCodesWarning": "Estes códigos não serão mostrados novamente!",
+        "verify": "Verificar e Ativar",
+        "verifying": "Verificando..."
+      },
+      "verify": {
+        "title": "Digite o Código de Verificação",
+        "description": "Digite o código de 6 dígitos do seu app autenticador",
+        "code": "Código de verificação",
+        "codePlaceholder": "000000",
+        "useBackupCode": "Usar código de backup",
+        "useAuthenticator": "Usar app autenticador",
+        "backupCode": "Código de backup",
+        "backupCodePlaceholder": "Digite o código de backup",
+        "submit": "Verificar",
+        "submitting": "Verificando...",
+        "invalidCode": "Código de verificação inválido",
+        "invalidBackupCode": "Código de backup inválido"
+      },
+      "disable": {
+        "title": "Desativar Autenticação de Dois Fatores",
+        "description": "Digite seu código de verificação para desativar o 2FA",
+        "warning": "Isso tornará sua conta menos segura",
+        "confirm": "Desativar 2FA",
+        "confirming": "Desativando..."
+      },
+      "success": {
+        "enabled": "Autenticação de dois fatores foi ativada",
+        "disabled": "Autenticação de dois fatores foi desativada"
+      },
+      "error": {
+        "setupFailed": "Falha ao configurar 2FA",
+        "verifyFailed": "Falha ao verificar código",
+        "disableFailed": "Falha ao desativar 2FA"
+      }
+    }
+  },
+  "nav": {
+    "home": "Início",
+    "features": "Recursos",
+    "pricing": "Preços",
+    "docs": "Documentação",
+    "blog": "Blog",
+    "dashboard": "Painel",
+    "settings": "Configurações",
+    "profile": "Perfil",
+    "billing": "Faturamento",
+    "team": "Equipe",
+    "admin": "Admin"
+  },
+  "landing": {
+    "hero": {
+      "title": "Construa seu SaaS mais rápido",
+      "subtitle": "O boilerplate definitivo com IA nativa para aplicações web modernas",
+      "cta": "Começar",
+      "secondaryCta": "Ver demo"
+    },
+    "features": {
+      "title": "Tudo que você precisa",
+      "subtitle": "Construído com as melhores ferramentas e práticas",
+      "auth": {
+        "title": "Autenticação",
+        "description": "Múltiplos provedores de auth com OAuth, links mágicos e credenciais"
+      },
+      "payments": {
+        "title": "Pagamentos",
+        "description": "Stripe, LemonSqueezy ou Polar - troque com uma única variável de ambiente"
+      },
+      "ai": {
+        "title": "Integração de IA",
+        "description": "OpenRouter e Vercel AI SDK com uso baseado em créditos"
+      },
+      "teams": {
+        "title": "Organizações",
+        "description": "Multi-tenancy com equipes, funções e permissões"
+      },
+      "security": {
+        "title": "Segurança Empresarial",
+        "description": "Autenticação de dois fatores, segredos criptografados e sessões seguras"
+      },
+      "testing": {
+        "title": "Suite de Testes",
+        "description": "Vitest para testes unitários e Playwright para testes end-to-end"
+      },
+      "cicd": {
+        "title": "Pipeline CI/CD",
+        "description": "GitHub Actions para testes automatizados, linting e deployments"
+      },
+      "monitoring": {
+        "title": "Monitoramento de Erros",
+        "description": "Integração Sentry com replay de sessão e rastreamento de performance"
+      },
+      "docker": {
+        "title": "Pronto para Docker",
+        "description": "Configuração Docker pronta para produção com builds multi-estágio"
+      },
+      "seo": {
+        "title": "Otimizado para SEO",
+        "description": "Sitemap dinâmico, robots.txt e meta tags para mecanismos de busca"
+      }
+    },
+    "pricing": {
+      "title": "Preços simples e transparentes",
+      "subtitle": "Escolha o plano que se adapta às suas necessidades",
+      "monthly": "Mensal",
+      "yearly": "Anual",
+      "popular": "Mais popular",
+      "perMonth": "/mês",
+      "getStarted": "Começar"
+    },
+    "testimonials": {
+      "title": "Amado pelos desenvolvedores",
+      "subtitle": "Veja o que outros estão dizendo"
+    },
+    "cta": {
+      "title": "Pronto para lançar?",
+      "subtitle": "Comece a construir seu SaaS hoje",
+      "button": "Obter ShipKit agora"
+    }
+  },
+  "dashboard": {
+    "title": "Painel",
+    "welcome": "Bem-vindo de volta",
+    "welcomeBack": "Bem-vindo de volta, {name}!",
+    "there": "aí",
+    "overview": "Visão geral",
+    "accountOverview": "Aqui está o que está acontecendo com sua conta hoje.",
+    "stats": {
+      "totalUsers": "Total de usuários",
+      "revenue": "Receita",
+      "activeSubscriptions": "Assinaturas ativas",
+      "creditsUsed": "Créditos usados",
+      "creditsRemaining": "Créditos Restantes",
+      "aiRequests": "Solicitações de IA",
+      "teamMembers": "Membros da Equipe",
+      "currentPlan": "Plano Atual"
+    },
+    "fromLastMonth": "desde o mês passado",
+    "quickActions": "Ações Rápidas",
+    "actions": {
+      "aiPlayground": "Playground de IA",
+      "aiPlaygroundDesc": "Teste modelos e prompts de IA",
+      "documentation": "Documentação",
+      "documentationDesc": "Aprenda a usar o ShipKit",
+      "settings": "Configurações",
+      "settingsDesc": "Gerencie sua conta",
+      "getHelp": "Obter Ajuda",
+      "getHelpDesc": "Contatar suporte"
+    },
+    "goTo": "Ir para {page}",
+    "recentActivity": "Atividade Recente",
+    "recentActivityDesc": "Suas últimas ações e atualizações",
+    "noRecentActivity": "Nenhuma atividade recente",
+    "startUsing": "Comece a usar o ShipKit para ver sua atividade aqui",
+    "tryAiPlayground": "Experimentar Playground de IA"
+  },
+  "settings": {
+    "title": "Configurações",
+    "description": "Gerencie as configurações e preferências da sua conta",
+    "manage": "Gerenciar {section}",
+    "sections": {
+      "profile": "Perfil",
+      "profileDesc": "Gerencie suas informações pessoais",
+      "billing": "Faturamento",
+      "billingDesc": "Gerencie sua assinatura e métodos de pagamento",
+      "apiKeys": "Chaves de API",
+      "apiKeysDesc": "Gerencie suas chaves de API para integrações externas",
+      "security": "Segurança",
+      "securityDesc": "Gerencie sua senha e configurações de segurança"
+    },
+    "security": {
+      "title": "Segurança",
+      "description": "Gerencie sua senha e configurações de segurança",
+      "password": {
+        "title": "Senha",
+        "description": "Altere sua senha para manter sua conta segura",
+        "current": "Senha atual",
+        "new": "Nova senha",
+        "confirm": "Confirmar nova senha",
+        "update": "Atualizar senha",
+        "updating": "Atualizando...",
+        "updated": "Senha atualizada com sucesso",
+        "error": "Falha ao atualizar senha",
+        "mismatch": "As senhas não coincidem",
+        "requirements": "A senha deve ter pelo menos 8 caracteres"
+      },
+      "twoFactor": {
+        "title": "Autenticação de Dois Fatores",
+        "description": "Adicione uma camada extra de segurança usando um app autenticador",
+        "status": "Status",
+        "enabled": "Ativado",
+        "disabled": "Desativado",
+        "enable": "Ativar 2FA",
+        "disable": "Desativar 2FA",
+        "manage": "Gerenciar 2FA"
+      },
+      "sessions": {
+        "title": "Sessões Ativas",
+        "description": "Gerencie suas sessões ativas em todos os dispositivos",
+        "current": "Sessão atual",
+        "lastActive": "Última atividade {time}",
+        "revoke": "Revogar",
+        "revokeAll": "Revogar todas as outras sessões",
+        "revokeSuccess": "Sessão revogada com sucesso",
+        "revokeAllSuccess": "Todas as outras sessões revogadas"
+      },
+      "activityLog": {
+        "title": "Atividade de Segurança",
+        "description": "Eventos de segurança recentes na sua conta",
+        "loginSuccess": "Login bem-sucedido",
+        "loginFailed": "Tentativa de login falhou",
+        "passwordChanged": "Senha alterada",
+        "twoFactorEnabled": "2FA ativado",
+        "twoFactorDisabled": "2FA desativado",
+        "noActivity": "Nenhuma atividade de segurança recente"
+      }
+    },
+    "notifications": {
+      "title": "Notificações",
+      "description": "Escolha quais notificações você deseja receber",
+      "email": "Notificações por e-mail",
+      "emailDesc": "Receba atualizações por e-mail sobre sua conta",
+      "marketing": "E-mails de marketing",
+      "marketingDesc": "Receba e-mails sobre novos recursos e ofertas",
+      "security": "Alertas de segurança",
+      "securityDesc": "Seja notificado sobre eventos de segurança",
+      "updates": "Atualizações do produto"
+    },
+    "dangerZone": {
+      "title": "Zona de Perigo",
+      "description": "Ações irreversíveis e destrutivas",
+      "deleteAccount": "Excluir conta",
+      "deleteAccountDesc": "Exclua permanentemente sua conta e todos os dados",
+      "deleteButton": "Excluir Conta"
+    },
+    "profile": {
+      "title": "Perfil",
+      "description": "Gerencie suas informações pessoais",
+      "avatar": "Avatar",
+      "avatarDesc": "Clique no avatar para fazer upload de um personalizado dos seus arquivos.",
+      "changeAvatar": "Alterar Avatar",
+      "avatarFormats": "JPG, GIF ou PNG. Máximo 1MB.",
+      "details": "Detalhes do Perfil",
+      "detailsDesc": "Atualize suas informações pessoais",
+      "displayName": "Nome de exibição",
+      "fullName": "Nome completo",
+      "namePlaceholder": "João Silva",
+      "email": "E-mail",
+      "emailPlaceholder": "joao@exemplo.com",
+      "emailDisabled": "O e-mail não pode ser alterado aqui",
+      "bio": "Bio",
+      "bioPlaceholder": "Conte-nos um pouco sobre você",
+      "saveChanges": "Salvar Alterações",
+      "saved": "Perfil atualizado com sucesso",
+      "updateSuccess": "Perfil atualizado com sucesso",
+      "updateError": "Falha ao atualizar perfil"
+    },
+    "account": {
+      "title": "Conta",
+      "description": "Gerencie as configurações da sua conta",
+      "email": "Endereço de e-mail",
+      "changeEmail": "Alterar e-mail",
+      "password": "Senha",
+      "changePassword": "Alterar senha",
+      "deleteAccount": "Excluir conta",
+      "deleteWarning": "Esta ação não pode ser desfeita"
+    },
+    "billing": {
+      "title": "Faturamento",
+      "description": "Gerencie sua assinatura e métodos de pagamento",
+      "currentPlan": "Plano Atual",
+      "currentPlanDesc": "Você está atualmente no plano {plan}",
+      "status": {
+        "active": "Ativo",
+        "canceled": "Cancelado",
+        "past_due": "Vencido",
+        "trialing": "Em Teste"
+      },
+      "changePlan": "Alterar Plano",
+      "cancel": "Cancelar",
+      "nextBilling": "Próxima data de cobrança: {date}",
+      "creditsUsage": "Uso de Créditos",
+      "creditsUsageDesc": "Seu uso de créditos de IA neste período de faturamento",
+      "creditsUsed": "{used} / {total} créditos usados",
+      "buyMoreCredits": "Comprar Mais Créditos",
+      "viewUsageHistory": "Ver Histórico de Uso",
+      "paymentMethod": "Método de Pagamento",
+      "paymentMethodDesc": "Gerencie seus métodos de pagamento",
+      "expires": "Expira em {date}",
+      "update": "Atualizar",
+      "updatePayment": "Atualizar método de pagamento",
+      "billingHistory": "Histórico de Faturamento",
+      "billingHistoryDesc": "Baixe suas faturas anteriores",
+      "invoiceStatus": {
+        "paid": "Pago",
+        "pending": "Pendente",
+        "failed": "Falhou"
+      },
+      "viewAllInvoices": "Ver Todas as Faturas",
+      "viewInvoices": "Ver faturas",
+      "cancelSubscription": "Cancelar assinatura",
+      "upgrade": "Fazer upgrade do plano",
+      "usage": "Uso",
+      "credits": "Créditos restantes"
+    },
+    "apiKeys": {
+      "title": "Chaves de API",
+      "description": "Gerencie suas chaves de API para integrações externas",
+      "createNewKey": "Criar Nova Chave",
+      "createApiKey": "Criar Chave de API",
+      "createKeyDesc": "Crie uma nova chave de API para sua aplicação.",
+      "keyCreatedDesc": "Sua chave de API foi criada. Copie agora - você não poderá vê-la novamente.",
+      "copyApiKey": "Copiar Chave de API",
+      "keyName": "Nome da Chave",
+      "keyNamePlaceholder": "ex: Chave de API de Produção",
+      "done": "Concluído",
+      "cancel": "Cancelar",
+      "createKey": "Criar Chave",
+      "yourApiKeys": "Suas Chaves de API",
+      "apiKeysDesc": "Essas chaves permitem acesso à sua conta via API",
+      "noApiKeys": "Nenhuma chave de API",
+      "createFirstKey": "Crie sua primeira chave de API para começar",
+      "neverUsed": "Nunca usada",
+      "created": "Criada em {date}",
+      "lastUsed": "Última vez usada em {date}",
+      "deleteApiKey": "Excluir Chave de API",
+      "deleteKeyDesc": "Tem certeza de que deseja excluir \"{name}\"? Esta ação não pode ser desfeita e qualquer aplicação usando esta chave deixará de funcionar.",
+      "delete": "Excluir",
+      "copied": "Copiado para a área de transferência",
+      "enterKeyName": "Por favor, insira um nome para a chave",
+      "keyCreated": "Chave de API criada",
+      "createError": "Falha ao criar chave de API",
+      "keyDeleted": "Chave de API excluída",
+      "deleteError": "Falha ao excluir chave de API",
+      "apiUsage": "Uso da API",
+      "apiUsageDesc": "Como usar suas chaves de API",
+      "includeInHeaders": "Incluir nos cabeçalhos da requisição:",
+      "exampleCurl": "Exemplo de requisição cURL:"
+    },
+    "team": {
+      "title": "Equipe",
+      "description": "Gerencie os membros da sua equipe",
+      "members": "Membros da equipe",
+      "inviteMember": "Convidar membro",
+      "role": "Função",
+      "owner": "Proprietário",
+      "admin": "Admin",
+      "member": "Membro",
+      "pending": "Pendente",
+      "remove": "Remover",
+      "leave": "Sair da equipe"
+    },
+    "api": {
+      "title": "Chaves de API",
+      "description": "Gerencie suas chaves de API",
+      "create": "Criar nova chave",
+      "name": "Nome da chave",
+      "key": "Chave de API",
+      "created": "Criada",
+      "lastUsed": "Último uso",
+      "revoke": "Revogar"
+    }
+  },
+  "errors": {
+    "notFound": "Página não encontrada",
+    "notFoundDescription": "A página que você está procurando não existe",
+    "serverError": "Erro do servidor",
+    "serverErrorDescription": "Algo deu errado do nosso lado",
+    "unauthorized": "Não autorizado",
+    "unauthorizedDescription": "Você não tem permissão para acessar esta página",
+    "goHome": "Ir para a página inicial",
+    "global": {
+      "title": "Algo deu errado!",
+      "description": "Pedimos desculpas pelo inconveniente. Ocorreu um erro inesperado. Nossa equipe foi notificada e está trabalhando para corrigir o problema.",
+      "tryAgain": "Tentar novamente",
+      "goHome": "Ir para a página inicial",
+      "errorId": "ID do Erro: {digest}"
+    }
+  },
+  "sidebar": {
+    "sections": {
+      "overview": "Visão Geral",
+      "ai": "IA",
+      "team": "Equipe",
+      "settings": "Configurações",
+      "admin": "Admin"
+    },
+    "items": {
+      "dashboard": "Painel",
+      "analytics": "Análises",
+      "aiPlayground": "Playground de IA",
+      "usage": "Uso",
+      "team": "Equipe",
+      "profile": "Perfil",
+      "billing": "Faturamento",
+      "apiKeys": "Chaves API",
+      "security": "Segurança",
+      "settings": "Configurações",
+      "adminPanel": "Painel Admin",
+      "users": "Usuários"
+    }
+  },
+  "footer": {
+    "product": "Produto",
+    "company": "Empresa",
+    "legal": "Legal",
+    "social": "Social",
+    "copyright": "Todos os direitos reservados"
+  },
+"admin": {
+    "sidebar": {
+      "admin": "Admin",
+      "overview": "Visão geral",
+      "users": "Usuários",
+      "organizations": "Organizações",
+      "subscriptions": "Assinaturas",
+      "waitlist": "Lista de espera",
+      "pageBuilder": "Construtor de páginas",
+      "analytics": "Análises",
+      "themeBuilder": "Construtor de temas",
+      "settings": "Configurações",
+      "exitAdmin": "Sair do Admin"
+    },
+    "settings": {
+      "title": "Configurações",
+      "description": "Gerenciar flags de recursos, configurações do site e configuração de provedores",
+      "featureFlags": {
+        "title": "Flags de recursos",
+        "description": "Ativar ou desativar recursos em toda a aplicação",
+        "waitlistMode": "Modo lista de espera",
+        "waitlistModeDesc": "Habilitar modo lista de espera para novos cadastros",
+        "maintenanceMode": "Modo manutenção",
+        "maintenanceModeDesc": "Colocar o site em modo manutenção"
+      },
+      "siteSettings": {
+        "title": "Configurações do site",
+        "description": "Configurar nome, URL e descrição do site",
+        "siteName": "Nome do site",
+        "siteUrl": "URL do site",
+        "siteDescription": "Descrição do site"
+      },
+      "language": {
+        "title": "Configurações de idioma",
+        "description": "Configurar o idioma padrão e gerenciar idiomas disponíveis",
+        "defaultLanguage": "Idioma padrão",
+        "defaultLanguageDesc": "O idioma usado quando nenhuma preferência está definida",
+        "yourLanguage": "Seu idioma",
+        "yourLanguageDesc": "Alterar sua preferência de idioma atual",
+        "availableLanguages": "Idiomas disponíveis",
+        "availableLanguagesDesc": "Idiomas configurados para sua aplicação"
+      },
+      "providers": {
+        "title": "Configuração de provedores",
+        "description": "Selecionar provedores para autenticação, pagamentos e IA"
+      }
+    },
+    "overview": {
+      "title": "Painel",
+      "description": "Visão geral das métricas e atividades da sua aplicação",
+      "totalUsers": "Total de usuários",
+      "thisWeek": "esta semana",
+      "activeSubscriptions": "Assinaturas ativas",
+      "trialing": "em teste",
+      "monthlyRevenue": "Receita mensal",
+      "fromLastMonth": "desde o mês passado",
+      "aiRequests": "Requisições de IA",
+      "tokensUsed": "tokens usados",
+      "recentSignups": "Cadastros recentes",
+      "viewAll": "Ver tudo",
+      "anonymous": "Anônimo",
+      "noRecentSignups": "Nenhum cadastro recente",
+      "recentSubscriptionChanges": "Alterações recentes em assinaturas",
+      "noRecentChanges": "Nenhuma alteração recente",
+      "recentAIUsage": "Uso recente de IA",
+      "latestAIRequests": "Últimas requisições de IA de todos os usuários",
+      "tokens": "tokens",
+      "credits": "créditos",
+      "noRecentAIUsage": "Nenhum uso recente de IA"
+    },
+    "users": {
+      "title": "Usuários",
+      "description": "Gerenciar contas de usuário e permissões",
+      "searchPlaceholder": "Pesquisar usuários por email ou nome...",
+      "allRoles": "Todos os papéis",
+      "allStatus": "Todos os status",
+      "allPlans": "Todos os planos",
+      "noUsersFound": "Nenhum usuário encontrado",
+      "showing": "Mostrando {start}-{end} de {total}",
+      "previous": "Anterior",
+      "next": "Próximo",
+      "user": "Usuário",
+      "status": "Status",
+      "plan": "Plano",
+      "credits": "Créditos",
+      "aiUsage": "Uso de IA",
+      "role": "Papel",
+      "joined": "Cadastrado",
+      "view": "Ver",
+      "usersCount": "Usuários ({count})",
+      "manageAccounts": "Gerenciar contas de usuário",
+      "selected": "{count} selecionados",
+      "bulkActions": "Ações em massa",
+      "activateSelected": "Ativar selecionados",
+      "suspendSelected": "Suspender selecionados",
+      "banSelected": "Banir selecionados",
+      "exportSelected": "Exportar selecionados (CSV)",
+      "anonymous": "Anônimo",
+      "apply": "Aplicar",
+      "clear": "Limpar",
+      "active": "Ativo",
+      "suspended": "Suspenso",
+      "banned": "Banido",
+      "admin": "Admin",
+      "free": "Grátis",
+      "starter": "Inicial",
+      "pro": "Pro",
+      "enterprise": "Empresarial",
+      "banSelectedUsers": "Banir usuários selecionados",
+      "suspendSelectedUsers": "Suspender usuários selecionados",
+      "activateSelectedUsers": "Ativar usuários selecionados",
+      "banDescription": "Isso banirá permanentemente {count} usuário(s). Eles não poderão fazer login.",
+      "suspendDescription": "Isso suspenderá temporariamente {count} usuário(s). Eles podem ser reativados depois.",
+      "activateDescription": "Isso reativará {count} usuário(s), restaurando seu acesso.",
+      "cancel": "Cancelar",
+      "processing": "Processando...",
+      "confirmActivate": "Confirmar ativação",
+      "confirmSuspend": "Confirmar suspensão",
+      "confirmBan": "Confirmar banimento"
+    },
+    "organizations": {
+      "title": "Organizações",
+      "description": "Gerenciar organizações, membros e assinaturas",
+      "searchPlaceholder": "Pesquisar organizações...",
+      "allPlans": "Todos os planos",
+      "noOrganizationsFound": "Nenhuma organização encontrada"
+    },
+    "subscriptions": {
+      "title": "Assinaturas",
+      "description": "Ver e gerenciar assinaturas de clientes",
+      "subscriptionsCount": "Assinaturas ({count})",
+      "manageSubscriptions": "Gerenciar assinaturas de clientes",
+      "customer": "Cliente",
+      "plan": "Plano",
+      "status": "Status",
+      "provider": "Provedor",
+      "currentPeriod": "Período atual",
+      "created": "Criado",
+      "manage": "Gerenciar",
+      "noSubscriptions": "Nenhuma assinatura encontrada",
+      "allStatus": "Todos os status",
+      "active": "Ativo",
+      "trialing": "Em teste",
+      "pastDue": "Vencido",
+      "canceled": "Cancelado",
+      "allPlans": "Todos os planos",
+      "starter": "Inicial",
+      "pro": "Pro",
+      "enterprise": "Empresarial",
+      "anonymous": "Anônimo",
+      "showing": "Mostrando {start}-{end} de {total}",
+      "previous": "Anterior",
+      "next": "Próximo"
+    },
+    "waitlist": {
+      "title": "Lista de espera",
+      "description": "Gerenciar assinantes de newsletter e cadastros na lista de espera",
+      "totalSubscribers": "Total de assinantes",
+      "confirmed": "Confirmados",
+      "pending": "Pendentes",
+      "unsubscribed": "Cancelados",
+      "thisWeek": "Esta semana",
+      "searchPlaceholder": "Pesquisar assinantes...",
+      "allStatus": "Todos os status",
+      "allSources": "Todas as fontes",
+      "allTags": "Todas as tags"
+    },
+    "analytics": {
+      "title": "Análises",
+      "description": "Métricas de uso e insights de negócio",
+      "aiUsage": "Uso de IA",
+      "apiUsageStats": "Estatísticas de uso de API",
+      "totalRequests": "Total de requisições",
+      "totalTokens": "Total de tokens",
+      "creditsUsed": "Créditos usados",
+      "topAIModels": "Principais modelos de IA",
+      "topModelsDesc": "Modelos mais usados nos últimos 30 dias",
+      "requests": "requisições",
+      "noData": "Nenhum dado disponível",
+      "newsletter": "Newsletter",
+      "subscriberStats": "Estatísticas de assinantes",
+      "totalSubscribers": "Total de assinantes",
+      "confirmed": "Confirmados",
+      "unconfirmed": "Não confirmados",
+      "newThisWeek": "Novos esta semana",
+      "bySource": "Por fonte",
+      "userGrowth": "Crescimento de usuários",
+      "userAcquisition": "Métricas de aquisição de usuários",
+      "totalUsers": "Total de usuários",
+      "newThisMonth": "Novos este mês",
+      "conversionRate": "Taxa de conversão",
+      "revenue": "Receita",
+      "monthlyRecurring": "Receita mensal recorrente",
+      "mrr": "MRR",
+      "lastMonth": "Mês passado",
+      "growth": "Crescimento",
+      "activeSubscriptionsByPlan": "Assinaturas ativas por plano",
+      "active": "Ativo",
+      "trialing": "Em teste"
+    },
+    "theme": {
+      "title": "Construtor de temas",
+      "description": "Personalize a aparência visual da sua aplicação",
+      "copy": "Copiar",
+      "copied": "Copiado!",
+      "export": "Exportar",
+      "reset": "Redefinir",
+      "saveTheme": "Salvar tema",
+      "saving": "Salvando...",
+      "unsavedChanges": "Você tem alterações não salvas. Clique em \"Salvar tema\" para aplicá-las globalmente.",
+      "presets": "Predefinições",
+      "themeInfo": "Informações do tema",
+      "themeName": "Nome do tema",
+      "editingMode": "Modo de edição",
+      "light": "Claro",
+      "dark": "Escuro",
+      "customize": "Personalizar",
+      "fineTuneColors": "Ajustar cores e estilos para o modo",
+      "mode": "modo",
+      "colors": "Cores",
+      "borderRadius": "Raio da borda",
+      "brandColors": "Cores da marca",
+      "primary": "Primária",
+      "primaryDesc": "Cor principal para botões e links",
+      "secondary": "Secundária",
+      "secondaryDesc": "Cor de apoio para elementos menos proeminentes",
+      "accent": "Destaque",
+      "accentDesc": "Cor de destaque para elementos especiais",
+      "semanticColors": "Cores semânticas",
+      "destructive": "Destrutiva",
+      "destructiveDesc": "Cor para erros e ações perigosas",
+      "muted": "Suave",
+      "mutedDesc": "Fundo sutil para elementos inativos",
+      "surfaceColors": "Cores de superfície",
+      "background": "Fundo",
+      "backgroundDesc": "Fundo principal da página",
+      "foreground": "Primeiro plano",
+      "foregroundDesc": "Cor principal do texto",
+      "card": "Cartão",
+      "cardDesc": "Fundos de cartões e painéis",
+      "popover": "Popover",
+      "popoverDesc": "Fundos de menus suspensos",
+      "uiColors": "Cores de UI",
+      "border": "Borda",
+      "borderDesc": "Cor de borda para inputs e divisores",
+      "input": "Input",
+      "inputDesc": "Cor de borda de campos de entrada",
+      "ring": "Anel",
+      "ringDesc": "Cor do anel de foco",
+      "radiusSharp": "Angular",
+      "radiusSubtle": "Sutil",
+      "radiusMedium": "Médio",
+      "radiusRounded": "Arredondado",
+      "radiusFull": "Completo",
+      "livePreview": "Visualização ao vivo",
+      "livePreviewDesc": "Veja como seu tema fica com componentes reais",
+      "buttons": "Botões",
+      "badges": "Badges",
+      "formElements": "Elementos de formulário",
+      "textInput": "Campo de texto",
+      "toggleSwitch": "Interruptor",
+      "alerts": "Alertas",
+      "alertMessage": "Esta é uma mensagem de alerta informativa.",
+      "cards": "Cartões",
+      "defaultCard": "Cartão padrão",
+      "defaultCardDesc": "Cartão padrão com fundo padrão.",
+      "primaryCard": "Cartão primário",
+      "primaryCardDesc": "Cartão com fundo primário.",
+      "mutedCard": "Cartão suave",
+      "mutedCardDesc": "Cartão com fundo suave.",
+      "themeSaved": "Tema salvo com sucesso!",
+      "themeSaveFailed": "Falha ao salvar tema",
+      "themeReset": "Tema redefinido para o padrão",
+      "themeResetFailed": "Falha ao redefinir tema",
+      "themeExported": "Tema exportado!",
+      "cssCopied": "CSS copiado para a área de transferência!"
+    },
+    "common": {
+      "loading": "Carregando...",
+      "search": "Pesquisar",
+      "filter": "Filtrar",
+      "actions": "Ações",
+      "edit": "Editar",
+      "delete": "Excluir",
+      "save": "Salvar",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "showing": "Mostrando",
+      "of": "de",
+      "previous": "Anterior",
+      "next": "Próximo",
+      "noResults": "Nenhum resultado encontrado",
+      "anonymous": "Anônimo"
+    }
+  },
+  "home": {
+    "nav": {
+      "docs": "Documentação",
+      "dashboard": "Painel"
+    },
+    "welcome": {
+      "badge": "Configuração Concluída",
+      "title": "Bem-vindo ao ShipKit",
+      "titlePrefix": "Bem-vindo ao",
+      "titleWithName": "Bem-vindo, {name}!",
+      "description": "Tudo pronto para criar algo incrível. Programe com seu assistente de IA favorito ou explore a documentação para começar."
+    },
+    "bento": {
+      "quickActions": {
+        "title": "Ações Rápidas",
+        "dashboard": {
+          "title": "Painel",
+          "description": "Ver métricas e atividade da aplicação"
+        },
+        "docs": {
+          "title": "Documentação",
+          "description": "Aprenda a personalizar e estender o ShipKit"
+        },
+        "settings": {
+          "title": "Configurações",
+          "description": "Configure sua conta e preferências"
+        },
+        "adminPanel": {
+          "title": "Painel Admin",
+          "description": "Gerencie usuários, configurações e sistema"
+        },
+        "themeBuilder": {
+          "title": "Construtor de Temas",
+          "description": "Personalize cores e estilos do seu app"
+        },
+        "waitlistBuilder": {
+          "title": "Construtor de Waitlist",
+          "description": "Crie e gerencie sua página de espera"
+        }
+      },
+      "features": {
+        "title": "Recursos Incluídos",
+        "auth": {
+          "title": "Auth Multi-Provedor",
+          "description": "Autenticação flexível com múltiplos provedores",
+          "h1": "NextAuth, Supabase ou Better Auth",
+          "h2": "OAuth, magic links, credenciais",
+          "h3": "2FA integrado com TOTP"
+        },
+        "payments": {
+          "title": "Pagamentos Flexíveis",
+          "description": "Aceite pagamentos com seu provedor preferido",
+          "h1": "Stripe, LemonSqueezy ou Polar",
+          "h2": "Assinaturas e pagamentos únicos",
+          "h3": "Sistema de créditos por uso"
+        },
+        "ai": {
+          "title": "Integração de IA",
+          "description": "Capacidades de IA prontas para usar",
+          "h1": "OpenRouter + Vercel AI SDK",
+          "h2": "Rastreamento de uso por créditos"
+        },
+        "teams": {
+          "title": "Organizações",
+          "description": "Arquitetura multi-tenant",
+          "h1": "Equipes com funções e permissões",
+          "h2": "Convites de membros"
+        },
+        "database": {
+          "title": "Banco de Dados Pronto",
+          "description": "Configuração de BD para produção",
+          "h1": "Prisma ORM incluído",
+          "h2": "Supabase, Neon ou PlanetScale"
+        },
+        "i18n": {
+          "title": "Internacionalização",
+          "description": "Alcance global incluído",
+          "h1": "7 idiomas incluídos",
+          "h2": "Fácil adicionar mais"
+        },
+        "theming": {
+          "title": "Temas Visuais",
+          "description": "Sistema de design personalizável",
+          "h1": "Construtor de temas integrado",
+          "h2": "Componentes shadcn/ui"
+        },
+        "api": {
+          "title": "Rotas de API",
+          "description": "Infraestrutura de API segura",
+          "h1": "API RESTful com rate limiting",
+          "h2": "Gerenciamento de chaves de API"
+        },
+        "security": {
+          "title": "Segurança Empresarial",
+          "description": "Melhores práticas de segurança",
+          "h1": "Autenticação de dois fatores",
+          "h2": "Secrets e sessões criptografados"
+        },
+        "testing": {
+          "title": "Suite de Testes",
+          "description": "Configuração de testes completa",
+          "h1": "Vitest para testes unitários",
+          "h2": "Playwright para E2E"
+        },
+        "cicd": {
+          "title": "Pipeline CI/CD",
+          "description": "Deploys automatizados prontos",
+          "h1": "Workflows do GitHub Actions",
+          "h2": "Testes e linting automáticos"
+        },
+        "monitoring": {
+          "title": "Monitoramento de Erros",
+          "description": "Rastreie problemas em produção",
+          "h1": "Integração com Sentry",
+          "h2": "Replay de sessões e performance"
+        },
+        "docker": {
+          "title": "Docker Pronto",
+          "description": "Deploy em qualquer lugar com containers",
+          "h1": "Dockerfile de produção",
+          "h2": "Builds multi-stage"
+        },
+        "seo": {
+          "title": "SEO Otimizado",
+          "description": "Pronto para buscadores",
+          "h1": "Sitemap e robots.txt dinâmicos",
+          "h2": "Gerenciamento de meta tags"
+        },
+        "email": {
+          "title": "Sistema de Email",
+          "description": "Email transacional pronto",
+          "h1": "Templates React Email",
+          "h2": "Integração com Resend"
+        },
+        "analytics": {
+          "title": "Painel de Analytics",
+          "description": "Entenda seus usuários",
+          "h1": "Analytics admin integrado",
+          "h2": "Métricas de usuários e receita"
+        }
+      },
+      "gettingStarted": {
+        "title": "Pronto para personalizar?",
+        "description": "Consulte a documentação para aprender a personalizar o ShipKit para suas necessidades.",
+        "viewDocs": "Ver Documentação",
+        "viewSource": "Código Fonte"
+      }
+    },
+    "footer": {
+      "tagline": "ShipKit - Lance seu SaaS mais rápido"
+    }
+  },
+  "onboarding": {
+    "meta": {
+      "title": "Configuração - ShipKit",
+      "description": "Configure sua aplicação ShipKit"
+    },
+    "sidebar": {
+      "setup": "Configuração",
+      "complete": "concluído",
+      "step": "Passo",
+      "of": "de",
+      "completed": "concluído"
+    },
+    "navigation": {
+      "back": "Voltar",
+      "next": "Continuar",
+      "finish": "Finalizar Configuração",
+      "skip": "Pular",
+      "stepOf": "Passo {current} de {total}"
+    },
+    "steps": {
+      "env": "Ambiente",
+      "envDesc": "Configurar arquivo .env",
+      "database": "Banco de Dados",
+      "databaseDesc": "Conectar banco de dados",
+      "auth": "Autenticação",
+      "authDesc": "Configurar auth",
+      "payments": "Pagamentos",
+      "paymentsDesc": "Configurar pagamentos",
+      "admin": "Admin",
+      "adminDesc": "Criar usuário admin"
+    },
+    "env": {
+      "badge": "Ambiente",
+      "title": "Configuração do Ambiente",
+      "description": "Configure suas variáveis de ambiente para começar.",
+      "status": {
+        "checking": "Verificando ambiente...",
+        "checkingDesc": "Verificando seu arquivo .env.local",
+        "valid": "Ambiente Configurado",
+        "validDesc": "Todas as variáveis de ambiente necessárias estão definidas.",
+        "missing": "Configuração Faltando",
+        "missingDesc": "Algumas variáveis de ambiente necessárias estão faltando."
+      },
+      "missing": {
+        "title": "Variáveis faltando"
+      },
+      "configured": {
+        "title": "Configuradas"
+      },
+      "template": {
+        "title": "Modelo de Ambiente",
+        "copy": "Copiar Modelo",
+        "copied": "Copiado!",
+        "instruction": "Copie este modelo para seu arquivo .env.local e preencha os valores."
+      },
+      "providers": {
+        "title": "Obter um banco de dados",
+        "getDb": "Começar"
+      },
+      "refresh": "Verificar novamente",
+      "help": {
+        "title": "Precisa de ajuda?",
+        "description": "Consulte a documentação para instruções detalhadas de configuração."
+      }
+    },
+    "database": {
+      "badge": "Banco de Dados",
+      "title": "Conexão com Banco de Dados",
+      "description": "Conecte-se ao seu banco de dados para armazenar dados da aplicação.",
+      "status": {
+        "checking": "Testando conexão...",
+        "checkingDesc": "Tentando conectar ao seu banco de dados",
+        "connected": "Banco de Dados Conectado",
+        "connectedDesc": "Conexão bem-sucedida com seu banco de dados.",
+        "notConnected": "Conexão Falhou",
+        "notConnectedDesc": "Não foi possível conectar ao seu banco de dados."
+      },
+      "testConnection": "Testar Conexão",
+      "troubleshooting": {
+        "title": "Solução de problemas"
+      },
+      "migration": {
+        "title": "Executar Migrações",
+        "description": "Envie seu schema para o banco de dados para criar as tabelas necessárias."
+      },
+      "docs": "Documentação",
+      "docsDesc": "Saiba mais sobre configuração de banco de dados",
+      "success": {
+        "title": "Banco de Dados Pronto",
+        "description": "Seu banco de dados está conectado e pronto para uso."
+      }
+    },
+    "auth": {
+      "badge": "Autenticação",
+      "title": "Configuração de Autenticação",
+      "description": "Configure a autenticação para proteger sua aplicação.",
+      "status": {
+        "checking": "Verificando config de auth...",
+        "checkingDesc": "Verificando configuração de autenticação",
+        "configured": "Auth Configurado",
+        "configuredDesc": "A autenticação está corretamente configurada.",
+        "notConfigured": "Auth Não Configurado",
+        "notConfiguredDesc": "AUTH_SECRET é necessário para autenticação."
+      },
+      "refresh": "Verificar novamente",
+      "methods": {
+        "title": "Métodos de Autenticação",
+        "email": {
+          "title": "Email e Senha",
+          "desc": "Autenticação tradicional com email e senha"
+        },
+        "2fa": {
+          "title": "Auth de Dois Fatores",
+          "desc": "Autenticação de dois fatores baseada em TOTP"
+        },
+        "available": "Disponível",
+        "builtin": "Integrado"
+      },
+      "oauth": {
+        "title": "Provedores OAuth",
+        "configured": "Configurado",
+        "notConfigured": "Não configurado",
+        "optional": "Provedores OAuth são opcionais. Configure-os para habilitar login social."
+      },
+      "info": {
+        "title": "Nota de Segurança",
+        "description": "Gere um AUTH_SECRET seguro usando: openssl rand -base64 32"
+      }
+    },
+    "payments": {
+      "badge": "Pagamentos",
+      "optional": "Opcional",
+      "title": "Configuração de Pagamentos",
+      "description": "Configure o processamento de pagamentos para aceitar pagamentos dos seus clientes.",
+      "skip": {
+        "title": "Pular por enquanto",
+        "description": "Você pode configurar pagamentos depois na página de configurações.",
+        "button": "Pular"
+      },
+      "providers": {
+        "title": "Provedores de Pagamento",
+        "configured": "Configurado",
+        "required": "Variáveis env necessárias",
+        "getKeys": "Obter chaves de API"
+      },
+      "refresh": "Verificar novamente",
+      "warning": {
+        "title": "Modo de Teste",
+        "description": "Use chaves de API de teste durante o desenvolvimento. Mude para chaves de produção para produção."
+      },
+      "status": {
+        "ready": "Pagamentos Prontos",
+        "readyDesc": "{count} provedor(es) de pagamento configurado(s)",
+        "notConfigured": "Sem Provedores de Pagamento",
+        "notConfiguredDesc": "Configure pelo menos um provedor para aceitar pagamentos."
+      }
+    },
+    "admin": {
+      "badge": "Configuração de Admin",
+      "title": "Criar Conta de Administrador",
+      "description": "Crie o primeiro usuário administrador para gerenciar sua aplicação.",
+      "form": {
+        "name": "Nome Completo",
+        "namePlaceholder": "João Silva",
+        "email": "Email",
+        "emailPlaceholder": "admin@exemplo.com",
+        "password": "Senha",
+        "passwordPlaceholder": "Crie uma senha forte",
+        "confirmPassword": "Confirmar Senha",
+        "confirmPasswordPlaceholder": "Confirme sua senha",
+        "submit": "Criar Conta de Admin",
+        "creating": "Criando conta..."
+      },
+      "password": {
+        "weak": "Fraca",
+        "medium": "Média",
+        "strong": "Forte"
+      },
+      "errors": {
+        "nameTooShort": "O nome deve ter pelo menos 2 caracteres",
+        "invalidEmail": "Por favor, insira um email válido",
+        "passwordTooShort": "A senha deve ter pelo menos 6 caracteres",
+        "passwordMismatch": "As senhas não coincidem",
+        "general": "Falha ao criar conta de admin. Por favor, tente novamente."
+      },
+      "success": {
+        "title": "Conta de Admin Criada!",
+        "description": "Sua conta de administrador foi criada com sucesso.",
+        "redirecting": "Redirecionando para a página inicial..."
+      },
+      "info": {
+        "title": "Primeiro Admin",
+        "description": "Esta conta terá acesso administrativo completo à sua aplicação."
+      }
+    }
+  },
+  "tour": {
+    "meta": {
+      "title": "Tour do Produto - ShipKit",
+      "description": "Explore os recursos do ShipKit através de um tour interativo"
+    },
+    "sidebar": {
+      "productTour": "Tour do Produto",
+      "complete": "completo",
+      "step": "Passo",
+      "of": "de",
+      "visited": "visitados"
+    },
+    "navigation": {
+      "back": "Voltar",
+      "next": "Continuar",
+      "finish": "Começar",
+      "stepOf": "Passo {current} de {total}",
+      "goToStep": "Ir para o passo"
+    },
+    "steps": {
+      "welcome": "Boas-vindas",
+      "welcomeDesc": "Descubra o ShipKit",
+      "database": "Banco de Dados",
+      "databaseDesc": "Escolha seu banco",
+      "auth": "Autenticação",
+      "authDesc": "Proteja seu app",
+      "payments": "Pagamentos",
+      "paymentsDesc": "Aceite pagamentos",
+      "launch": "Lançamento",
+      "launchDesc": "Faça o deploy"
+    },
+    "welcome": {
+      "badge": "Boas-vindas",
+      "title": "Bem-vindo ao ShipKit",
+      "description": "O boilerplate Next.js definitivo para SaaS. Construa e lance seu produto em dias, não meses.",
+      "features": {
+        "fast": {
+          "title": "Ultra Rápido",
+          "description": "Construído com Next.js 16 e Turbopack para desenvolvimento ultrarrápido"
+        },
+        "secure": {
+          "title": "Seguro por Padrão",
+          "description": "2FA, sessões criptografadas e segurança empresarial integrados"
+        },
+        "deploy": {
+          "title": "Deploy em Qualquer Lugar",
+          "description": "Deploy com um clique na Vercel, ou use Docker para qualquer plataforma"
+        }
+      },
+      "whatYouLearn": {
+        "title": "O que você vai explorar",
+        "database": "Conecte seu banco de dados (Supabase, Neon, PlanetScale)",
+        "auth": "Configure autenticação com múltiplos provedores",
+        "payments": "Aceite pagamentos com Stripe, LemonSqueezy ou Polar",
+        "launch": "Faça o deploy e comece a construir"
+      },
+      "help": {
+        "title": "Precisa de ajuda?",
+        "description": "Confira nossa documentação ou junte-se à nossa comunidade no Discord."
+      }
+    },
+    "database": {
+      "badge": "Passo 2 de 5",
+      "title": "Conecte Seu Banco de Dados",
+      "description": "Escolha um provedor de banco de dados que atenda suas necessidades. Todas as opções são totalmente suportadas com Prisma ORM.",
+      "recommended": "Recomendado",
+      "providers": {
+        "supabase": {
+          "features": {
+            "postgres": "PostgreSQL",
+            "realtime": "Tempo Real",
+            "auth": "Auth Integrado"
+          }
+        },
+        "neon": {
+          "features": {
+            "serverless": "Serverless",
+            "branching": "Branches",
+            "scaling": "Auto-scaling"
+          }
+        },
+        "planetscale": {
+          "features": {
+            "mysql": "MySQL",
+            "branching": "Branches",
+            "vitess": "Vitess"
+          }
+        }
+      },
+      "nextSteps": {
+        "title": "Próximos passos",
+        "step1": "Crie uma conta e projeto no {provider}",
+        "step2": "Copie sua string de conexão",
+        "step3": "Adicione ao seu arquivo .env.local"
+      },
+      "envPreview": "Visualização"
+    },
+    "auth": {
+      "badge": "Passo 3 de 5",
+      "title": "Configure a Autenticação",
+      "description": "Escolha seu provedor de autenticação. Todas as opções suportam OAuth, magic links e mais.",
+      "providers": {
+        "nextauth": {
+          "features": {
+            "oauth": "OAuth",
+            "credentials": "Credenciais",
+            "jwt": "Sessões JWT"
+          }
+        },
+        "supabase": {
+          "features": {
+            "magic_link": "Magic Link",
+            "oauth": "OAuth",
+            "mfa": "MFA"
+          }
+        },
+        "betterauth": {
+          "features": {
+            "passkeys": "Passkeys",
+            "oauth": "OAuth",
+            "session": "Sessões"
+          }
+        }
+      },
+      "oauthProviders": {
+        "title": "Provedores OAuth Suportados",
+        "more": "mais 10"
+      },
+      "twoFactor": {
+        "title": "Autenticação de Dois Fatores Incluída",
+        "description": "ShipKit inclui 2FA integrado com suporte TOTP para segurança aprimorada."
+      },
+      "envPreview": "Visualização"
+    },
+    "payments": {
+      "badge": "Passo 4 de 5",
+      "title": "Aceite Pagamentos",
+      "description": "Escolha um provedor de pagamentos. Troque entre provedores com uma única variável de ambiente.",
+      "providers": {
+        "stripe": {
+          "features": {
+            "subscriptions": "Assinaturas",
+            "one_time": "Pagamento Único",
+            "webhooks": "Webhooks"
+          }
+        },
+        "lemonsqueezy": {
+          "features": {
+            "subscriptions": "Assinaturas",
+            "licenses": "Licenças",
+            "taxes": "Gestão de Impostos"
+          }
+        },
+        "polar": {
+          "features": {
+            "subscriptions": "Assinaturas",
+            "donations": "Doações",
+            "github": "Integração GitHub"
+          }
+        }
+      },
+      "pricingFeatures": {
+        "title": "Recursos de Preços Incluídos",
+        "subscriptions": {
+          "title": "Assinaturas",
+          "description": "Cobrança recorrente com gestão de planos"
+        },
+        "credits": {
+          "title": "Créditos de Uso",
+          "description": "Sistema de créditos de IA pague-conforme-usa"
+        },
+        "webhooks": {
+          "title": "Webhooks",
+          "description": "Sincronização automática de assinaturas"
+        }
+      },
+      "nextSteps": {
+        "title": "Próximos passos",
+        "step1": "Crie uma conta no {provider}",
+        "step2": "Configure seus produtos e preços",
+        "step3": "Adicione suas chaves API ao .env.local"
+      },
+      "envPreview": "Visualização"
+    },
+    "launch": {
+      "badge": "Passo 5 de 5",
+      "title": "Você Está Pronto para Lançar!",
+      "description": "Parabéns! Você explorou todos os recursos principais. Agora é hora de construir algo incrível.",
+      "celebration": {
+        "title": "Parabéns!",
+        "description": "Você completou o tour do produto. Agora está pronto para construir seu SaaS."
+      },
+      "checklist": {
+        "title": "Configuração Completa",
+        "database": "Configuração do banco de dados entendida",
+        "auth": "Opções de autenticação exploradas",
+        "payments": "Integração de pagamentos revisada",
+        "ready": "Pronto para lançar!"
+      },
+      "terminal": {
+        "title": "Iniciar desenvolvimento",
+        "copy": "Copiar"
+      },
+      "deploy": {
+        "vercel": "Deploy na Vercel",
+        "github": "Ver no GitHub"
+      },
+      "cta": {
+        "title": "Pronto para construir?",
+        "description": "Comece a construir seu SaaS hoje com ShipKit.",
+        "getStarted": "Começar",
+        "readDocs": "Ler Docs"
+      }
+    }
+  },
+  "maintenance": {
+    "title": "Em Manutenção",
+    "description": "Estamos realizando manutenção programada para melhorar sua experiência.",
+    "checkBack": "Por favor, volte em breve. Retornaremos em instantes.",
+    "backToHome": "Voltar ao Início"
+  },
+  "joinWaitlist": {
+    "title": "Entrar na Lista de Espera",
+    "description": "Atualmente aceitamos novos usuários apenas por convite. Entre na lista de espera para ser notificado quando abrirmos.",
+    "emailPlaceholder": "Digite seu email",
+    "joinButton": "Entrar na Lista",
+    "submitting": "Entrando...",
+    "invalidEmail": "Por favor, digite um email válido",
+    "successTitle": "Você está na lista!",
+    "successDescription": "Notificaremos você quando uma vaga abrir. Obrigado pelo interesse!",
+    "errorMessage": "Algo deu errado. Por favor, tente novamente.",
+    "backToHome": "Voltar ao Início"
+  }
+}

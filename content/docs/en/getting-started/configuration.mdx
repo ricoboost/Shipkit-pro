@@ -1,0 +1,141 @@
+---
+title: Configuration
+description: Configure ShipKit environment variables and provider settings.
+---
+
+# Configuration
+
+ShipKit uses environment variables for configuration, making it easy to switch between providers and environments.
+
+## Environment Variables
+
+Create a `.env` file in the root of your project with the following variables:
+
+### App Configuration
+
+```bash
+# App URL (required)
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_APP_NAME="ShipKit"
+```
+
+### Database
+
+```bash
+# PostgreSQL (recommended)
+DATABASE_URL="postgresql://user:password@localhost:5432/shipkit"
+
+# Or MongoDB
+# MONGODB_URI="mongodb+srv://user:password@cluster.mongodb.net/shipkit"
+```
+
+### Authentication Provider
+
+Choose one auth provider:
+
+```bash
+# Options: nextauth | supabase | betterauth
+AUTH_PROVIDER="nextauth"
+
+# NextAuth.js
+AUTH_SECRET="your-secret-key"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Supabase (if using)
+NEXT_PUBLIC_SUPABASE_URL="your-supabase-url"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+
+# OAuth Providers (optional)
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+```
+
+### Payment Provider
+
+Choose one payment provider:
+
+```bash
+# Options: stripe | lemonsqueezy | polar
+PAYMENT_PROVIDER="stripe"
+
+# Stripe
+STRIPE_SECRET_KEY=""
+STRIPE_PUBLISHABLE_KEY=""
+STRIPE_WEBHOOK_SECRET=""
+
+# LemonSqueezy
+LEMONSQUEEZY_API_KEY=""
+LEMONSQUEEZY_STORE_ID=""
+LEMONSQUEEZY_WEBHOOK_SECRET=""
+
+# Polar
+POLAR_ACCESS_TOKEN=""
+POLAR_ORGANIZATION_ID=""
+```
+
+### AI Provider
+
+```bash
+# Options: openrouter | vercel
+AI_PROVIDER="openrouter"
+
+# OpenRouter
+OPENROUTER_API_KEY=""
+
+# Vercel AI SDK / OpenAI
+OPENAI_API_KEY=""
+```
+
+### Email (Resend)
+
+```bash
+RESEND_API_KEY=""
+EMAIL_FROM="noreply@yourdomain.com"
+```
+
+## Provider Selection
+
+ShipKit uses a unified abstraction layer. Change providers by updating the environment variable:
+
+```bash
+# Switch from Stripe to LemonSqueezy
+PAYMENT_PROVIDER="lemonsqueezy"
+
+# Switch from NextAuth to Supabase
+AUTH_PROVIDER="supabase"
+```
+
+No code changes required - the abstraction layer handles the rest.
+
+## Configuration Files
+
+### `src/config/site.ts`
+
+Site-wide configuration:
+
+```typescript
+export const siteConfig = {
+  name: "ShipKit",
+  description: "Your SaaS description",
+  url: process.env.NEXT_PUBLIC_APP_URL,
+  // ...
+};
+```
+
+### `src/config/plans.ts`
+
+Subscription plans configuration. See [Payments](/docs/payments/overview) for details.
+
+## Next Steps
+
+<Cards>
+  <Card title="Authentication" href="/docs/authentication/overview">
+    Set up user authentication.
+  </Card>
+  <Card title="Payments" href="/docs/payments/overview">
+    Configure payment processing.
+  </Card>
+</Cards>

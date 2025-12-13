@@ -1,0 +1,325 @@
+---
+title: Credits API
+description: API reference for the credit system - balance, usage, and purchases.
+---
+
+# Credits API
+
+Base URL: `https://your-app.com/api/credits`
+
+The credits system enables usage-based billing for AI features and other metered services.
+
+---
+
+## Endpoints
+
+### Get Balance
+
+Get the current credit balance for the authenticated user.
+
+```http
+GET /api/credits/balance
+Authorization: Bearer <token>
+```
+
+**curl Example:**
+
+```bash
+curl https://your-app.com/api/credits/balance \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+**Response (200):**
+
+```json
+{
+  "balance": 1500,
+  "tier": "pro",
+  "monthlyAllowance": 10000,
+  "usedThisMonth": 8500,
+  "resetsAt": "2024-02-01T00:00:00.000Z"
+}
+```
+
+---
+
+### Get Usage History
+
+Get credit transaction history.
+
+```http
+GET /api/credits/history
+Authorization: Bearer <token>
+```
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `limit` | number | 20 | Max results (1-100) |
+| `offset` | number | 0 | Pagination offset |
+| `type` | string | all | Filter: `burn`, `purchase`, `grant`, `refund` |
+
+**curl Example:**
+
+```bash
+curl "https://your-app.com/api/credits/history?limit=10&type=burn" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+**Response (200):**
+
+```json
+{
+  "transactions": [
+    {
+      "id": "txn_clx1234567890",
+      "type": "BURN",
+      "amount": -10,
+      "balance_after": 1490,
+      "reason": "AI chat: gpt-4-turbo",
+      "metadata": {
+        "model": "gpt-4-turbo",
+        "tokens": 1523
+      },
+      "created_at": "2024-01-15T14:30:00.000Z"
+    },
+    {
+      "id": "txn_clx0987654321",
+      "type": "PURCHASE",
+      "amount": 2000,
+      "balance_after": 1500,
+      "reason": "Credit package: popular",
+      "metadata": {
+        "package_id": "popular",
+        "payment_id": "pi_xxx"
+      },
+      "created_at": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+  "total": 45,
+  "has_more": true
+}
+```
+
+---
+
+### Use Credits
+
+Deduct credits for a service (typically called internally).
+
+```http
+POST /api/credits/use
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `amount` | number | Yes | Credits to deduct |
+| `reason` | string | Yes | Description for ledger |
+| `metadata` | object | No | Additional context |
+
+**curl Example:**
+
+```bash
+curl -X POST https://your-app.com/api/credits/use \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 10,
+    "reason": "AI image generation",
+    "metadata": {
+      "model": "dall-e-3",
+      "size": "1024x1024"
+    }
+  }'
+```
+
+**Success Response (200):**
+
+```json
+{
+  "success": true,
+  "balance": 1490,
+  "transaction_id": "txn_clx1234567890"
+}
+```
+
+**Insufficient Credits (402):**
+
+```json
+{
+  "error": "INSUFFICIENT_CREDITS",
+  "message": "Not enough credits",
+  "required": 10,
+  "balance": 5
+}
+```
+
+---
+
+### Purchase Credits
+
+Create a checkout session to purchase credits.
+
+```http
+POST /api/credits/purchase
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `package_id` | string | Yes | Credit package ID |
+
+**Available Packages:**
+
+| Package ID | Credits | Price | Savings |
+|------------|---------|-------|---------|
+| `starter` | 500 | $5 | - |
+| `popular` | 2000 | $15 | 25% |
+| `power` | 10000 | $50 | 50% |
+
+**curl Example:**
+
+```bash
+curl -X POST https://your-app.com/api/credits/purchase \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \
+  -H "Content-Type: application/json" \
+  -d '{"package_id": "popular"}'
+```
+
+**Response (200):**
+
+```json
+{
+  "checkout_url": "https://checkout.stripe.com/c/pay/cs_xxx",
+  "session_id": "cs_xxx"
+}
+```
+
+---
+
+### Check Credit Cost
+
+Check credit cost for an action before executing.
+
+```http
+GET /api/credits/cost
+Authorization: Bearer <token>
+```
+
+**Query Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `action` | string | Action type (e.g., `ai-chat`) |
+| `model` | string | Model name (e.g., `gpt-4-turbo`) |
+
+**curl Example:**
+
+```bash
+curl "https://your-app.com/api/credits/cost?action=ai-chat&model=gpt-4-turbo" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+**Response (200):**
+
+```json
+{
+  "action": "ai-chat",
+  "model": "gpt-4-turbo",
+  "cost": 10,
+  "your_balance": 1500,
+  "can_afford": true
+}
+```
+
+---
+
+## Credit Costs Reference
+
+| Action | Model | Credits |
+|--------|-------|---------|
+| AI Chat | gpt-3.5-turbo | 1 |
+| AI Chat | gpt-4-turbo | 10 |
+| AI Chat | claude-3-sonnet | 5 |
+| AI Chat | claude-3-opus | 15 |
+| Image Generation | dall-e-3 | 20 |
+| Image Generation | stable-diffusion | 5 |
+| Document Analysis | - | 5 |
+| Code Generation | - | 10 |
+
+---
+
+## Error Codes
+
+| Code | Error | Description |
+|------|-------|-------------|
+| 400 | `INVALID_AMOUNT` | Amount must be positive |
+| 401 | `UNAUTHORIZED` | Invalid or missing token |
+| 402 | `INSUFFICIENT_CREDITS` | Not enough credits |
+| 404 | `PACKAGE_NOT_FOUND` | Invalid package ID |
+| 429 | `RATE_LIMITED` | Too many requests |
+
+---
+
+## Webhooks
+
+Credit-related webhook events:
+
+| Event | Description |
+|-------|-------------|
+| `credits.purchased` | User purchased credits |
+| `credits.depleted` | Balance reached zero |
+| `credits.low` | Balance below threshold |
+| `credits.monthly_reset` | Monthly allowance reset |
+
+See [Webhooks API](/docs/api/webhooks) for payload details.
+
+---
+
+## SDK Examples
+
+### TypeScript
+
+```typescript
+import { credits } from '@/lib/payments/credits';
+
+// Check balance
+const { balance, canAfford } = await credits.check(userId, 10);
+
+// Use credits
+if (canAfford) {
+  await credits.use(userId, 10, 'AI generation');
+}
+
+// Add credits
+await credits.add(userId, 1000, 'PURCHASE', 'Credit package');
+```
+
+### React Hook
+
+```tsx
+import { useCredits } from '@/hooks/use-credits';
+
+function CreditDisplay() {
+  const { balance, isLoading, purchase } = useCredits();
+
+  if (isLoading) return <Skeleton />;
+
+  return (
+    <div>
+      <span>{balance} credits</span>
+      <Button onClick={() => purchase('popular')}>
+        Buy More
+      </Button>
+    </div>
+  );
+}
+```

@@ -1,0 +1,142 @@
+---
+title: Modo de Mantenimiento
+description: Bloquea temporalmente el acceso público mientras realizas actualizaciones o mantenimiento.
+---
+
+# Modo de Mantenimiento
+
+ShipKit incluye una función de modo de mantenimiento que te permite bloquear temporalmente el acceso a tu aplicación mientras realizas actualizaciones, despliegues o tareas de mantenimiento críticas.
+
+## Descripción General
+
+Cuando el modo de mantenimiento está habilitado:
+
+- Todos los usuarios no administradores son redirigidos a una página de mantenimiento
+- Los administradores pueden acceder a toda la aplicación
+- Las rutas API permanecen accesibles para operaciones internas
+- Hay una opción de emergencia disponible mediante variable de entorno
+
+## Habilitar el Modo de Mantenimiento
+
+### Mediante el Panel de Administración
+
+1. Ve a **Admin** > **Configuración** > **Feature Flags**
+2. Activa **Modo de Mantenimiento**
+3. Todos los visitantes no administradores verán inmediatamente la página de mantenimiento
+
+### Mediante API
+
+```typescript
+// Habilitar modo de mantenimiento
+const response = await fetch('/api/admin/settings/flags', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ maintenanceMode: true }),
+});
+```
+
+### Mediante Base de Datos
+
+```typescript
+import { db } from '@/lib/db';
+
+await db.appConfig.upsert({
+  where: { id: 'default' },
+  update: { maintenanceMode: true },
+  create: { id: 'default', maintenanceMode: true },
+});
+```
+
+## Cómo Funciona
+
+### Aplicación del Middleware
+
+El middleware verifica el modo de mantenimiento en cada solicitud:
+
+```typescript
+// src/middleware.ts
+if (flags.maintenanceMode && !isAdmin) {
+  if (!shouldBypassMaintenance(pathname)) {
+    return NextResponse.redirect(new URL('/maintenance', request.url));
+  }
+}
+```
+
+### Rutas de Bypass
+
+Estas rutas siempre son accesibles durante el mantenimiento:
+
+- `/maintenance` - La página de mantenimiento
+- `/login` - Página de autenticación (para que los admins puedan iniciar sesión)
+- `/api/auth/*` - Rutas API de autenticación
+- `/onboarding` - Configuración inicial (si no existe un admin)
+
+### Detección de Administrador
+
+El estado de administrador se determina mediante una cookie (`shipkit-is-admin`) que se establece cuando los usuarios inician sesión.
+
+## Recuperación de Emergencia
+
+Si accidentalmente habilitas el modo de mantenimiento y no puedes acceder al panel de administración:
+
+### Opción 1: Bypass mediante Variable de Entorno
+
+Añade a tu archivo `.env`:
+
+```bash
+BYPASS_MAINTENANCE=true
+```
+
+### Opción 2: Actualización Directa de Base de Datos
+
+```bash
+npx prisma db execute --stdin <<< "UPDATE app_config SET \"maintenanceMode\" = false WHERE id = 'default';"
+```
+
+### Opción 3: Prisma Studio
+
+```bash
+npx prisma studio
+```
+
+Navega a `AppConfig` y establece `maintenanceMode` en `false`.
+
+## Personalizar la Página de Mantenimiento
+
+### Ubicación de la Página
+
+```
+src/app/[locale]/maintenance/page.tsx
+```
+
+### Traducciones
+
+El texto de la página de mantenimiento se traduce mediante el namespace `maintenance`:
+
+```json
+{
+  "maintenance": {
+    "title": "En Mantenimiento",
+    "description": "Estamos realizando mantenimiento programado.",
+    "checkBack": "Por favor, vuelve pronto.",
+    "backToHome": "Volver al Inicio"
+  }
+}
+```
+
+## Mejores Prácticas
+
+1. **Notifica a los usuarios con anticipación** - Anuncia el mantenimiento programado
+2. **Mantén el mantenimiento breve** - Minimiza la interrupción del usuario
+3. **Prueba el acceso de admin primero** - Verifica que puedes iniciar sesión como admin
+4. **Ten un plan de recuperación** - Conoce cómo usar `BYPASS_MAINTENANCE`
+5. **Usa staging primero** - Prueba el modo de mantenimiento en staging
+
+## Comparación: Mantenimiento vs Modo Waitlist
+
+| Característica | Modo Mantenimiento | Modo Waitlist |
+|----------------|-------------------|---------------|
+| Bloquea usuarios existentes | Sí | No |
+| Bloquea nuevos registros | Sí | Sí |
+| Bypass de admin | Sí | Sí |
+| Caso de uso | Actualizaciones, emergencias | Pre-lanzamiento, acceso controlado |

@@ -1,0 +1,70 @@
+---
+title: 集成
+description: 用于监控、电子邮件、存储等的第三方服务集成。
+---
+
+# 集成
+
+ShipKit与流行的第三方服务集成，提供监控、电子邮件投递、存储和缓存功能。
+
+---
+
+## 可用集成
+
+<Cards>
+  <Card title="Sentry" href="/docs/integrations/sentry">
+    错误跟踪和性能监控。
+  </Card>
+  <Card title="Resend" href="/docs/integrations/resend">
+    事务性电子邮件投递。
+  </Card>
+  <Card title="Analytics" href="/docs/integrations/analytics">
+    Google Analytics、PostHog和Plausible。
+  </Card>
+  <Card title="Upstash" href="/docs/integrations/upstash">
+    Redis缓存和速率限制。
+  </Card>
+  <Card title="存储" href="/docs/integrations/storage">
+    AWS S3、Cloudflare R2和文件上传。
+  </Card>
+</Cards>
+
+---
+
+## 快速设置指南
+
+### 基本服务
+
+| 服务 | 用途 | 必要性 |
+|------|------|--------|
+| [Sentry](/docs/integrations/sentry) | 错误跟踪 | 推荐 |
+| [Resend](/docs/integrations/resend) | 电子邮件投递 | 认证必需 |
+| [Upstash](/docs/integrations/upstash) | 速率限制 | 推荐 |
+| [Analytics](/docs/integrations/analytics) | 用户分析 | 可选 |
+| [存储](/docs/integrations/storage) | 文件上传 | 可选 |
+
+---
+
+## 环境变量
+
+根据您使用的服务添加到`.env`文件：
+
+```bash
+# Sentry - 错误跟踪
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+SENTRY_ORG=your-org
+SENTRY_PROJECT=your-project
+SENTRY_AUTH_TOKEN=sntrys_xxx
+
+# Resend - 电子邮件
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@your-domain.com
+
+# Upstash - Redis
+UPSTASH_REDIS_REST_URL=https://xxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=xxx
+
+# Analytics
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+```

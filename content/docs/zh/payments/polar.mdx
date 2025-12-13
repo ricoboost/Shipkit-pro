@@ -1,0 +1,50 @@
+---
+title: Polar
+description: 配置Polar用于专注于开源的支付。
+---
+
+# Polar设置
+
+Polar专为开源项目和开发者工具设计。
+
+## 配置
+
+```bash
+PAYMENT_PROVIDER="polar"
+POLAR_ACCESS_TOKEN="your-access-token"
+POLAR_ORGANIZATION_ID="your-org-id"
+```
+
+## 获取凭据
+
+1. 在[polar.sh](https://polar.sh)创建账户
+2. 前往 Settings > Developers
+3. 创建访问令牌
+4. 从您的仪表板获取组织ID
+
+## 特性
+
+- GitHub集成
+- 赞助层级
+- 权益管理
+- Discord集成
+
+## 实现
+
+```typescript
+// src/lib/payments/polar.ts
+import { Polar } from '@polar-sh/sdk';
+
+const polar = new Polar({ accessToken: process.env.POLAR_ACCESS_TOKEN! });
+
+export const polarProvider: PaymentProvider = {
+  async createCheckout({ priceId, userId, successUrl }) {
+    const checkout = await polar.checkouts.create({
+      productPriceId: priceId,
+      successUrl,
+      metadata: { userId },
+    });
+    return { url: checkout.url };
+  },
+};
+```

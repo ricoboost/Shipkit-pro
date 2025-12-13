@@ -1,0 +1,66 @@
+---
+title: LemonSqueezy
+description: Configurer LemonSqueezy comme votre Marchand de Référence.
+---
+
+# Configuration de LemonSqueezy
+
+LemonSqueezy agit comme Marchand de Référence, gérant les taxes et la conformité pour vous.
+
+## Configuration
+
+```bash
+PAYMENT_PROVIDER="lemonsqueezy"
+LEMONSQUEEZY_API_KEY="your-api-key"
+LEMONSQUEEZY_STORE_ID="your-store-id"
+LEMONSQUEEZY_WEBHOOK_SECRET="your-webhook-secret"
+```
+
+## Obtenir les Identifiants
+
+1. Créer un compte sur [lemonsqueezy.com](https://lemonsqueezy.com)
+2. Aller dans Settings > API
+3. Créer une clé API
+4. Obtenir l'ID de boutique depuis Settings > Stores
+5. Configurer le webhook dans Settings > Webhooks
+
+## Créer des Produits
+
+1. Aller dans Products
+2. Créer un produit pour chaque plan
+3. Configurer les variantes pour mensuel/annuel
+4. Copier les IDs de variante dans `src/config/plans.ts`
+
+## Implémentation
+
+```typescript
+// src/lib/payments/lemonsqueezy.ts
+import { lemonSqueezySetup, createCheckout } from '@lemonsqueezy/lemonsqueezy.js';
+
+lemonSqueezySetup({ apiKey: process.env.LEMONSQUEEZY_API_KEY! });
+
+export const lemonProvider: PaymentProvider = {
+  async createCheckout({ priceId, userId, successUrl }) {
+    const checkout = await createCheckout(
+      process.env.LEMONSQUEEZY_STORE_ID!,
+      priceId,
+      {
+        checkoutData: {
+          custom: { user_id: userId },
+        },
+        productOptions: {
+          redirectUrl: successUrl,
+        },
+      }
+    );
+    return { url: checkout.data.attributes.url };
+  },
+};
+```
+
+## Avantages
+
+- Gère la taxe de vente mondiale
+- Conformité TVA UE incluse
+- Pas besoin de Stripe Atlas
+- Système d'affiliation intégré

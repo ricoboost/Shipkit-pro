@@ -1,0 +1,71 @@
+---
+title: セキュリティ
+description: ShipKitアプリケーションを保護するためのベストプラクティスとガイド。
+---
+
+# セキュリティ
+
+これらのベストプラクティスとセキュリティガイドでShipKitアプリケーションを保護しましょう。
+
+---
+
+## セキュリティガイド
+
+<Cards>
+  <Card title="認証セキュリティ" href="/docs/security/authentication">
+    セッション管理、パスワードハッシュ、OAuth セキュリティ。
+  </Card>
+  <Card title="APIセキュリティ" href="/docs/security/api-security">
+    レート制限、APIキー、入力検証。
+  </Card>
+  <Card title="セキュリティヘッダー" href="/docs/security/headers">
+    CSP、HSTS、その他のHTTPセキュリティヘッダー。
+  </Card>
+  <Card title="データ保護" href="/docs/security/data-protection">
+    暗号化、PII処理、GDPRコンプライアンス。
+  </Card>
+</Cards>
+
+---
+
+## セキュリティ概要
+
+### 認証
+- ✅ コストファクター12でのbcryptハッシュ
+- ✅ 安全なセッションCookie（HttpOnly、SameSite）
+- ✅ OAuth状態パラメーター
+- ✅ 二要素認証サポート
+
+### APIセキュリティ
+- ✅ すべてのエンドポイントでレート制限
+- ✅ Zodによる入力検証
+- ✅ APIキー認証
+- ✅ Webhook署名検証
+
+### データ保護
+- ✅ 保存時暗号化（AES-256）
+- ✅ 強制HTTPS（HSTS）
+- ✅ GDPRコンプライアンス
+- ✅ データ保持ポリシー
+
+---
+
+## セキュリティチェックリスト
+
+### ローンチ前
+
+- [ ] 安全な環境変数を設定
+- [ ] HSTSでHTTPSを有効化
+- [ ] セキュリティヘッダーを設定
+- [ ] レート制限を有効化
+- [ ] すべてのAPIルートで入力検証
+- [ ] 認証シークレットをローテーション
+- [ ] データベース権限を確認
+- [ ] エラー監視を有効化（Sentry）
+
+### 継続的
+
+- [ ] 定期的なセキュリティ監査
+- [ ] 依存関係の更新
+- [ ] アクセスログの確認
+- [ ] インシデント対応計画の文書化

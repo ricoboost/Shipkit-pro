@@ -1,0 +1,158 @@
+---
+title: 设置向导
+description: 交互式设置向导引导您完成ShipKit应用程序的配置。
+---
+
+# 设置向导
+
+设置向导是配置ShipKit应用程序的最快方式。它以交互方式引导您完成每个配置步骤。
+
+## 运行向导
+
+启动交互式向导：
+
+```bash
+npm run setup
+```
+
+使用合理的默认值快速设置：
+
+```bash
+npm run setup:quick
+```
+
+跳过可选配置步骤：
+
+```bash
+npx tsx scripts/setup/wizard.ts --skip-optional
+```
+
+## 向导配置内容
+
+向导按以下顺序引导您完成这些步骤：
+
+### 0. Stack选择器（可选）
+
+选择您将使用的AI编码工具和部署策略。此步骤通过忽略未使用的配置文件来减少膨胀：
+
+- **AI工具**: Claude Code、Cursor、Windsurf（多选）
+- **部署**: Vercel或Docker/自托管
+
+[了解更多关于Stack选择器](/docs/cli/setup-stack)
+
+### 1. 环境变量（必需）
+
+生成包含所有必需配置的`.env`文件：
+
+- `DATABASE_URL` - 数据库连接字符串
+- `AUTH_SECRET` - 自动生成的加密密钥
+- `NEXT_PUBLIC_APP_URL` - 您的应用程序URL
+
+### 2. 数据库（必需）
+
+配置数据库连接。支持的提供商：
+
+- **PostgreSQL** - 标准PostgreSQL
+- **MySQL** - MySQL数据库
+- **SQLite** - 基于文件（适合开发）
+- **Supabase** - 带Supabase的PostgreSQL
+- **Neon** - 无服务器PostgreSQL
+- **PlanetScale** - 无服务器MySQL
+
+### 3. 认证（必需）
+
+设置认证提供商：
+
+- **NextAuth.js** - 灵活的自托管认证
+- **Supabase Auth** - 与Supabase集成
+- **Better Auth** - 现代类型安全认证
+
+### 4. 支付（可选）
+
+配置支付处理：
+
+- **Stripe** - 行业标准支付
+- **Lemon Squeezy** - 包含税务处理的一体化方案
+- **Polar** - 开源友好支付
+
+### 5. AI提供商（可选）
+
+设置AI/LLM集成：
+
+- **OpenAI** - GPT-4、GPT-3.5
+- **Anthropic** - Claude模型
+- **Google AI** - Gemini模型
+- **OpenRouter** - 访问100多个模型
+
+### 6. 管理员用户（可选）
+
+创建您的第一个管理员账户以访问管理面板。
+
+## 单独设置命令
+
+您也可以单独运行每个设置步骤：
+
+```bash
+# Stack选择器（减少膨胀）
+npm run setup:stack
+
+# 环境变量
+npm run setup:env
+
+# 数据库
+npm run setup:db
+
+# 认证
+npm run setup:auth
+
+# 支付
+npm run setup:payments
+
+# AI提供商
+npm run setup:ai
+
+# 管理员用户
+npm run setup:admin
+```
+
+## 设置完成后
+
+向导完成后：
+
+1. 检查您的`.env`文件
+2. 启动开发服务器：
+
+```bash
+npm run dev
+```
+
+3. 打开 [http://localhost:3000](http://localhost:3000)
+4. 登录并探索仪表板
+
+## 故障排除
+
+### 数据库连接失败
+
+确保您的数据库正在运行且连接字符串正确：
+
+```bash
+# 使用Prisma测试
+npx prisma db pull
+```
+
+### 缺少环境变量
+
+重新运行环境设置：
+
+```bash
+npm run setup:env --interactive
+```
+
+### Prisma客户端未生成
+
+手动生成Prisma客户端：
+
+```bash
+npm run db:generate
+npm run db:push
+```

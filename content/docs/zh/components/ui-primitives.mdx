@@ -1,0 +1,343 @@
+---
+title: UI 原语
+description: 基于 shadcn/ui 和 Radix UI 原语构建的核心 UI 组件
+---
+
+# UI 原语
+
+ShipKit 使用 [shadcn/ui](https://ui.shadcn.com) 作为 UI 组件的基础。这些原语是完全可自定义的,并遵循 Radix UI 设计模式。
+
+## 可用组件
+
+所有组件都位于 `src/components/ui/`:
+
+### 表单组件
+
+| 组件 | 文件 | 描述 |
+|-----------|------|-------------|
+| Button | `button.tsx` | 带变体的操作按钮 |
+| Input | `input.tsx` | 文本输入字段 |
+| Textarea | `textarea.tsx` | 多行文本输入 |
+| Select | `select.tsx` | 下拉选择 |
+| Checkbox | `checkbox.tsx` | 布尔选择 |
+| Switch | `switch.tsx` | 切换开关 |
+| Slider | `slider.tsx` | 范围滑块 |
+| Label | `label.tsx` | 表单字段标签 |
+
+### 布局组件
+
+| 组件 | 文件 | 描述 |
+|-----------|------|-------------|
+| Card | `card.tsx` | 带标题/内容/页脚的容器 |
+| Dialog | `dialog.tsx` | 模态对话框 |
+| Alert Dialog | `alert-dialog.tsx` | 确认对话框 |
+| Dropdown Menu | `dropdown-menu.tsx` | 上下文菜单 |
+| Popover | `popover.tsx` | 浮动内容 |
+| Tabs | `tabs.tsx` | 选项卡内容 |
+| Scroll Area | `scroll-area.tsx` | 自定义滚动条 |
+| Separator | `separator.tsx` | 视觉分隔符 |
+| Table | `table.tsx` | 数据表 |
+
+### 反馈组件
+
+| 组件 | 文件 | 描述 |
+|-----------|------|-------------|
+| Badge | `badge.tsx` | 状态指示器 |
+| Alert | `alert.tsx` | 内联消息 |
+| Progress | `progress.tsx` | 进度指示器 |
+| Sonner | `sonner.tsx` | Toast 通知 |
+
+### 数据显示
+
+| 组件 | 文件 | 描述 |
+|-----------|------|-------------|
+| Avatar | `avatar.tsx` | 用户头像 |
+| Icon Picker | `icon-picker.tsx` | Lucide 图标选择器 |
+
+---
+
+## Button
+
+最常用的组件,具有多种变体和尺寸。
+
+### 使用方法
+
+```tsx
+import { Button } from '@/components/ui/button';
+
+// 变体
+<Button>默认</Button>
+<Button variant="secondary">次要</Button>
+<Button variant="destructive">破坏性</Button>
+<Button variant="outline">轮廓</Button>
+<Button variant="ghost">幽灵</Button>
+<Button variant="link">链接</Button>
+
+// 尺寸
+<Button size="sm">小</Button>
+<Button size="default">默认</Button>
+<Button size="lg">大</Button>
+<Button size="icon">
+  <Icon className="h-4 w-4" />
+</Button>
+
+// 状态
+<Button disabled>禁用</Button>
+<Button asChild>
+  <Link href="/somewhere">作为链接</Link>
+</Button>
+```
+
+### 属性
+
+```typescript
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  asChild?: boolean;
+}
+```
+
+---
+
+## Card
+
+用于分组相关内容的容器组件。
+
+### 使用方法
+
+```tsx
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
+
+<Card>
+  <CardHeader>
+    <CardTitle>卡片标题</CardTitle>
+    <CardDescription>卡片描述或副标题</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>主要内容在这里</p>
+  </CardContent>
+  <CardFooter>
+    <Button>操作</Button>
+  </CardFooter>
+</Card>
+```
+
+---
+
+## Dialog
+
+用于聚焦交互的模态对话框。
+
+### 使用方法
+
+```tsx
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@/components/ui/dialog';
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button>打开对话框</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>对话框标题</DialogTitle>
+      <DialogDescription>
+        这是对话框内容的描述。
+      </DialogDescription>
+    </DialogHeader>
+    <div className="py-4">
+      对话框内容在这里
+    </div>
+    <DialogFooter>
+      <Button variant="outline">取消</Button>
+      <Button>确认</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+---
+
+## Tabs
+
+选项卡式内容导航。
+
+### 使用方法
+
+```tsx
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+<Tabs defaultValue="tab1">
+  <TabsList>
+    <TabsTrigger value="tab1">选项卡 1</TabsTrigger>
+    <TabsTrigger value="tab2">选项卡 2</TabsTrigger>
+    <TabsTrigger value="tab3">选项卡 3</TabsTrigger>
+  </TabsList>
+  <TabsContent value="tab1">选项卡 1 的内容</TabsContent>
+  <TabsContent value="tab2">选项卡 2 的内容</TabsContent>
+  <TabsContent value="tab3">选项卡 3 的内容</TabsContent>
+</Tabs>
+```
+
+---
+
+## Select
+
+下拉选择组件。
+
+### 使用方法
+
+```tsx
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+<Select>
+  <SelectTrigger className="w-[180px]">
+    <SelectValue placeholder="选择选项" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="option1">选项 1</SelectItem>
+    <SelectItem value="option2">选项 2</SelectItem>
+    <SelectItem value="option3">选项 3</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+---
+
+## Badge
+
+状态指示器和标签。
+
+### 使用方法
+
+```tsx
+import { Badge } from '@/components/ui/badge';
+
+<Badge>默认</Badge>
+<Badge variant="secondary">次要</Badge>
+<Badge variant="outline">轮廓</Badge>
+<Badge variant="destructive">破坏性</Badge>
+```
+
+---
+
+## Alert
+
+内联信息消息。
+
+### 使用方法
+
+```tsx
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal } from 'lucide-react';
+
+<Alert>
+  <Terminal className="h-4 w-4" />
+  <AlertTitle>注意!</AlertTitle>
+  <AlertDescription>
+    您可以使用 CLI 向应用添加组件。
+  </AlertDescription>
+</Alert>
+
+<Alert variant="destructive">
+  <AlertTitle>错误</AlertTitle>
+  <AlertDescription>出了点问题。</AlertDescription>
+</Alert>
+```
+
+---
+
+## Table
+
+数据表组件。
+
+### 使用方法
+
+```tsx
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
+<Table>
+  <TableCaption>用户列表</TableCaption>
+  <TableHeader>
+    <TableRow>
+      <TableHead>姓名</TableHead>
+      <TableHead>邮箱</TableHead>
+      <TableHead>角色</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>张三</TableCell>
+      <TableCell>john@example.com</TableCell>
+      <TableCell>管理员</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+---
+
+## 添加更多组件
+
+ShipKit 基于 shadcn/ui 构建,因此您可以轻松添加更多组件:
+
+```bash
+npx shadcn@latest add [component-name]
+```
+
+可用组件: accordion、breadcrumb、calendar、carousel、chart、collapsible、command、context-menu、drawer、form、hover-card、menubar、navigation-menu、pagination、radio-group、resizable、sheet、skeleton、tooltip 等。
+
+查看 [shadcn/ui 文档](https://ui.shadcn.com/docs/components)获取完整列表。
+
+---
+
+## 自定义
+
+所有组件都使用 CSS 变量进行主题化。在 `globals.css` 中自定义它们:
+
+```css
+:root {
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  /* ... */
+}
+
+.dark {
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  /* ... */
+}
+```
+
+或使用[主题构建器](/docs/components/theme-builder)进行可视化自定义。

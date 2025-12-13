@@ -1,0 +1,463 @@
+---
+title: Componentes de Recursos
+description: Mostre os recursos do seu produto com 6 variantes de layout diferentes
+---
+
+# Componentes de Recursos
+
+As seções de recursos ajudam os visitantes a entender o que torna seu produto valioso. O ShipKit inclui 6 variantes de componentes de recursos para diferentes estilos de apresentação.
+
+## Variantes Disponíveis
+
+| Variante | Melhor Para | Recurso Principal |
+|---------|----------|-------------|
+| `FeaturesGrid` | Múltiplos recursos | Grade de cartões responsiva |
+| `FeaturesListicle` | Explicações detalhadas | Formato de lista numerada |
+| `FeaturesAccordion` | Conteúdo estilo FAQ | Seções expansíveis |
+| `FeaturesTabs` | Categorias de recursos | Interface com abas e imagens |
+| `FeaturesBento` | Vitrine visual | Layout em grade bento |
+| `FeaturesComparison` | Comparações de planos | Comparação lado a lado |
+
+## Props Comuns
+
+Todos os componentes de recursos compartilham estas props base:
+
+```typescript
+interface FeaturesBaseProps {
+  title?: string;                   // Título da seção
+  subtitle?: string;                // Texto pequeno acima do título
+  description?: string;             // Texto de apoio
+  animated?: boolean;               // Ativar/desativar animações
+  colorScheme?: ColorScheme;        // Tema de cores
+  className?: string;               // Classes CSS adicionais
+}
+
+interface FeatureItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+}
+```
+
+---
+
+## FeaturesGrid
+
+A variante mais versátil exibindo recursos em uma grade de cartões responsiva.
+
+### Uso
+
+```tsx
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+import { Zap, Shield, Rocket, Heart, Star, Globe } from 'lucide-react';
+
+export function FeaturesSection() {
+  return (
+    <FeaturesGrid
+      title="Tudo o Que Você Precisa para Lançar Rápido"
+      subtitle="Recursos"
+      description="Construído com melhores práticas modernas e pronto para produção desde o primeiro dia"
+      columns={3}
+      features={[
+        {
+          title: 'Extremamente Rápido',
+          description: 'Otimizado para desempenho com Turbopack e funções edge',
+          icon: <Zap className="h-6 w-6" />,
+        },
+        {
+          title: 'Segurança Empresarial',
+          description: 'Auth integrado, limitação de taxa e cabeçalhos de segurança',
+          icon: <Shield className="h-6 w-6" />,
+        },
+        {
+          title: 'Escala Sem Esforço',
+          description: 'De zero a milhões de usuários sem mudanças no código',
+          icon: <Rocket className="h-6 w-6" />,
+        },
+        {
+          title: 'Experiência do Desenvolvedor',
+          description: 'TypeScript, ESLint, Prettier configurados de fábrica',
+          icon: <Heart className="h-6 w-6" />,
+        },
+        {
+          title: 'Pronto para IA',
+          description: 'Integração OpenRouter e Vercel AI SDK integrada',
+          icon: <Star className="h-6 w-6" />,
+        },
+        {
+          title: 'Global por Padrão',
+          description: '7 idiomas suportados com next-intl',
+          icon: <Globe className="h-6 w-6" />,
+        },
+      ]}
+      colorScheme="primary"
+    />
+  );
+}
+```
+
+### Props Adicionais
+
+```typescript
+interface FeaturesGridProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  columns?: 2 | 3 | 4;              // Colunas da grade (padrão: 3)
+}
+```
+
+---
+
+## FeaturesListicle
+
+Formato de lista numerada ideal para recursos passo a passo ou benefícios ordenados.
+
+### Uso
+
+```tsx
+import { FeaturesListicle } from '@/components/marketing/features/features-listicle';
+
+export function HowItWorks() {
+  return (
+    <FeaturesListicle
+      title="Como Funciona"
+      subtitle="Primeiros Passos"
+      features={[
+        {
+          title: 'Clone o Repositório',
+          description: 'Um comando para começar com a pilha completa',
+        },
+        {
+          title: 'Configure Seus Provedores',
+          description: 'Use nosso assistente de configuração para configurar auth, pagamentos e IA',
+        },
+        {
+          title: 'Personalize Seu Tema',
+          description: 'Use o construtor visual de temas para combinar com sua marca',
+        },
+        {
+          title: 'Implante em Produção',
+          description: 'Implantação com um clique na Vercel ou use Docker para auto-hospedagem',
+        },
+      ]}
+    />
+  );
+}
+```
+
+### Props Adicionais
+
+```typescript
+interface FeaturesListicleProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  numbered?: boolean;               // Mostrar números (padrão: true)
+  orientation?: 'vertical' | 'horizontal';
+}
+```
+
+---
+
+## FeaturesAccordion
+
+Seções de acordeão expansíveis para explicações detalhadas de recursos.
+
+### Uso
+
+```tsx
+import { FeaturesAccordion } from '@/components/marketing/features/features-accordion';
+
+export function DetailedFeatures() {
+  return (
+    <FeaturesAccordion
+      title="Recursos Detalhados"
+      features={[
+        {
+          title: 'Autenticação Multi-Provedor',
+          description: 'Suporte para NextAuth.js, Supabase Auth e Better-Auth. Alterne entre provedores com uma única variável de ambiente. Inclui OAuth, magic links e credenciais.',
+        },
+        {
+          title: 'Integração de Pagamento Flexível',
+          description: 'Integrações pré-construídas com Stripe, LemonSqueezy e Polar. Suporte para assinaturas, pagamentos únicos e cobrança baseada em uso.',
+        },
+        {
+          title: 'Arquitetura Nativa em IA',
+          description: 'Integração OpenRouter para mais de 100 modelos de IA. Vercel AI SDK para respostas em streaming. Demos integradas de chat e geração de imagens.',
+        },
+      ]}
+      defaultOpen={0}
+    />
+  );
+}
+```
+
+### Props Adicionais
+
+```typescript
+interface FeaturesAccordionProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  defaultOpen?: number;             // Índice do item inicialmente aberto
+  allowMultiple?: boolean;          // Permitir múltiplos abertos (padrão: false)
+}
+```
+
+---
+
+## FeaturesTabs
+
+Interface com abas mostrando recursos com imagens, ideal para categorias de recursos.
+
+### Uso
+
+```tsx
+import { FeaturesTabs } from '@/components/marketing/features/features-tabs';
+import { Palette, Lock, CreditCard } from 'lucide-react';
+
+export function FeatureCategories() {
+  return (
+    <FeaturesTabs
+      title="Explore Nossos Recursos"
+      tabs={[
+        {
+          id: 'theming',
+          label: 'Temas',
+          icon: <Palette className="h-4 w-4" />,
+          title: 'Construtor Visual de Temas',
+          description: 'Personalize cada aspecto da sua aplicação com nosso construtor visual de temas. Escolha entre predefinições ou crie seu próprio visual único.',
+          image: {
+            src: '/images/features/theming.png',
+            alt: 'Interface do Construtor de Temas',
+          },
+          highlights: [
+            '5 predefinições de esquemas de cores',
+            'Seletor de cores HSL',
+            'Suporte a modo claro e escuro',
+            'Exportar como CSS',
+          ],
+        },
+        {
+          id: 'auth',
+          label: 'Autenticação',
+          icon: <Lock className="h-4 w-4" />,
+          title: 'Autenticação Flexível',
+          description: 'Escolha entre múltiplos provedores de auth ou use-os juntos. Todos os principais provedores OAuth suportados.',
+          image: {
+            src: '/images/features/auth.png',
+            alt: 'Opções de Autenticação',
+          },
+          highlights: [
+            'NextAuth.js, Supabase, Better-Auth',
+            'OAuth com Google, GitHub, etc.',
+            'Magic links e credenciais',
+            'Autenticação de dois fatores',
+          ],
+        },
+        {
+          id: 'payments',
+          label: 'Pagamentos',
+          icon: <CreditCard className="h-4 w-4" />,
+          title: 'Processamento de Pagamentos',
+          description: 'Aceite pagamentos globalmente com sua escolha de processador de pagamentos. Assinaturas, pagamentos únicos e cobrança baseada em uso.',
+          image: {
+            src: '/images/features/payments.png',
+            alt: 'Integração de Pagamentos',
+          },
+          highlights: [
+            'Stripe, LemonSqueezy, Polar',
+            'Gerenciamento de assinaturas',
+            'Portal do cliente',
+            'Manipulação de webhooks',
+          ],
+        },
+      ]}
+      defaultTab="theming"
+    />
+  );
+}
+```
+
+### Props Adicionais
+
+```typescript
+interface FeatureTab {
+  id: string;
+  label: string;
+  icon?: ReactNode;
+  title: string;
+  description: string;
+  image?: { src: string; alt: string };
+  highlights?: string[];
+}
+
+interface FeaturesTabsProps extends FeaturesBaseProps {
+  tabs: FeatureTab[];
+  defaultTab?: string;              // ID da aba ativa padrão
+}
+```
+
+---
+
+## FeaturesBento
+
+Layout em grade bento para vitrines de recursos visualmente marcantes.
+
+### Uso
+
+```tsx
+import { FeaturesBento } from '@/components/marketing/features/features-bento';
+import { Zap, Shield, Rocket, Code2, Palette, Globe } from 'lucide-react';
+
+export function BentoShowcase() {
+  return (
+    <FeaturesBento
+      title="Construído para Desenvolvimento Moderno"
+      subtitle="Recursos"
+      items={[
+        {
+          title: 'Extremamente Rápido',
+          description: 'Desenvolvimento com Turbopack com HMR instantâneo',
+          icon: <Zap className="h-6 w-6" />,
+          size: 'large',
+        },
+        {
+          title: 'Seguro por Padrão',
+          description: 'Segurança de nível empresarial integrada',
+          icon: <Shield className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: 'Nativo em IA',
+          description: 'OpenRouter e Vercel AI SDK prontos',
+          icon: <Rocket className="h-6 w-6" />,
+          size: 'wide',
+        },
+        {
+          title: 'TypeScript',
+          description: 'Segurança de tipos completa em toda a pilha',
+          icon: <Code2 className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: 'Personalizável',
+          description: 'Construtor visual de temas incluído',
+          icon: <Palette className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: 'Pronto para i18n',
+          description: '7 idiomas de fábrica',
+          icon: <Globe className="h-6 w-6" />,
+          size: 'tall',
+        },
+      ]}
+    />
+  );
+}
+```
+
+### Props Adicionais
+
+```typescript
+interface BentoItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+  size?: 'default' | 'large' | 'wide' | 'tall';
+}
+
+interface FeaturesBentoProps extends FeaturesBaseProps {
+  items: BentoItem[];
+}
+```
+
+### Opções de Tamanho
+
+| Tamanho | Extensão da Grade | Melhor Para |
+|------|-----------|----------|
+| `default` | 1x1 | Recursos padrão |
+| `large` | 2x2 | Recursos principais |
+| `wide` | 2x1 | Recursos com títulos mais longos |
+| `tall` | 1x2 | Recursos com descrições mais longas |
+
+---
+
+## FeaturesComparison
+
+Tabela de comparação lado a lado para planos ou versões de produtos.
+
+### Uso
+
+```tsx
+import { FeaturesComparison } from '@/components/marketing/features/features-comparison';
+
+export function PlanComparison() {
+  return (
+    <FeaturesComparison
+      title="Compare os Planos"
+      columns={[
+        { name: 'Iniciante', price: 'Grátis' },
+        { name: 'Pro', price: 'R$19/mês', highlighted: true },
+        { name: 'Enterprise', price: 'Personalizado' },
+      ]}
+      features={[
+        { name: 'Usuários', values: ['1', 'Ilimitado', 'Ilimitado'] },
+        { name: 'Chamadas API', values: ['1.000/mês', '100.000/mês', 'Ilimitado'] },
+        { name: 'Suporte', values: ['Comunidade', 'Prioritário', '24/7 Dedicado'] },
+        { name: 'Domínio Personalizado', values: [false, true, true] },
+        { name: 'Analytics', values: [false, true, true] },
+        { name: 'SSO', values: [false, false, true] },
+      ]}
+    />
+  );
+}
+```
+
+### Props Adicionais
+
+```typescript
+interface ComparisonColumn {
+  name: string;
+  price?: string;
+  highlighted?: boolean;
+  cta?: { label: string; href: string };
+}
+
+interface ComparisonFeature {
+  name: string;
+  values: (string | boolean)[];     // Boolean renderiza como check/x
+}
+
+interface FeaturesComparisonProps extends FeaturesBaseProps {
+  columns: ComparisonColumn[];
+  features: ComparisonFeature[];
+}
+```
+
+---
+
+## Esquemas de Cores
+
+Todas as variantes de recursos suportam 5 esquemas de cores:
+
+```tsx
+<FeaturesGrid colorScheme="primary" {...props} />   // Cores de marca padrão
+<FeaturesGrid colorScheme="secondary" {...props} /> // Secundário sutil
+<FeaturesGrid colorScheme="accent" {...props} />    // Destaque chamativo
+<FeaturesGrid colorScheme="muted" {...props} />     // Neutro, discreto
+<FeaturesGrid colorScheme="destructive" {...props} /> // Estilo de aviso
+```
+
+## Animações
+
+Todos os componentes incluem animações acionadas por rolagem:
+
+```tsx
+// Ativado por padrão
+<FeaturesGrid animated={true} {...props} />
+
+// Desativar para desempenho/acessibilidade
+<FeaturesGrid animated={false} {...props} />
+```
+
+Recursos de animação:
+- **Revelação escalonada**: Itens aparecem sequencialmente
+- **Fade up**: Elementos aparecem enquanto sobem
+- **Gatilho de viewport**: Anima quando rolado para a visualização

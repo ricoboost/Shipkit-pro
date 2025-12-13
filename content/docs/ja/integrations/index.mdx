@@ -1,0 +1,70 @@
+---
+title: インテグレーション
+description: 監視、メール、ストレージなどのサードパーティサービス連携。
+---
+
+# インテグレーション
+
+ShipKitは、監視、メール配信、ストレージ、キャッシング機能を提供する人気のサードパーティサービスと統合します。
+
+---
+
+## 利用可能なインテグレーション
+
+<Cards>
+  <Card title="Sentry" href="/docs/integrations/sentry">
+    エラー追跡とパフォーマンス監視。
+  </Card>
+  <Card title="Resend" href="/docs/integrations/resend">
+    トランザクションメール配信。
+  </Card>
+  <Card title="Analytics" href="/docs/integrations/analytics">
+    Google Analytics、PostHog、Plausible。
+  </Card>
+  <Card title="Upstash" href="/docs/integrations/upstash">
+    Redisキャッシングとレート制限。
+  </Card>
+  <Card title="ストレージ" href="/docs/integrations/storage">
+    AWS S3、Cloudflare R2、ファイルアップロード。
+  </Card>
+</Cards>
+
+---
+
+## クイックセットアップガイド
+
+### 必須サービス
+
+| サービス | 目的 | 必要性 |
+|---------|------|--------|
+| [Sentry](/docs/integrations/sentry) | エラー追跡 | 推奨 |
+| [Resend](/docs/integrations/resend) | メール配信 | 認証に必要 |
+| [Upstash](/docs/integrations/upstash) | レート制限 | 推奨 |
+| [Analytics](/docs/integrations/analytics) | ユーザー分析 | オプション |
+| [ストレージ](/docs/integrations/storage) | ファイルアップロード | オプション |
+
+---
+
+## 環境変数
+
+使用するサービスに応じて、`.env`ファイルに追加してください：
+
+```bash
+# Sentry - エラー追跡
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+SENTRY_ORG=your-org
+SENTRY_PROJECT=your-project
+SENTRY_AUTH_TOKEN=sntrys_xxx
+
+# Resend - メール
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@your-domain.com
+
+# Upstash - Redis
+UPSTASH_REDIS_REST_URL=https://xxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=xxx
+
+# Analytics
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+```

@@ -1,0 +1,221 @@
+---
+title: 等待列表 & 页面构建器
+description: 使用可视化拖放编辑器创建和自定义等待列表着陆页。
+---
+
+# 等待列表 & 页面构建器
+
+ShipKit 包含完整的等待列表管理系统，配备可视化页面构建器用于创建自定义着陆页。
+
+## 概述
+
+等待列表功能允许您：
+
+- 在发布前收集邮箱注册
+- 无需代码创建精美的着陆页
+- 使用标签和分类管理订阅者
+- 将订阅者数据导出为 CSV
+- 启用等待列表模式重定向新注册
+
+## 启用等待列表模式
+
+### 通过管理面板
+
+1. 转到 **Admin** > **设置** > **Feature Flags**
+2. 开启 **等待列表模式**
+3. 新用户将被重定向到等待列表页面而不是注册页面
+
+### 通过代码
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// 启用等待列表模式
+await admin.toggleFeatureFlag('waitlistMode', true);
+
+// 禁用等待列表模式
+await admin.toggleFeatureFlag('waitlistMode', false);
+```
+
+## 页面构建器
+
+可视化页面构建器让您创建自定义等待列表着陆页。
+
+### 访问编辑器
+
+导航到 **Admin** > **Waitlist** > **编辑页面** 或直接访问 `/admin/waitlist/editor`。
+
+### 可用区块
+
+#### Hero 区块
+
+主要头部区块：
+- 徽章文本（如「即将推出」）
+- 标题和副标题
+- 订阅表单或 CTA 按钮
+- 可选的 Hero 图片
+
+#### 功能网格（Bento）
+
+展示产品功能：
+- 2、3 或 4 列布局
+- 带图标的功能卡片
+- 可自定义的背景
+
+#### 使用流程
+
+步骤说明：
+- 带图标的编号步骤
+- 水平或垂直布局
+- 自定义标题和描述
+
+#### 页脚
+
+页面页脚：
+- 版权文本
+- 导航链接
+- 社交媒体图标
+
+### 自定义区块
+
+点击任意区块选中它，然后使用右侧边栏：
+
+- **背景**: 设置纯色、渐变或图片
+- **间距**: 调整内边距和外边距
+- **可见性**: 隐藏/显示区块
+- **自定义 CSS**: 添加自定义样式
+
+### 编辑内容
+
+- 点击文本进行内联编辑
+- 修改排版（大小、粗细、颜色、对齐）
+- 更新按钮文本和样式
+- 自定义表单占位符和成功消息
+
+### 发布
+
+1. 点击 **保存** 保存更改
+2. 点击 **发布** 使页面公开
+3. 在 `/waitlist` 预览页面
+
+## 管理订阅者
+
+### 管理仪表板
+
+在 **Admin** > **Waitlist** 访问订阅者仪表板。
+
+#### 统计数据
+
+- **总订阅者**: 所有注册
+- **已确认**: 已验证的邮箱
+- **待处理**: 等待确认
+- **已取消**: 已退出
+- **本周**: 最近的注册
+
+#### 筛选
+
+按以下条件筛选订阅者：
+- 邮箱搜索
+- 状态（已确认、待处理、已取消）
+- 来源（waitlist、footer、popup）
+- 标签
+
+### 批量操作
+
+选择多个订阅者进行：
+- 添加分类标签
+- 从列表中移除
+- 导出为 CSV
+
+### 导出数据
+
+点击 **导出 CSV** 下载订阅者数据。
+
+## 订阅表单
+
+### 嵌入表单
+
+在任何位置添加订阅表单：
+
+```tsx
+import { SubscribeFormBlock } from '@/components/waitlist-builder/blocks/subscribe-form-block';
+
+<SubscribeFormBlock
+  block={{
+    id: 'form-1',
+    type: 'subscribe-form',
+    placeholder: '输入您的邮箱',
+    buttonText: '加入等待列表',
+    successMessage: '感谢您的注册！',
+    source: 'homepage',
+    tags: ['early-access'],
+  }}
+/>
+```
+
+## API 参考
+
+### 订阅
+
+```typescript
+POST /api/newsletter/subscribe
+
+// 请求
+{
+  "email": "user@example.com",
+  "source": "waitlist",
+  "tags": ["early-access"]
+}
+
+// 响应
+{
+  "success": true,
+  "isNew": true,
+  "confirmed": false
+}
+```
+
+### 取消订阅
+
+```typescript
+POST /api/newsletter/unsubscribe
+
+// 请求
+{ "email": "user@example.com" }
+
+// 响应
+{ "success": true }
+```
+
+## 库函数
+
+```typescript
+import { newsletter } from '@/lib/newsletter';
+
+// 带来源和标签订阅
+await newsletter.subscribe({
+  email: 'user@example.com',
+  source: 'waitlist',
+  tags: ['early-access', 'beta'],
+});
+
+// 获取订阅者统计
+const stats = await newsletter.getStats();
+
+// 为订阅者添加标签
+await newsletter.addTags('user@example.com', ['vip']);
+
+// 导出到 CSV
+const csv = await newsletter.exportCSV({
+  confirmedOnly: true,
+  tag: 'early-access',
+});
+```
+
+## 最佳实践
+
+1. **使用有意义的标签** - 按来源、兴趣或活动对订阅者进行分类
+2. **设置确认邮件** - 启用双重确认以获得高质量列表
+3. **自定义页面** - 使用页面构建器匹配您的品牌
+4. **监控统计** - 跟踪转化率和参与度
+5. **定期导出** - 备份您的订阅者列表

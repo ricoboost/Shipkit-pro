@@ -1,0 +1,39 @@
+---
+title: Deploy em Produção
+description: Guia completo para deploy da sua aplicação ShipKit no Vercel, Railway ou Docker.
+---
+
+# Deploy em Produção
+
+Este tutorial cobre o deploy da sua aplicação ShipKit em produção.
+
+## Opções de Deploy
+
+| Plataforma | Ideal Para | Complexidade |
+|------------|------------|--------------|
+| **Vercel** | Deploy mais rápido | Fácil |
+| **Railway** | Controle total | Médio |
+| **Docker** | Auto-hospedado | Avançado |
+
+## Opção 1: Deploy no Vercel
+
+1. Acesse [vercel.com/new](https://vercel.com/new)
+2. Importe seu repositório GitHub
+3. Configure variáveis de ambiente
+4. Clique em "Deploy"
+
+## Checklist de Produção
+
+- [ ] Novo `NEXTAUTH_SECRET` gerado
+- [ ] Chaves Stripe em modo live
+- [ ] Verificação de assinatura de webhook ativada
+- [ ] Pooling de conexão de banco de dados
+- [ ] Sentry configurado para rastreamento de erros
+
+## Próximos Passos
+
+<Cards>
+  <Card title="Configurar Monitoramento" href="/docs/infrastructure/monitoring">
+    Configure Sentry, analytics e monitoramento de uptime.
+  </Card>
+</Cards>

@@ -1,0 +1,93 @@
+---
+title: Installation
+description: Lancez ShipKit en quelques minutes avec ce guide d'installation étape par étape.
+---
+
+# Installation
+
+Ce guide vous aidera à configurer ShipKit sur votre machine locale.
+
+## Prérequis
+
+Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
+
+- **Node.js 20+** - [Télécharger Node.js](https://nodejs.org/)
+- **npm** ou **pnpm** - Gestionnaire de paquets
+- **Git** - Contrôle de version
+
+## Démarrage Rapide
+
+### 1. Cloner le Dépôt
+
+```bash
+git clone https://github.com/your-org/shipkit.git my-saas-app
+cd my-saas-app
+```
+
+### 2. Installer les Dépendances
+
+```bash
+npm install
+```
+
+### 3. Configurer les Variables d'Environnement
+
+Copiez le fichier d'environnement exemple :
+
+```bash
+cp .env.example .env
+```
+
+Ensuite, modifiez `.env` avec votre configuration. Voir [Configuration](/docs/getting-started/configuration) pour plus de détails.
+
+### 4. Configurer la Base de Données
+
+Initialisez Prisma et créez votre base de données :
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### 5. Démarrer le Serveur de Développement
+
+```bash
+npm run dev
+```
+
+Votre application fonctionne maintenant sur [http://localhost:3000](http://localhost:3000) !
+
+## Et Ensuite ?
+
+<Cards>
+  <Card title="Configuration" href="/docs/getting-started/configuration">
+    Configurez vos fournisseurs et variables d'environnement.
+  </Card>
+  <Card title="Structure du Projet" href="/docs/getting-started/project-structure">
+    Découvrez l'organisation de la base de code.
+  </Card>
+</Cards>
+
+## Dépannage
+
+### npm install échoue
+
+Assurez-vous d'utiliser Node.js 20 ou supérieur :
+
+```bash
+node --version
+```
+
+Si vous devez mettre à jour, utilisez [nvm](https://github.com/nvm-sh/nvm) ou téléchargez depuis nodejs.org.
+
+### Erreurs de connexion à la base de données
+
+Assurez-vous que votre `DATABASE_URL` dans `.env` est correct et que le serveur de base de données est en cours d'exécution.
+
+### Le port 3000 est déjà utilisé
+
+Arrêtez l'autre processus ou utilisez un port différent :
+
+```bash
+npm run dev -- -p 3001
+```

@@ -1,0 +1,71 @@
+---
+title: Sécurité
+description: Meilleures pratiques et guides de sécurité pour protéger votre application ShipKit.
+---
+
+# Sécurité
+
+Protégez votre application ShipKit avec ces meilleures pratiques et guides de sécurité.
+
+---
+
+## Guides de Sécurité
+
+<Cards>
+  <Card title="Sécurité d'Authentification" href="/docs/security/authentication">
+    Gestion des sessions, hachage des mots de passe et sécurité OAuth.
+  </Card>
+  <Card title="Sécurité API" href="/docs/security/api-security">
+    Limitation de débit, clés API et validation des entrées.
+  </Card>
+  <Card title="En-têtes de Sécurité" href="/docs/security/headers">
+    CSP, HSTS et autres en-têtes HTTP de sécurité.
+  </Card>
+  <Card title="Protection des Données" href="/docs/security/data-protection">
+    Chiffrement, gestion des PII et conformité RGPD.
+  </Card>
+</Cards>
+
+---
+
+## Aperçu de la Sécurité
+
+### Authentification
+- ✅ Hachage bcrypt avec facteur de coût 12
+- ✅ Cookies de session sécurisés (HttpOnly, SameSite)
+- ✅ Paramètre d'état OAuth
+- ✅ Support de l'authentification à deux facteurs
+
+### Sécurité API
+- ✅ Limitation de débit sur tous les endpoints
+- ✅ Validation des entrées avec Zod
+- ✅ Authentification par clé API
+- ✅ Vérification de signature des webhooks
+
+### Protection des Données
+- ✅ Chiffrement au repos (AES-256)
+- ✅ HTTPS forcé (HSTS)
+- ✅ Conformité RGPD
+- ✅ Politiques de rétention des données
+
+---
+
+## Liste de Contrôle de Sécurité
+
+### Avant le Lancement
+
+- [ ] Variables d'environnement sécurisées configurées
+- [ ] HTTPS activé avec HSTS
+- [ ] En-têtes de sécurité configurés
+- [ ] Limitation de débit activée
+- [ ] Validation des entrées sur toutes les routes API
+- [ ] Secrets d'authentification renouvelés depuis les valeurs de développement
+- [ ] Permissions de base de données vérifiées
+- [ ] Surveillance des erreurs activée (Sentry)
+
+### En Continu
+
+- [ ] Audits de sécurité réguliers
+- [ ] Mises à jour des dépendances
+- [ ] Revues des journaux d'accès
+- [ ] Plan de réponse aux incidents documenté

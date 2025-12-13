@@ -1,0 +1,463 @@
+---
+title: Features 组件
+description: 以 6 种不同的布局变体展示您的产品功能
+---
+
+# Features 组件
+
+功能区域帮助访问者了解您的产品的价值所在。ShipKit 包含 6 种功能组件变体,适用于不同的展示风格。
+
+## 可用变体
+
+| 变体 | 最适合 | 关键特性 |
+|---------|----------|-------------|
+| `FeaturesGrid` | 多个功能 | 响应式卡片网格 |
+| `FeaturesListicle` | 详细说明 | 编号列表格式 |
+| `FeaturesAccordion` | FAQ 风格内容 | 可展开部分 |
+| `FeaturesTabs` | 功能类别 | 带图片的选项卡界面 |
+| `FeaturesBento` | 视觉展示 | Bento 网格布局 |
+| `FeaturesComparison` | 计划比较 | 并排比较 |
+
+## 通用属性
+
+所有功能组件共享这些基础属性:
+
+```typescript
+interface FeaturesBaseProps {
+  title?: string;                   // 区域标题
+  subtitle?: string;                // 标题上方的小文本
+  description?: string;             // 支持文本
+  animated?: boolean;               // 启用/禁用动画
+  colorScheme?: ColorScheme;        // 色彩主题
+  className?: string;               // 附加 CSS 类
+}
+
+interface FeatureItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+}
+```
+
+---
+
+## FeaturesGrid
+
+最通用的变体,在响应式卡片网格中显示功能。
+
+### 使用方法
+
+```tsx
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+import { Zap, Shield, Rocket, Heart, Star, Globe } from 'lucide-react';
+
+export function FeaturesSection() {
+  return (
+    <FeaturesGrid
+      title="快速发布所需的一切"
+      subtitle="功能"
+      description="采用现代最佳实践构建,从第一天起就可用于生产环境"
+      columns={3}
+      features={[
+        {
+          title: '闪电般快速',
+          description: '使用 Turbopack 和边缘函数优化性能',
+          icon: <Zap className="h-6 w-6" />,
+        },
+        {
+          title: '企业级安全',
+          description: '内置身份验证、速率限制和安全头',
+          icon: <Shield className="h-6 w-6" />,
+        },
+        {
+          title: '轻松扩展',
+          description: '从零到数百万用户无需更改代码',
+          icon: <Rocket className="h-6 w-6" />,
+        },
+        {
+          title: '开发者体验',
+          description: 'TypeScript、ESLint、Prettier 开箱即用',
+          icon: <Heart className="h-6 w-6" />,
+        },
+        {
+          title: 'AI 就绪',
+          description: '内置 OpenRouter 和 Vercel AI SDK 集成',
+          icon: <Star className="h-6 w-6" />,
+        },
+        {
+          title: '默认全球化',
+          description: '支持 7 种语言,使用 next-intl',
+          icon: <Globe className="h-6 w-6" />,
+        },
+      ]}
+      colorScheme="primary"
+    />
+  );
+}
+```
+
+### 附加属性
+
+```typescript
+interface FeaturesGridProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  columns?: 2 | 3 | 4;              // 网格列数(默认: 3)
+}
+```
+
+---
+
+## FeaturesListicle
+
+编号列表格式,非常适合分步功能或有序优势。
+
+### 使用方法
+
+```tsx
+import { FeaturesListicle } from '@/components/marketing/features/features-listicle';
+
+export function HowItWorks() {
+  return (
+    <FeaturesListicle
+      title="工作原理"
+      subtitle="入门"
+      features={[
+        {
+          title: '克隆仓库',
+          description: '一条命令即可开始使用完整的技术栈',
+        },
+        {
+          title: '配置您的提供商',
+          description: '使用我们的设置向导配置身份验证、支付和 AI',
+        },
+        {
+          title: '自定义您的主题',
+          description: '使用可视化主题构建器匹配您的品牌',
+        },
+        {
+          title: '部署到生产环境',
+          description: '一键部署到 Vercel 或使用 Docker 自托管',
+        },
+      ]}
+    />
+  );
+}
+```
+
+### 附加属性
+
+```typescript
+interface FeaturesListicleProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  numbered?: boolean;               // 显示数字(默认: true)
+  orientation?: 'vertical' | 'horizontal';
+}
+```
+
+---
+
+## FeaturesAccordion
+
+可展开的手风琴部分,用于详细的功能说明。
+
+### 使用方法
+
+```tsx
+import { FeaturesAccordion } from '@/components/marketing/features/features-accordion';
+
+export function DetailedFeatures() {
+  return (
+    <FeaturesAccordion
+      title="详细功能"
+      features={[
+        {
+          title: '多提供商身份验证',
+          description: '支持 NextAuth.js、Supabase Auth 和 Better-Auth。使用单个环境变量在提供商之间切换。包括 OAuth、魔法链接和凭据。',
+        },
+        {
+          title: '灵活的支付集成',
+          description: '与 Stripe、LemonSqueezy 和 Polar 的预构建集成。支持订阅、一次性付款和基于使用量的计费。',
+        },
+        {
+          title: '原生 AI 架构',
+          description: 'OpenRouter 集成支持 100 多个 AI 模型。Vercel AI SDK 用于流式响应。内置聊天和图像生成演示。',
+        },
+      ]}
+      defaultOpen={0}
+    />
+  );
+}
+```
+
+### 附加属性
+
+```typescript
+interface FeaturesAccordionProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  defaultOpen?: number;             // 初始打开项的索引
+  allowMultiple?: boolean;          // 允许多个打开(默认: false)
+}
+```
+
+---
+
+## FeaturesTabs
+
+显示带图片功能的选项卡界面,非常适合功能类别。
+
+### 使用方法
+
+```tsx
+import { FeaturesTabs } from '@/components/marketing/features/features-tabs';
+import { Palette, Lock, CreditCard } from 'lucide-react';
+
+export function FeatureCategories() {
+  return (
+    <FeaturesTabs
+      title="探索我们的功能"
+      tabs={[
+        {
+          id: 'theming',
+          label: '主题',
+          icon: <Palette className="h-4 w-4" />,
+          title: '可视化主题构建器',
+          description: '使用我们的可视化主题构建器自定义应用程序的各个方面。从预设中选择或创建您自己独特的外观。',
+          image: {
+            src: '/images/features/theming.png',
+            alt: '主题构建器界面',
+          },
+          highlights: [
+            '5 种色彩方案预设',
+            'HSL 颜色选择器',
+            '亮色和暗色模式支持',
+            '导出为 CSS',
+          ],
+        },
+        {
+          id: 'auth',
+          label: '身份验证',
+          icon: <Lock className="h-4 w-4" />,
+          title: '灵活的身份验证',
+          description: '从多个身份验证提供商中选择或同时使用它们。支持所有主要 OAuth 提供商。',
+          image: {
+            src: '/images/features/auth.png',
+            alt: '身份验证选项',
+          },
+          highlights: [
+            'NextAuth.js、Supabase、Better-Auth',
+            '使用 Google、GitHub 等的 OAuth',
+            '魔法链接和凭据',
+            '双因素身份验证',
+          ],
+        },
+        {
+          id: 'payments',
+          label: '支付',
+          icon: <CreditCard className="h-4 w-4" />,
+          title: '支付处理',
+          description: '使用您选择的支付处理器在全球范围内接受付款。支持订阅、一次性和基于使用量的计费。',
+          image: {
+            src: '/images/features/payments.png',
+            alt: '支付集成',
+          },
+          highlights: [
+            'Stripe、LemonSqueezy、Polar',
+            '订阅管理',
+            '客户门户',
+            'Webhook 处理',
+          ],
+        },
+      ]}
+      defaultTab="theming"
+    />
+  );
+}
+```
+
+### 附加属性
+
+```typescript
+interface FeatureTab {
+  id: string;
+  label: string;
+  icon?: ReactNode;
+  title: string;
+  description: string;
+  image?: { src: string; alt: string };
+  highlights?: string[];
+}
+
+interface FeaturesTabsProps extends FeaturesBaseProps {
+  tabs: FeatureTab[];
+  defaultTab?: string;              // 默认活动选项卡的 ID
+}
+```
+
+---
+
+## FeaturesBento
+
+Bento 网格布局,用于引人注目的功能展示。
+
+### 使用方法
+
+```tsx
+import { FeaturesBento } from '@/components/marketing/features/features-bento';
+import { Zap, Shield, Rocket, Code2, Palette, Globe } from 'lucide-react';
+
+export function BentoShowcase() {
+  return (
+    <FeaturesBento
+      title="为现代开发而构建"
+      subtitle="功能"
+      items={[
+        {
+          title: '极速快速',
+          description: '由 Turbopack 驱动的开发,即时 HMR',
+          icon: <Zap className="h-6 w-6" />,
+          size: 'large',
+        },
+        {
+          title: '默认安全',
+          description: '内置企业级安全',
+          icon: <Shield className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: '原生 AI',
+          description: 'OpenRouter 和 Vercel AI SDK 就绪',
+          icon: <Rocket className="h-6 w-6" />,
+          size: 'wide',
+        },
+        {
+          title: 'TypeScript',
+          description: '整个堆栈的完整类型安全',
+          icon: <Code2 className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: '可主题化',
+          description: '包含可视化主题构建器',
+          icon: <Palette className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: 'i18n 就绪',
+          description: '开箱即用支持 7 种语言',
+          icon: <Globe className="h-6 w-6" />,
+          size: 'tall',
+        },
+      ]}
+    />
+  );
+}
+```
+
+### 附加属性
+
+```typescript
+interface BentoItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+  size?: 'default' | 'large' | 'wide' | 'tall';
+}
+
+interface FeaturesBentoProps extends FeaturesBaseProps {
+  items: BentoItem[];
+}
+```
+
+### 尺寸选项
+
+| 尺寸 | 网格跨度 | 最适合 |
+|------|-----------|----------|
+| `default` | 1x1 | 标准功能 |
+| `large` | 2x2 | 主打功能 |
+| `wide` | 2x1 | 标题较长的功能 |
+| `tall` | 1x2 | 描述较长的功能 |
+
+---
+
+## FeaturesComparison
+
+计划或产品版本的并排比较表。
+
+### 使用方法
+
+```tsx
+import { FeaturesComparison } from '@/components/marketing/features/features-comparison';
+
+export function PlanComparison() {
+  return (
+    <FeaturesComparison
+      title="比较计划"
+      columns={[
+        { name: '入门版', price: '免费' },
+        { name: '专业版', price: '$19/月', highlighted: true },
+        { name: '企业版', price: '自定义' },
+      ]}
+      features={[
+        { name: '用户', values: ['1', '无限', '无限'] },
+        { name: 'API 调用', values: ['1,000/月', '100,000/月', '无限'] },
+        { name: '支持', values: ['社区', '优先', '24/7 专属'] },
+        { name: '自定义域名', values: [false, true, true] },
+        { name: '分析', values: [false, true, true] },
+        { name: 'SSO', values: [false, false, true] },
+      ]}
+    />
+  );
+}
+```
+
+### 附加属性
+
+```typescript
+interface ComparisonColumn {
+  name: string;
+  price?: string;
+  highlighted?: boolean;
+  cta?: { label: string; href: string };
+}
+
+interface ComparisonFeature {
+  name: string;
+  values: (string | boolean)[];     // 布尔值呈现为勾选/叉
+}
+
+interface FeaturesComparisonProps extends FeaturesBaseProps {
+  columns: ComparisonColumn[];
+  features: ComparisonFeature[];
+}
+```
+
+---
+
+## 色彩方案
+
+所有功能变体都支持 5 种色彩方案:
+
+```tsx
+<FeaturesGrid colorScheme="primary" {...props} />   // 默认品牌颜色
+<FeaturesGrid colorScheme="secondary" {...props} /> // 柔和的次要色
+<FeaturesGrid colorScheme="accent" {...props} />    // 引人注目的强调色
+<FeaturesGrid colorScheme="muted" {...props} />     // 中性、柔和
+<FeaturesGrid colorScheme="destructive" {...props} /> // 警告样式
+```
+
+## 动画
+
+所有组件都包含滚动触发动画:
+
+```tsx
+// 默认启用
+<FeaturesGrid animated={true} {...props} />
+
+// 禁用以提高性能/可访问性
+<FeaturesGrid animated={false} {...props} />
+```
+
+动画特性:
+- **交错显示**: 项目按顺序出现
+- **向上淡入**: 元素在向上移动时淡入
+- **视口触发**: 滚动到视图时播放动画

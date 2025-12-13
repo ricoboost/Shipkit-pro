@@ -1,0 +1,87 @@
+---
+title: Introduccion
+description: Bienvenido a ShipKit - El boilerplate SaaS nativo de IA con temas visuales, soporte multi-proveedor y funciones de IA integradas.
+---
+
+# Bienvenido a ShipKit
+
+ShipKit es un kit de inicio SaaS completo construido con Next.js 16, disenado para ayudarte a lanzar tu producto SaaS mas rapido con total flexibilidad.
+
+## Caracteristicas Principales
+
+<Cards>
+  <Card title="Multi-Proveedores de Auth" href="/docs/authentication/overview">
+    Cambia entre NextAuth.js, Supabase Auth o Better Auth con una sola variable de entorno.
+  </Card>
+  <Card title="Multi-Proveedores de Pago" href="/docs/payments/overview">
+    Soporte para Stripe, LemonSqueezy y Polar - elige lo que mejor funcione para tu negocio.
+  </Card>
+  <Card title="Integracion de IA" href="/docs/ai/overview">
+    Funciones de IA integradas con soporte para OpenRouter y Vercel AI SDK.
+  </Card>
+  <Card title="Temas Visuales" href="/docs/features/theming">
+    Personaliza la apariencia de tu aplicacion con nuestro constructor de temas visual.
+  </Card>
+</Cards>
+
+## Por que ShipKit?
+
+### El Problema con los Boilerplates Existentes
+
+- Te atan a un solo proveedor de autenticacion
+- Te atan a un solo proveedor de pagos
+- Sin integracion de IA lista
+- Documentacion estatica y desactualizada
+- Lucen identicos sin personalizacion
+
+### La Solucion ShipKit
+
+Un starter SaaS con flexibilidad total:
+
+- **Agnostico de Proveedores:** Cambia auth, pagos o IA con una variable de entorno
+- **Nativo de IA:** Claude Code / Cursor entienden el codigo inmediatamente
+- **Auto-Documentado:** Los docs se actualizan cuando cambian las funciones
+- **Visualmente Personalizable:** Sistema de diseno configurado mediante UI
+- **Listo para Demo:** Componentes de IA funcionales para mostrar inmediatamente
+
+## Inicio Rapido
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/your-org/shipkit.git
+
+# Instalar dependencias
+npm install
+
+# Copiar variables de entorno
+cp .env.example .env
+
+# Iniciar el servidor de desarrollo
+npm run dev
+```
+
+Luego abre [http://localhost:3000](http://localhost:3000) para ver tu aplicacion.
+
+## Stack Tecnologico
+
+| Tecnologia | Proposito |
+|------------|-----------|
+| Next.js 16 | Framework React con Turbopack |
+| TypeScript | Seguridad de tipos |
+| Tailwind CSS 4 | Estilos |
+| Prisma | ORM de base de datos |
+| shadcn/ui | Componentes UI |
+
+## Siguientes Pasos
+
+<Cards>
+  <Card title="Instalacion" href="/docs/getting-started/installation">
+    Pon ShipKit en funcionamiento en minutos.
+  </Card>
+  <Card title="Configuracion" href="/docs/getting-started/configuration">
+    Configura tus variables de entorno y proveedores.
+  </Card>
+  <Card title="Estructura del Proyecto" href="/docs/getting-started/project-structure">
+    Comprende la organizacion del codigo.
+  </Card>
+</Cards>

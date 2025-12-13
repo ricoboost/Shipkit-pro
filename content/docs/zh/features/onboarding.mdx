@@ -1,0 +1,170 @@
+---
+title: 引导流程 & 设置向导
+description: 新安装的自动设置向导和引导式用户入职流程。
+---
+
+# 引导流程 & 设置向导
+
+ShipKit 包含两种类型的引导：用于新安装的**自动设置向导**和用于引导新用户使用应用程序的**用户引导流程**。
+
+## 设置向导（首次安装）
+
+当您在克隆 ShipKit 后首次运行 `npm run dev` 时，应用程序会自动检测是否为新安装并引导您完成设置过程。
+
+### 自动检测
+
+设置向导在以下情况下自动出现：
+
+- 数据库中不存在管理员用户
+- 数据库未配置
+- 首次运行应用程序
+
+```typescript
+// src/app/[locale]/page.tsx
+const isSetupComplete = await checkSetupComplete();
+if (!isSetupComplete) {
+  redirect(`/${locale}/onboarding`);
+}
+```
+
+### 设置步骤
+
+向导将引导您完成：
+
+1. **数据库配置** - 连接到 PostgreSQL、MySQL、SQLite 或云数据库
+2. **身份验证设置** - 配置 NextAuth、Supabase Auth 或 Better Auth
+3. **管理员账户创建** - 创建具有强密码要求的第一个管理员
+4. **可选集成** - 设置支付、AI 提供商等
+
+### 管理员密码要求
+
+为了安全，管理员密码必须满足以下要求：
+
+- 最少 12 个字符
+- 至少一个大写字母
+- 至少一个小写字母
+- 至少一个数字
+- 至少一个特殊字符
+
+### CLI 替代方案
+
+您也可以通过 CLI 运行设置：
+
+```bash
+# 交互式设置向导
+npm run setup
+
+# 使用默认值快速设置
+npm run setup:quick
+
+# 单独的设置步骤
+npm run setup:db
+npm run setup:auth
+npm run setup:admin
+```
+
+### 设置完成后
+
+向导完成后：
+
+- 引导页面重定向到首页
+- 您的管理员账户可以访问仪表板
+- 设置向导不会再次出现（管理员已存在）
+
+## 用户引导（应用程序用户）
+
+初始设置后，您可以为应用程序用户创建自定义引导流程。
+
+### 功能
+
+- 带进度跟踪的多步骤向导
+- 可自定义的步骤
+- 每个用户的完成跟踪
+- 基于引导状态的条件渲染
+
+### 定义引导步骤
+
+```typescript
+// src/config/onboarding.ts
+export const onboardingSteps = [
+  {
+    id: 'profile',
+    title: '完善资料',
+    description: '添加您的姓名和头像',
+    component: ProfileStep,
+  },
+  {
+    id: 'organization',
+    title: '创建组织',
+    description: '设置您的团队工作区',
+    component: OrganizationStep,
+  },
+  {
+    id: 'invite',
+    title: '邀请团队',
+    description: '邀请您的团队成员',
+    component: InviteStep,
+  },
+];
+```
+
+### 引导库
+
+```typescript
+import { onboarding } from '@/lib/onboarding';
+
+// 获取用户的引导进度
+const progress = await onboarding.getProgress(userId);
+
+// 将步骤标记为已完成
+await onboarding.completeStep(userId, 'profile');
+
+// 检查引导是否完成
+const isDone = await onboarding.isComplete(userId);
+```
+
+### 向导组件
+
+```tsx
+import { OnboardingWizard } from '@/components/onboarding/onboarding-wizard';
+
+<OnboardingWizard
+  steps={onboardingSteps}
+  onComplete={() => router.push('/dashboard')}
+  allowSkip={true}
+/>
+```
+
+### 条件渲染
+
+仅向新用户显示引导：
+
+```tsx
+export default async function DashboardLayout({ children }) {
+  const user = await getCurrentUser();
+  const isOnboarded = await onboarding.isComplete(user.id);
+
+  if (!isOnboarded) {
+    return <OnboardingWizard steps={onboardingSteps} />;
+  }
+
+  return children;
+}
+```
+
+## 演示模式
+
+ShipKit 包含绕过设置向导的演示模式：
+
+- 无需身份验证即可访问仪表板
+- 数据本地存储在浏览器中
+- 无需数据库连接
+- 显示演示模式激活的横幅
+
+## 最佳实践
+
+1. **保持步骤最少** - 只请求必要信息
+2. **提供进度指示器** - 向用户展示他们的进度
+3. **允许跳过** - 让用户在完成前先探索
+4. **保存进度** - 不要让用户从头开始
+5. **测试流程** - 以新用户身份体验引导流程

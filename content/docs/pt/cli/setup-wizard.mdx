@@ -1,0 +1,158 @@
+---
+title: Assistente de Configuração
+description: O assistente de configuração interativo guia você através da configuração da sua aplicação ShipKit.
+---
+
+# Assistente de Configuração
+
+O assistente de configuração é a forma mais rápida de configurar sua aplicação ShipKit. Ele guia você através de cada etapa de configuração de forma interativa.
+
+## Executar o Assistente
+
+Inicie o assistente interativo:
+
+```bash
+npm run setup
+```
+
+Para configuração rápida com valores padrão sensatos:
+
+```bash
+npm run setup:quick
+```
+
+Para pular etapas de configuração opcionais:
+
+```bash
+npx tsx scripts/setup/wizard.ts --skip-optional
+```
+
+## O Que o Assistente Configura
+
+O assistente guia você através destas etapas em ordem:
+
+### 0. Seletor de Stack (Opcional)
+
+Escolha quais ferramentas de codificação IA e estratégia de implantação você usará. Esta etapa ignora arquivos de configuração não utilizados para reduzir o excesso:
+
+- **Ferramentas IA**: Claude Code, Cursor, Windsurf (seleção múltipla)
+- **Implantação**: Vercel ou Docker/Auto-hospedado
+
+[Saiba mais sobre o Seletor de Stack](/docs/cli/setup-stack)
+
+### 1. Variáveis de Ambiente (Obrigatório)
+
+Gera seu arquivo `.env` com toda a configuração necessária:
+
+- `DATABASE_URL` - String de conexão do banco de dados
+- `AUTH_SECRET` - Chave de criptografia auto-gerada
+- `NEXT_PUBLIC_APP_URL` - URL da sua aplicação
+
+### 2. Banco de Dados (Obrigatório)
+
+Configura sua conexão com o banco de dados. Provedores suportados:
+
+- **PostgreSQL** - PostgreSQL padrão
+- **MySQL** - Banco de dados MySQL
+- **SQLite** - Baseado em arquivo (ideal para desenvolvimento)
+- **Supabase** - PostgreSQL com Supabase
+- **Neon** - PostgreSQL serverless
+- **PlanetScale** - MySQL serverless
+
+### 3. Autenticação (Obrigatório)
+
+Configura seu provedor de autenticação:
+
+- **NextAuth.js** - Autenticação flexível e auto-hospedada
+- **Supabase Auth** - Integrado com Supabase
+- **Better Auth** - Autenticação moderna e type-safe
+
+### 4. Pagamentos (Opcional)
+
+Configura o processamento de pagamentos:
+
+- **Stripe** - Pagamentos padrão da indústria
+- **Lemon Squeezy** - Tudo em um com gestão de impostos
+- **Polar** - Pagamentos amigáveis para open source
+
+### 5. Provedor de IA (Opcional)
+
+Configura a integração de IA/LLM:
+
+- **OpenAI** - GPT-4, GPT-3.5
+- **Anthropic** - Modelos Claude
+- **Google AI** - Modelos Gemini
+- **OpenRouter** - Acesso a mais de 100 modelos
+
+### 6. Usuário Administrador (Opcional)
+
+Cria sua primeira conta de administrador para acessar o painel de administração.
+
+## Comandos de Configuração Individual
+
+Você também pode executar cada etapa de configuração individualmente:
+
+```bash
+# Seletor de stack (reduzir excesso)
+npm run setup:stack
+
+# Variáveis de ambiente
+npm run setup:env
+
+# Banco de dados
+npm run setup:db
+
+# Autenticação
+npm run setup:auth
+
+# Pagamentos
+npm run setup:payments
+
+# Provedor de IA
+npm run setup:ai
+
+# Usuário administrador
+npm run setup:admin
+```
+
+## Após a Configuração
+
+Uma vez que o assistente termine:
+
+1. Revise seu arquivo `.env`
+2. Inicie o servidor de desenvolvimento:
+
+```bash
+npm run dev
+```
+
+3. Abra [http://localhost:3000](http://localhost:3000)
+4. Faça login e explore o dashboard
+
+## Solução de Problemas
+
+### Falha na Conexão com o Banco de Dados
+
+Certifique-se de que seu banco de dados está em execução e a string de conexão está correta:
+
+```bash
+# Teste com Prisma
+npx prisma db pull
+```
+
+### Variáveis de Ambiente Faltando
+
+Execute novamente a configuração de ambiente:
+
+```bash
+npm run setup:env --interactive
+```
+
+### Cliente Prisma Não Gerado
+
+Gere o cliente Prisma manualmente:
+
+```bash
+npm run db:generate
+npm run db:push
+```

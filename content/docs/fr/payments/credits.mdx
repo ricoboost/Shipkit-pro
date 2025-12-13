@@ -1,0 +1,86 @@
+---
+title: Système de Crédits
+description: Facturation à l'usage avec le système de crédits ShipKit.
+---
+
+# Système de Crédits
+
+ShipKit inclut un système de crédits flexible pour la facturation à l'usage.
+
+## Aperçu
+
+Les crédits vous permettent de :
+- Facturer les générations d'IA
+- Limiter les appels API
+- Offrir une tarification à l'utilisation
+- Inclure dans les abonnements
+
+## Utilisation
+
+```typescript
+import { credits } from '@/lib/payments/credits';
+
+// Vérifier le solde
+const balance = await credits.getBalance(userId);
+
+// Déduire des crédits
+const success = await credits.deduct(userId, 10, 'Message de chat IA');
+
+if (!success) {
+  throw new Error('Crédits insuffisants');
+}
+
+// Ajouter des crédits
+await credits.add(userId, 100, 'Recharge d\'abonnement mensuel');
+
+// Obtenir l'historique
+const history = await credits.getHistory(userId);
+```
+
+## Routes API
+
+```typescript
+// GET /api/credits/balance
+const balance = await fetch('/api/credits/balance');
+
+// GET /api/credits/history
+const history = await fetch('/api/credits/history');
+```
+
+## Schéma de Base de Données
+
+```prisma
+model CreditTransaction {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int      // positif = ajouter, négatif = déduire
+  reason    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+```
+
+## Intégration d'Abonnement
+
+Recharge automatique des crédits lors du renouvellement d'abonnement :
+
+```typescript
+// Dans le gestionnaire de webhook
+case 'invoice.paid':
+  const plan = getPlanFromSubscription(event.data);
+  await credits.add(userId, plan.monthlyCredits, 'Recharge mensuelle');
+  break;
+```
+
+## Coûts de Crédits
+
+Configurer les coûts dans votre application :
+
+```typescript
+export const creditCosts = {
+  'ai-chat': 1,
+  'ai-image': 10,
+  'api-call': 1,
+  'export': 5,
+};
+```

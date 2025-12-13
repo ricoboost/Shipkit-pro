@@ -1,0 +1,108 @@
+---
+title: Supabase Auth
+description: Configure Supabase Authentication in ShipKit.
+---
+
+# Supabase Auth Setup
+
+Supabase provides authentication integrated with its PostgreSQL database.
+
+## Configuration
+
+```bash
+AUTH_PROVIDER="supabase"
+
+NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+```
+
+## Getting Credentials
+
+1. Create a project at [supabase.com](https://supabase.com)
+2. Go to Settings > API
+3. Copy the URL and anon/service keys
+
+## OAuth Setup
+
+Configure OAuth in Supabase Dashboard:
+
+1. Go to Authentication > Providers
+2. Enable desired providers (Google, GitHub, etc.)
+3. Add client ID and secret from each provider
+4. Callback URL is automatically set by Supabase
+
+## Implementation
+
+```typescript
+// src/lib/auth/supabase.ts
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+
+export function createClient() {
+  const cookieStore = cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name, value, options) {
+          cookieStore.set({ name, value, ...options });
+        },
+        remove(name, options) {
+          cookieStore.set({ name, value: '', ...options });
+        },
+      },
+    }
+  );
+}
+```
+
+## Sign In
+
+```typescript
+const supabase = createClient();
+
+// Email/Password
+const { data, error } = await supabase.auth.signInWithPassword({
+  email: 'user@example.com',
+  password: 'password',
+});
+
+// OAuth
+const { data, error } = await supabase.auth.signInWithOAuth({
+  provider: 'google',
+  options: {
+    redirectTo: `${origin}/auth/callback`,
+  },
+});
+
+// Magic Link
+const { data, error } = await supabase.auth.signInWithOtp({
+  email: 'user@example.com',
+});
+```
+
+## Get Session
+
+```typescript
+const supabase = createClient();
+const { data: { session } } = await supabase.auth.getSession();
+```
+
+## Row Level Security
+
+Supabase uses RLS for data protection:
+
+```sql
+-- Enable RLS
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+
+-- Users can only see their own posts
+CREATE POLICY "Users can view own posts"
+ON posts FOR SELECT
+USING (auth.uid() = user_id);
+```

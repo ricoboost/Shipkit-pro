@@ -1,0 +1,424 @@
+---
+title: Authentication API
+description: Complete API reference for authentication endpoints with curl examples.
+---
+
+# Authentication API
+
+Base URL: `https://your-app.com/api/auth`
+
+## Authentication Methods
+
+| Method | Description | Use Case |
+|--------|-------------|----------|
+| Session Cookie | HttpOnly cookie set after sign in | Web applications |
+| Bearer Token | JWT token in Authorization header | API clients |
+
+---
+
+## Endpoints
+
+### Sign Up
+
+Create a new user account.
+
+```http
+POST /api/auth/signup
+Content-Type: application/json
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `email` | string | Yes | Valid email address |
+| `password` | string | Yes | Min 8 characters |
+| `name` | string | No | Display name |
+
+**curl Example:**
+
+```bash
+curl -X POST https://your-app.com/api/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securepassword123",
+    "name": "John Doe"
+  }'
+```
+
+**Success Response (201):**
+
+```json
+{
+  "user": {
+    "id": "clx1234567890",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "emailVerified": null,
+    "image": null,
+    "role": "user",
+    "createdAt": "2024-01-15T10:00:00.000Z"
+  },
+  "message": "Verification email sent"
+}
+```
+
+**Error Response (409):**
+
+```json
+{
+  "error": "EMAIL_EXISTS",
+  "message": "An account with this email already exists"
+}
+```
+
+---
+
+### Sign In
+
+Authenticate a user and create a session.
+
+```http
+POST /api/auth/signin
+Content-Type: application/json
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `email` | string | Yes | User's email |
+| `password` | string | Yes | User's password |
+| `remember` | boolean | No | Extended session (30 days) |
+
+**curl Example:**
+
+```bash
+curl -X POST https://your-app.com/api/auth/signin \
+  -H "Content-Type: application/json" \
+  -c cookies.txt \
+  -d '{
+    "email": "user@example.com",
+    "password": "securepassword123"
+  }'
+```
+
+**Success Response (200):**
+
+```json
+{
+  "user": {
+    "id": "clx1234567890",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "role": "user"
+  },
+  "session": {
+    "expires": "2024-02-15T00:00:00.000Z"
+  }
+}
+```
+
+**With Bearer Token (for API clients):**
+
+```bash
+curl -X POST https://your-app.com/api/auth/signin \
+  -H "Content-Type: application/json" \
+  -H "X-Request-Token: true" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securepassword123"
+  }'
+```
+
+**Token Response:**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "expiresAt": "2024-02-15T00:00:00.000Z"
+}
+```
+
+---
+
+### Sign Out
+
+End the current session.
+
+```http
+POST /api/auth/signout
+```
+
+**curl Example:**
+
+```bash
+curl -X POST https://your-app.com/api/auth/signout \
+  -b cookies.txt
+```
+
+**Success Response (200):**
+
+```json
+{
+  "message": "Signed out successfully"
+}
+```
+
+---
+
+### Get Session
+
+Get the current authenticated session.
+
+```http
+GET /api/auth/session
+```
+
+**curl Example:**
+
+```bash
+# With cookie
+curl https://your-app.com/api/auth/session \
+  -b cookies.txt
+
+# With Bearer token
+curl https://your-app.com/api/auth/session \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..."
+```
+
+**Success Response (200):**
+
+```json
+{
+  "user": {
+    "id": "clx1234567890",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "image": "https://avatars.githubusercontent.com/...",
+    "role": "user",
+    "emailVerified": "2024-01-15T10:00:00.000Z"
+  },
+  "expires": "2024-02-15T00:00:00.000Z"
+}
+```
+
+**No Session Response (200):**
+
+```json
+{
+  "user": null,
+  "expires": null
+}
+```
+
+---
+
+### Password Reset Request
+
+Request a password reset email.
+
+```http
+POST /api/auth/forgot-password
+Content-Type: application/json
+```
+
+**curl Example:**
+
+```bash
+curl -X POST https://your-app.com/api/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com"}'
+```
+
+**Success Response (200):**
+
+```json
+{
+  "message": "If an account exists, a reset email has been sent"
+}
+```
+
+---
+
+### Reset Password
+
+Reset password with token from email.
+
+```http
+POST /api/auth/reset-password
+Content-Type: application/json
+```
+
+**curl Example:**
+
+```bash
+curl -X POST https://your-app.com/api/auth/reset-password \
+  -H "Content-Type: application/json" \
+  -d '{
+    "token": "reset-token-from-email",
+    "password": "newSecurePassword123"
+  }'
+```
+
+---
+
+### Verify Email
+
+Verify email address with token.
+
+```http
+GET /api/auth/verify-email?token=xxx
+```
+
+**curl Example:**
+
+```bash
+curl "https://your-app.com/api/auth/verify-email?token=verification-token"
+```
+
+---
+
+### Update Profile
+
+Update the authenticated user's profile.
+
+```http
+PATCH /api/auth/profile
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**curl Example:**
+
+```bash
+curl -X PATCH https://your-app.com/api/auth/profile \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Jane Doe",
+    "image": "https://example.com/avatar.jpg"
+  }'
+```
+
+---
+
+## OAuth Endpoints
+
+### Initiate OAuth
+
+Redirect to OAuth provider.
+
+```http
+GET /api/auth/signin/{provider}
+```
+
+**Supported Providers:**
+- `google`
+- `github`
+- `discord`
+
+**curl Example (get redirect URL):**
+
+```bash
+curl -I "https://your-app.com/api/auth/signin/google?callbackUrl=/dashboard"
+```
+
+### OAuth Callback
+
+Handle OAuth provider callback (internal use).
+
+```http
+GET /api/auth/callback/{provider}
+```
+
+---
+
+## Error Codes
+
+| Code | Error | Description |
+|------|-------|-------------|
+| 400 | `INVALID_REQUEST` | Missing or invalid request body |
+| 401 | `INVALID_CREDENTIALS` | Wrong email or password |
+| 401 | `EMAIL_NOT_VERIFIED` | Email verification required |
+| 403 | `ACCOUNT_DISABLED` | Account has been disabled |
+| 404 | `USER_NOT_FOUND` | User doesn't exist |
+| 409 | `EMAIL_EXISTS` | Email already registered |
+| 429 | `RATE_LIMITED` | Too many requests (5/min) |
+
+**Error Response Format:**
+
+```json
+{
+  "error": "ERROR_CODE",
+  "message": "Human-readable error message",
+  "details": {} // Optional additional info
+}
+```
+
+---
+
+## Rate Limits
+
+| Endpoint | Limit | Window |
+|----------|-------|--------|
+| Sign In | 5 requests | 1 minute |
+| Sign Up | 3 requests | 1 minute |
+| Forgot Password | 3 requests | 5 minutes |
+| All others | 60 requests | 1 minute |
+
+**Rate Limit Headers:**
+
+```http
+X-RateLimit-Limit: 5
+X-RateLimit-Remaining: 3
+X-RateLimit-Reset: 1705312800
+```
+
+---
+
+## SDK Examples
+
+### JavaScript/TypeScript
+
+```typescript
+import { auth } from '@/lib/auth';
+
+// Sign in
+const { user, session } = await auth.signIn({
+  email: 'user@example.com',
+  password: 'securepassword123',
+});
+
+// Get session
+const session = await auth.getSession();
+
+// Sign out
+await auth.signOut();
+```
+
+### React Hook
+
+```tsx
+import { useAuth } from '@/hooks/use-auth';
+
+function LoginForm() {
+  const { signIn, isLoading, error } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await signIn({
+      email: formData.email,
+      password: formData.password,
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {error && <Alert>{error.message}</Alert>}
+      {/* form fields */}
+    </form>
+  );
+}
+```

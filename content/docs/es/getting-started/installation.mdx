@@ -1,0 +1,93 @@
+---
+title: Instalación
+description: Pon en marcha ShipKit en minutos con esta guía de instalación paso a paso.
+---
+
+# Instalación
+
+Esta guía te ayudará a configurar ShipKit en tu máquina local.
+
+## Requisitos Previos
+
+Antes de comenzar, asegúrate de tener lo siguiente instalado:
+
+- **Node.js 20+** - [Descargar Node.js](https://nodejs.org/)
+- **npm** o **pnpm** - Gestor de paquetes
+- **Git** - Control de versiones
+
+## Inicio Rápido
+
+### 1. Clonar el Repositorio
+
+```bash
+git clone https://github.com/your-org/shipkit.git my-saas-app
+cd my-saas-app
+```
+
+### 2. Instalar Dependencias
+
+```bash
+npm install
+```
+
+### 3. Configurar Variables de Entorno
+
+Copia el archivo de ejemplo de variables de entorno:
+
+```bash
+cp .env.example .env
+```
+
+Luego edita `.env` con tu configuración. Consulta [Configuración](/docs/getting-started/configuration) para más detalles.
+
+### 4. Configurar la Base de Datos
+
+Inicializa Prisma y crea tu base de datos:
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### 5. Iniciar el Servidor de Desarrollo
+
+```bash
+npm run dev
+```
+
+¡Tu aplicación ahora está ejecutándose en [http://localhost:3000](http://localhost:3000)!
+
+## ¿Qué Sigue?
+
+<Cards>
+  <Card title="Configuración" href="/docs/getting-started/configuration">
+    Configura tus proveedores y variables de entorno.
+  </Card>
+  <Card title="Estructura del Proyecto" href="/docs/getting-started/project-structure">
+    Aprende sobre la organización del código base.
+  </Card>
+</Cards>
+
+## Solución de Problemas
+
+### npm install falla
+
+Asegúrate de estar usando Node.js 20 o superior:
+
+```bash
+node --version
+```
+
+Si necesitas actualizar, usa [nvm](https://github.com/nvm-sh/nvm) o descarga desde nodejs.org.
+
+### Errores de conexión a la base de datos
+
+Asegúrate de que tu `DATABASE_URL` en `.env` sea correcto y que el servidor de base de datos esté ejecutándose.
+
+### Puerto 3000 ya en uso
+
+Detén el otro proceso o usa un puerto diferente:
+
+```bash
+npm run dev -- -p 3001
+```

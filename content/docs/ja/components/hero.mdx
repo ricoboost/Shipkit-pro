@@ -1,0 +1,268 @@
+---
+title: Heroコンポーネント
+description: さまざまなユースケースに対応した5つの異なるバリアントを持つランディングページのヒーローセクション
+---
+
+# Heroコンポーネント
+
+ヒーローセクションは、訪問者がランディングページで最初に目にするものです。ShipKitには、それぞれ異なるユースケースに最適化された5つのヒーローバリアントが含まれています。
+
+## 利用可能なバリアント
+
+| バリアント | 最適な用途 | 主な機能 |
+|---------|----------|-------------|
+| `HeroCentered` | 汎用目的 | クリーンで中央揃えのレイアウト |
+| `HeroSplit` | 製品紹介 | 画像付きのサイドバイサイド |
+| `HeroVideo` | デモとチュートリアル | 背景動画サポート |
+| `HeroGradient` | 視覚的インパクト | アニメーショングラデーション背景 |
+| `HeroMinimal` | シンプルなメッセージング | 気を散らさないデザイン |
+
+## 共通Props
+
+すべてのヒーローコンポーネントは、`HeroProps`インターフェースを通じてこれらのpropsを共有します:
+
+```typescript
+interface HeroProps {
+  title: string;                    // メイン見出し
+  subtitle?: string;                // タイトル上のオプションのサブタイトル
+  description?: string;             // タイトル下のサポートテキスト
+  primaryCTA?: CTAButton;           // プライマリアクションボタン
+  secondaryCTA?: CTAButton;         // セカンダリアクションボタン
+  badge?: string;                   // コンテンツ上のオプションのバッジ/ピル
+  animated?: boolean;               // アニメーションの有効/無効(デフォルト: true)
+  colorScheme?: ColorScheme;        // カラーテーマ
+  className?: string;               // 追加のCSSクラス
+}
+
+interface CTAButton {
+  label: string;
+  href: string;
+  variant?: 'default' | 'outline' | 'ghost';
+}
+```
+
+---
+
+## HeroCentered
+
+中央揃えのコンテンツを持つ最も汎用性の高いヒーローバリアント。
+
+### 使用方法
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+
+export function LandingHero() {
+  return (
+    <HeroCentered
+      title="Ship Your SaaS in Days, Not Months"
+      subtitle="The Modern Boilerplate"
+      description="Everything you need to launch a production-ready SaaS application with authentication, payments, and AI integration."
+      badge="New: v3.0 Released"
+      primaryCTA={{
+        label: 'Start Building',
+        href: '/register',
+      }}
+      secondaryCTA={{
+        label: 'View Demo',
+        href: '/demo',
+      }}
+      colorScheme="primary"
+    />
+  );
+}
+```
+
+### Props
+
+バリアント固有のスタイリングオプションで`HeroProps`を拡張します。
+
+---
+
+## HeroSplit
+
+コンテンツを片側に、画像をもう片側に配置したサイドバイサイドレイアウト。
+
+### 使用方法
+
+```tsx
+import { HeroSplit } from '@/components/marketing/hero/hero-split';
+
+export function ProductHero() {
+  return (
+    <HeroSplit
+      title="Beautiful Dashboard Included"
+      description="A fully functional admin dashboard with analytics, user management, and more."
+      primaryCTA={{ label: 'Get Started', href: '/register' }}
+      image={{
+        src: '/images/dashboard-preview.png',
+        alt: 'Dashboard Preview',
+        width: 800,
+        height: 600,
+      }}
+      imagePosition="right"
+    />
+  );
+}
+```
+
+### 追加Props
+
+```typescript
+interface HeroSplitProps extends HeroProps {
+  image?: {
+    src: string;
+    alt: string;
+    width?: number;
+    height?: number;
+  };
+  imagePosition?: 'left' | 'right';  // デフォルト: 'right'
+}
+```
+
+---
+
+## HeroVideo
+
+最大限の視覚的インパクトのための背景動画付きヒーローセクション。
+
+### 使用方法
+
+```tsx
+import { HeroVideo } from '@/components/marketing/hero/hero-video';
+
+export function VideoHero() {
+  return (
+    <HeroVideo
+      title="See It in Action"
+      description="Watch how easy it is to build with ShipKit"
+      primaryCTA={{ label: 'Try Free', href: '/register' }}
+      video={{
+        src: '/videos/demo.mp4',
+        poster: '/images/video-poster.jpg',
+      }}
+      overlay={true}
+      overlayOpacity={0.6}
+    />
+  );
+}
+```
+
+### 追加Props
+
+```typescript
+interface HeroVideoProps extends HeroProps {
+  video?: {
+    src: string;
+    poster?: string;
+  };
+  overlay?: boolean;           // 動画上の暗いオーバーレイ
+  overlayOpacity?: number;     // オーバーレイの不透明度(0-1)
+  autoPlay?: boolean;          // 動画の自動再生(デフォルト: true)
+  loop?: boolean;              // 動画のループ(デフォルト: true)
+  muted?: boolean;             // 動画のミュート(デフォルト: true)
+}
+```
+
+---
+
+## HeroGradient
+
+モダンでダイナミックな外観のためのアニメーショングラデーション背景。
+
+### 使用方法
+
+```tsx
+import { HeroGradient } from '@/components/marketing/hero/hero-gradient';
+
+export function GradientHero() {
+  return (
+    <HeroGradient
+      title="The Future of SaaS Development"
+      description="AI-native, fully customizable, and ready to ship"
+      primaryCTA={{ label: 'Get Started', href: '/register' }}
+      gradientColors={['#8B5CF6', '#EC4899', '#3B82F6']}
+      animationDuration={8}
+    />
+  );
+}
+```
+
+### 追加Props
+
+```typescript
+interface HeroGradientProps extends HeroProps {
+  gradientColors?: string[];      // グラデーションカラーの配列
+  gradientDirection?: string;     // CSSグラデーション方向
+  animationDuration?: number;     // アニメーションサイクルの秒数
+}
+```
+
+---
+
+## HeroMinimal
+
+集中的なメッセージングのためのクリーンで気を散らさないヒーロー。
+
+### 使用方法
+
+```tsx
+import { HeroMinimal } from '@/components/marketing/hero/hero-minimal';
+
+export function MinimalHero() {
+  return (
+    <HeroMinimal
+      title="Simple. Fast. Powerful."
+      description="Just the essentials, nothing more."
+      primaryCTA={{ label: 'Learn More', href: '/features' }}
+    />
+  );
+}
+```
+
+---
+
+## カラースキーム
+
+すべてのヒーローバリアントは5つのカラースキームをサポートします:
+
+```tsx
+// Primary(デフォルト) - プライマリブランドカラーを使用
+<HeroCentered colorScheme="primary" {...props} />
+
+// Secondary - 控えめなセカンダリ背景
+<HeroCentered colorScheme="secondary" {...props} />
+
+// Accent - 目を引くアクセントカラー
+<HeroCentered colorScheme="accent" {...props} />
+
+// Muted - 落ち着いたニュートラルトーン
+<HeroCentered colorScheme="muted" {...props} />
+
+// Destructive - 警告/アラートスタイル(まれな使用)
+<HeroCentered colorScheme="destructive" {...props} />
+```
+
+## アニメーションの無効化
+
+すべてのコンポーネントはデフォルトでアニメーションが有効です。アクセシビリティやパフォーマンスのために無効にできます:
+
+```tsx
+<HeroCentered animated={false} {...props} />
+```
+
+## レスポンシブ動作
+
+すべてのヒーローコンポーネントは完全にレスポンシブです:
+
+- **モバイル**: シングルカラム、スタックレイアウト
+- **タブレット**: 調整されたパディングとフォントサイズ
+- **デスクトップ**: 最適なスペーシングを持つ完全なレイアウト
+
+```tsx
+// classNameによるカスタムレスポンシブ調整
+<HeroCentered
+  className="min-h-[50vh] md:min-h-[70vh] lg:min-h-[80vh]"
+  {...props}
+/>
+```

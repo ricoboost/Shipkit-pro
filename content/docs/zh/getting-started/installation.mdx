@@ -1,0 +1,93 @@
+---
+title: 安装
+description: 通过此分步安装指南，在几分钟内启动并运行ShipKit。
+---
+
+# 安装
+
+本指南将帮助您在本地计算机上设置ShipKit。
+
+## 先决条件
+
+开始之前，请确保已安装以下内容：
+
+- **Node.js 20+** - [下载Node.js](https://nodejs.org/)
+- **npm** 或 **pnpm** - 包管理器
+- **Git** - 版本控制
+
+## 快速开始
+
+### 1. 克隆仓库
+
+```bash
+git clone https://github.com/your-org/shipkit.git my-saas-app
+cd my-saas-app
+```
+
+### 2. 安装依赖
+
+```bash
+npm install
+```
+
+### 3. 设置环境变量
+
+复制示例环境文件：
+
+```bash
+cp .env.example .env
+```
+
+然后使用您的配置编辑`.env`。详情请参阅[配置](/docs/getting-started/configuration)。
+
+### 4. 设置数据库
+
+初始化Prisma并创建数据库：
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### 5. 启动开发服务器
+
+```bash
+npm run dev
+```
+
+您的应用现在正在[http://localhost:3000](http://localhost:3000)上运行！
+
+## 下一步？
+
+<Cards>
+  <Card title="配置" href="/docs/getting-started/configuration">
+    配置您的提供商和环境变量。
+  </Card>
+  <Card title="项目结构" href="/docs/getting-started/project-structure">
+    了解代码库的组织结构。
+  </Card>
+</Cards>
+
+## 故障排除
+
+### npm install 失败
+
+确保您使用的是Node.js 20或更高版本：
+
+```bash
+node --version
+```
+
+如果需要升级，请使用[nvm](https://github.com/nvm-sh/nvm)或从nodejs.org下载。
+
+### 数据库连接错误
+
+确保`.env`中的`DATABASE_URL`正确，并且数据库服务器正在运行。
+
+### 端口3000已被占用
+
+停止其他进程或使用不同的端口：
+
+```bash
+npm run dev -- -p 3001
+```

@@ -1,0 +1,97 @@
+---
+title: Better Auth
+description: Configurez Better Auth pour une authentification moderne axée sur TypeScript.
+---
+
+# Configuration de Better Auth
+
+Better Auth est une bibliothèque d'authentification moderne avec un excellent support TypeScript et une API simple.
+
+## Configuration
+
+```bash
+AUTH_PROVIDER="betterauth"
+BETTER_AUTH_SECRET="your-secret-key"
+```
+
+## Implémentation
+
+```typescript
+// src/lib/auth/betterauth.ts
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { db } from '@/lib/db';
+
+export const auth = betterAuth({
+  database: prismaAdapter(db, {
+    provider: 'postgresql',
+  }),
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: true,
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    },
+  },
+});
+```
+
+## Configuration du Client
+
+```typescript
+// src/lib/auth/client.ts
+import { createAuthClient } from 'better-auth/react';
+
+export const authClient = createAuthClient({
+  baseURL: process.env.NEXT_PUBLIC_APP_URL,
+});
+```
+
+## Utilisation
+
+```tsx
+import { authClient } from '@/lib/auth/client';
+
+// Sign up
+await authClient.signUp.email({
+  email: 'user@example.com',
+  password: 'password',
+  name: 'User Name',
+});
+
+// Sign in
+await authClient.signIn.email({
+  email: 'user@example.com',
+  password: 'password',
+});
+
+// OAuth
+await authClient.signIn.social({
+  provider: 'google',
+});
+
+// Get session
+const session = await authClient.getSession();
+```
+
+## Hook React
+
+```tsx
+import { useSession } from '@/lib/auth/client';
+
+function Profile() {
+  const { data: session, isPending } = useSession();
+
+  if (isPending) return <Loading />;
+  if (!session) return <LoginButton />;
+
+  return <div>Welcome, {session.user.name}</div>;
+}
+```

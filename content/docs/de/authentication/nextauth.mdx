@@ -1,0 +1,143 @@
+---
+title: NextAuth.js
+description: Konfigurieren Sie NextAuth.js v5 für die Authentifizierung in ShipKit.
+---
+
+# NextAuth.js Einrichtung
+
+NextAuth.js ist eine flexible Authentifizierungslösung, die OAuth-Anbieter, Anmeldedaten und Magic Links unterstützt.
+
+## Konfiguration
+
+Legen Sie den Authentifizierungsanbieter in Ihrer `.env` fest:
+
+```bash
+AUTH_PROVIDER="nextauth"
+AUTH_SECRET="your-secret-key-generate-with-openssl"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+Generieren Sie ein Geheimnis:
+
+```bash
+openssl rand -base64 32
+```
+
+## OAuth-Anbieter
+
+### Google
+
+1. Gehen Sie zur [Google Cloud Console](https://console.cloud.google.com/)
+2. Erstellen Sie ein neues Projekt oder wählen Sie ein bestehendes aus
+3. Aktivieren Sie die Google+ API
+4. Erstellen Sie OAuth 2.0-Anmeldedaten
+5. Fügen Sie die autorisierte Weiterleitungs-URI hinzu: `http://localhost:3000/api/auth/callback/google`
+
+```bash
+GOOGLE_CLIENT_ID="your-client-id"
+GOOGLE_CLIENT_SECRET="your-client-secret"
+```
+
+### GitHub
+
+1. Gehen Sie zu [GitHub Entwicklereinstellungen](https://github.com/settings/developers)
+2. Erstellen Sie eine neue OAuth-App
+3. Setzen Sie die Callback-URL: `http://localhost:3000/api/auth/callback/github`
+
+```bash
+GITHUB_CLIENT_ID="your-client-id"
+GITHUB_CLIENT_SECRET="your-client-secret"
+```
+
+## Implementierungsdetails
+
+Die NextAuth-Konfiguration befindet sich in `src/lib/auth/nextauth.ts`:
+
+```typescript
+import NextAuth from 'next-auth';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import Google from 'next-auth/providers/google';
+import GitHub from 'next-auth/providers/github';
+import Credentials from 'next-auth/providers/credentials';
+import { db } from '@/lib/db';
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(db),
+  providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    GitHub({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    }),
+    Credentials({
+      // Email/password authentication
+    }),
+  ],
+  callbacks: {
+    session({ session, user }) {
+      session.user.id = user.id;
+      return session;
+    },
+  },
+});
+```
+
+## Anmeldedaten-Authentifizierung
+
+Aktivieren Sie die E-Mail/Passwort-Anmeldung:
+
+```typescript
+Credentials({
+  credentials: {
+    email: { label: 'Email', type: 'email' },
+    password: { label: 'Password', type: 'password' },
+  },
+  async authorize(credentials) {
+    const user = await db.user.findUnique({
+      where: { email: credentials.email },
+    });
+
+    if (!user || !user.password) return null;
+
+    const isValid = await bcrypt.compare(
+      credentials.password,
+      user.password
+    );
+
+    if (!isValid) return null;
+
+    return user;
+  },
+})
+```
+
+## Sitzungsverwaltung
+
+Holen Sie sich die aktuelle Sitzung:
+
+```typescript
+import { auth } from '@/lib/auth';
+
+// Server Component
+const session = await auth();
+
+// Client Component
+import { useSession } from 'next-auth/react';
+const { data: session } = useSession();
+```
+
+## Geschützte Routen
+
+Verwenden Sie Middleware zum Schutz von Routen:
+
+```typescript
+// middleware.ts
+export { auth as middleware } from '@/lib/auth';
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/settings/:path*'],
+};
+```

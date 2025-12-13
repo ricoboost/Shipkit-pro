@@ -1,0 +1,86 @@
+---
+title: 积分系统
+description: 使用ShipKit积分系统进行按使用量计费。
+---
+
+# 积分系统
+
+ShipKit包含灵活的积分系统，用于按使用量计费。
+
+## 概述
+
+积分允许您:
+- 对AI生成收费
+- 限制API调用
+- 提供按需付费定价
+- 与订阅捆绑
+
+## 使用
+
+```typescript
+import { credits } from '@/lib/payments/credits';
+
+// 检查余额
+const balance = await credits.getBalance(userId);
+
+// 扣除积分
+const success = await credits.deduct(userId, 10, 'AI聊天消息');
+
+if (!success) {
+  throw new Error('积分不足');
+}
+
+// 添加积分
+await credits.add(userId, 100, '每月订阅充值');
+
+// 获取历史记录
+const history = await credits.getHistory(userId);
+```
+
+## API路由
+
+```typescript
+// GET /api/credits/balance
+const balance = await fetch('/api/credits/balance');
+
+// GET /api/credits/history
+const history = await fetch('/api/credits/history');
+```
+
+## 数据库架构
+
+```prisma
+model CreditTransaction {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int      // 正数 = 添加，负数 = 扣除
+  reason    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+```
+
+## 订阅集成
+
+订阅续订时自动充值积分:
+
+```typescript
+// 在webhook处理程序中
+case 'invoice.paid':
+  const plan = getPlanFromSubscription(event.data);
+  await credits.add(userId, plan.monthlyCredits, '每月充值');
+  break;
+```
+
+## 积分成本
+
+在您的应用中配置成本:
+
+```typescript
+export const creditCosts = {
+  'ai-chat': 1,
+  'ai-image': 10,
+  'api-call': 1,
+  'export': 5,
+};
+```

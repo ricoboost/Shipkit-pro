@@ -1,0 +1,509 @@
+---
+title: Analytics Integration
+description: Track user behavior with Google Analytics, PostHog, or Plausible.
+---
+
+# Analytics Integration
+
+Track user behavior, measure conversions, and understand how users interact with your application.
+
+---
+
+## Analytics Options
+
+| Provider | Type | Privacy | Best For |
+|----------|------|---------|----------|
+| [Google Analytics](#google-analytics) | Full-featured | Cookie-based | Comprehensive tracking |
+| [PostHog](#posthog) | Product analytics | Self-hostable | Feature flags, funnels |
+| [Plausible](#plausible) | Privacy-focused | Cookie-free | GDPR compliance |
+
+---
+
+## Google Analytics
+
+### Setup
+
+1. Create a property at [analytics.google.com](https://analytics.google.com)
+2. Get your Measurement ID (G-XXXXXXXXXX)
+
+---
+
+### Environment Variables
+
+```bash
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+---
+
+### Implementation
+
+```tsx
+// src/components/analytics/google-analytics.tsx
+'use client';
+
+import Script from 'next/script';
+
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
+export function GoogleAnalytics() {
+  if (!GA_MEASUREMENT_ID) return null;
+
+  return (
+    <>
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${GA_MEASUREMENT_ID}');
+        `}
+      </Script>
+    </>
+  );
+}
+```
+
+---
+
+### Add to Layout
+
+```tsx
+// src/app/layout.tsx
+import { GoogleAnalytics } from '@/components/analytics/google-analytics';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <GoogleAnalytics />
+      </body>
+    </html>
+  );
+}
+```
+
+---
+
+### Track Custom Events
+
+```typescript
+// src/lib/analytics.ts
+export function trackEvent(
+  action: string,
+  category: string,
+  label?: string,
+  value?: number
+) {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', action, {
+      event_category: category,
+      event_label: label,
+      value: value,
+    });
+  }
+}
+
+// Usage
+trackEvent('sign_up', 'engagement', 'google_oauth');
+trackEvent('purchase', 'ecommerce', 'pro_plan', 29);
+```
+
+---
+
+### Track Page Views (App Router)
+
+```tsx
+// src/components/analytics/page-view-tracker.tsx
+'use client';
+
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+
+export function PageViewTracker() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      const url = pathname + searchParams.toString();
+      window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!, {
+        page_path: url,
+      });
+    }
+  }, [pathname, searchParams]);
+
+  return null;
+}
+```
+
+---
+
+## PostHog
+
+### Setup
+
+1. Create account at [posthog.com](https://posthog.com) or self-host
+2. Get your API key from Project Settings
+
+---
+
+### Install SDK
+
+```bash
+npm install posthog-js
+```
+
+---
+
+### Environment Variables
+
+```bash
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxxxx
+NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+```
+
+---
+
+### Implementation
+
+```tsx
+// src/components/analytics/posthog-provider.tsx
+'use client';
+
+import posthog from 'posthog-js';
+import { PostHogProvider as PHProvider } from 'posthog-js/react';
+import { useEffect } from 'react';
+
+export function PostHogProvider({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+        api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+        capture_pageview: false, // We'll handle this manually
+        capture_pageleave: true,
+      });
+    }
+  }, []);
+
+  return <PHProvider client={posthog}>{children}</PHProvider>;
+}
+```
+
+---
+
+### Track Events
+
+```typescript
+import posthog from 'posthog-js';
+
+// Track event
+posthog.capture('user_signed_up', {
+  method: 'google',
+  plan: 'free',
+});
+
+// Identify user
+posthog.identify(user.id, {
+  email: user.email,
+  name: user.name,
+  plan: user.subscription?.plan,
+});
+
+// Track page views
+posthog.capture('$pageview');
+```
+
+---
+
+### Feature Flags
+
+```tsx
+import { useFeatureFlagEnabled } from 'posthog-js/react';
+
+export function PricingPage() {
+  const showNewPricing = useFeatureFlagEnabled('new-pricing-page');
+
+  if (showNewPricing) {
+    return <NewPricingPage />;
+  }
+
+  return <OldPricingPage />;
+}
+```
+
+---
+
+## Plausible
+
+### Setup
+
+1. Create account at [plausible.io](https://plausible.io) or self-host
+2. Add your domain
+
+---
+
+### Environment Variables
+
+```bash
+NEXT_PUBLIC_PLAUSIBLE_DOMAIN=your-domain.com
+# Optional: for self-hosted
+NEXT_PUBLIC_PLAUSIBLE_HOST=https://plausible.your-domain.com
+```
+
+---
+
+### Implementation
+
+```tsx
+// src/components/analytics/plausible.tsx
+'use client';
+
+import Script from 'next/script';
+
+const DOMAIN = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
+const HOST = process.env.NEXT_PUBLIC_PLAUSIBLE_HOST || 'https://plausible.io';
+
+export function PlausibleAnalytics() {
+  if (!DOMAIN) return null;
+
+  return (
+    <Script
+      defer
+      data-domain={DOMAIN}
+      src={`${HOST}/js/script.js`}
+      strategy="afterInteractive"
+    />
+  );
+}
+```
+
+---
+
+### Track Custom Events
+
+```typescript
+// src/lib/analytics.ts
+export function trackPlausibleEvent(
+  name: string,
+  props?: Record<string, string | number | boolean>
+) {
+  if (typeof window !== 'undefined' && window.plausible) {
+    window.plausible(name, { props });
+  }
+}
+
+// Usage
+trackPlausibleEvent('Signup', { method: 'Google' });
+trackPlausibleEvent('Purchase', { plan: 'Pro', value: '29' });
+```
+
+---
+
+### TypeScript Declaration
+
+```typescript
+// src/types/global.d.ts
+declare global {
+  interface Window {
+    plausible: (
+      event: string,
+      options?: { props?: Record<string, string | number | boolean> }
+    ) => void;
+    gtag: (...args: any[]) => void;
+  }
+}
+
+export {};
+```
+
+---
+
+## Universal Analytics Service
+
+Create a unified analytics service that works with any provider:
+
+```typescript
+// src/lib/analytics/index.ts
+import posthog from 'posthog-js';
+
+type AnalyticsEvent = {
+  name: string;
+  properties?: Record<string, any>;
+};
+
+class Analytics {
+  private enabled = false;
+
+  init() {
+    this.enabled = process.env.NODE_ENV === 'production';
+  }
+
+  track(event: AnalyticsEvent) {
+    if (!this.enabled) {
+      console.log('[Analytics]', event.name, event.properties);
+      return;
+    }
+
+    // PostHog
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      posthog.capture(event.name, event.properties);
+    }
+
+    // Google Analytics
+    if (window.gtag) {
+      window.gtag('event', event.name, event.properties);
+    }
+
+    // Plausible
+    if (window.plausible) {
+      window.plausible(event.name, { props: event.properties });
+    }
+  }
+
+  identify(userId: string, traits?: Record<string, any>) {
+    if (!this.enabled) return;
+
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      posthog.identify(userId, traits);
+    }
+
+    if (window.gtag) {
+      window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!, {
+        user_id: userId,
+      });
+    }
+  }
+
+  page(url?: string) {
+    if (!this.enabled) return;
+
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      posthog.capture('$pageview', { url });
+    }
+
+    if (window.gtag) {
+      window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID!, {
+        page_path: url,
+      });
+    }
+  }
+
+  reset() {
+    if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      posthog.reset();
+    }
+  }
+}
+
+export const analytics = new Analytics();
+```
+
+---
+
+### Usage
+
+```typescript
+import { analytics } from '@/lib/analytics';
+
+// Initialize
+analytics.init();
+
+// Track events
+analytics.track({
+  name: 'subscription_started',
+  properties: {
+    plan: 'pro',
+    price: 29,
+    period: 'monthly',
+  },
+});
+
+// Identify users
+analytics.identify(user.id, {
+  email: user.email,
+  plan: user.subscription?.plan,
+});
+
+// Track page views
+analytics.page(window.location.pathname);
+
+// Reset on logout
+analytics.reset();
+```
+
+---
+
+## Consent Management
+
+### Cookie Consent Banner
+
+```tsx
+// src/components/cookie-consent.tsx
+'use client';
+
+import { useState, useEffect } from 'react';
+import { analytics } from '@/lib/analytics';
+
+export function CookieConsent() {
+  const [showBanner, setShowBanner] = useState(false);
+
+  useEffect(() => {
+    const consent = localStorage.getItem('analytics-consent');
+    if (!consent) {
+      setShowBanner(true);
+    } else if (consent === 'accepted') {
+      analytics.init();
+    }
+  }, []);
+
+  const acceptAll = () => {
+    localStorage.setItem('analytics-consent', 'accepted');
+    analytics.init();
+    setShowBanner(false);
+  };
+
+  const rejectAll = () => {
+    localStorage.setItem('analytics-consent', 'rejected');
+    setShowBanner(false);
+  };
+
+  if (!showBanner) return null;
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4">
+      <div className="container flex items-center justify-between">
+        <p>We use cookies to improve your experience.</p>
+        <div className="flex gap-2">
+          <button onClick={rejectAll}>Reject</button>
+          <button onClick={acceptAll}>Accept</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## Best Practices
+
+1. **Respect user privacy** - Implement consent management
+2. **Use server-side tracking** for sensitive events
+3. **Sanitize data** - Don't track PII without consent
+4. **Test tracking** before deploying
+5. **Document events** - Maintain an event schema
+6. **Use meaningful event names** - `subscription_started` not `click_button_3`
+
+---
+
+## Resources
+
+- [Google Analytics 4 Documentation](https://developers.google.com/analytics/devguides/collection/ga4)
+- [PostHog Documentation](https://posthog.com/docs)
+- [Plausible Documentation](https://plausible.io/docs)

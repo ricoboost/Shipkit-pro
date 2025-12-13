@@ -1,0 +1,126 @@
+---
+title: Organisations-API
+description: API-Referenz für die Verwaltung von Organisationen.
+---
+
+# Organisations-API
+
+## Endpunkte
+
+### Organisationen Auflisten
+
+Alle Organisationen des aktuellen Benutzers abrufen.
+
+```http
+GET /api/organizations
+Authorization: Bearer <token>
+```
+
+**Antwort:**
+
+```json
+{
+  "organizations": [
+    {
+      "id": "cuid",
+      "name": "My Team",
+      "slug": "my-team",
+      "role": "OWNER"
+    }
+  ]
+}
+```
+
+### Organisation Erstellen
+
+```http
+POST /api/organizations
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "My Team",
+  "slug": "my-team"
+}
+```
+
+### Organisation Abrufen
+
+```http
+GET /api/organizations/:id
+Authorization: Bearer <token>
+```
+
+### Organisation Aktualisieren
+
+```http
+PATCH /api/organizations/:id
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "Updated Name"
+}
+```
+
+### Organisation Löschen
+
+```http
+DELETE /api/organizations/:id
+Authorization: Bearer <token>
+```
+
+## Mitglieder
+
+### Mitglieder Auflisten
+
+```http
+GET /api/organizations/:id/members
+Authorization: Bearer <token>
+```
+
+### Mitgliederrolle Aktualisieren
+
+```http
+PATCH /api/organizations/:id/members/:memberId
+Authorization: Bearer <token>
+
+{
+  "role": "ADMIN"
+}
+```
+
+### Mitglied Entfernen
+
+```http
+DELETE /api/organizations/:id/members/:memberId
+Authorization: Bearer <token>
+```
+
+## Einladungen
+
+### Einladung Senden
+
+```http
+POST /api/organizations/:id/invitations
+Authorization: Bearer <token>
+
+{
+  "email": "user@example.com",
+  "role": "MEMBER"
+}
+```
+
+### Einladung Annehmen
+
+```http
+POST /api/invitations/:token
+```
+
+## Rollen
+
+| Rolle | Berechtigungen |
+|-------|----------------|
+| OWNER | Vollzugriff, kann Organisation löschen |
+| ADMIN | Mitglieder und Einstellungen verwalten |
+| MEMBER | Ressourcen anzeigen und verwenden |

@@ -1,0 +1,146 @@
+---
+title: 支付概述
+description: ShipKit 通过统一接口支持多个支付提供商。
+---
+
+# 支付
+
+ShipKit 提供统一的支付层，支持多个提供商。只需一个环境变量即可在它们之间切换。
+
+## 支持的提供商
+
+<Cards>
+  <Card title="Stripe" href="/docs/payments/stripe">
+    全面控制支付，覆盖全球。每笔交易 2.9% + 30¢。
+  </Card>
+  <Card title="LemonSqueezy" href="/docs/payments/lemonsqueezy">
+    记录商家 - 处理税务和合规。每笔交易 5% + 50¢。
+  </Card>
+  <Card title="Polar" href="/docs/payments/polar">
+    专注于开源的支付解决方案。每笔交易 5%。
+  </Card>
+</Cards>
+
+## 切换提供商
+
+```bash
+# .env
+PAYMENT_PROVIDER="stripe"  # 或 "lemonsqueezy" 或 "polar"
+```
+
+## 统一接口
+
+```typescript
+// src/lib/payments/types.ts
+export interface PaymentProvider {
+  createCheckout(params: CheckoutParams): Promise<CheckoutResult>;
+  createPortalSession(customerId: string): Promise<string>;
+  handleWebhook(payload: any, signature: string): Promise<WebhookEvent>;
+  getSubscription(subscriptionId: string): Promise<Subscription>;
+  cancelSubscription(subscriptionId: string): Promise<void>;
+}
+```
+
+## 创建结账会话
+
+```typescript
+import { payments } from '@/lib/payments';
+
+// 创建结账会话
+const checkout = await payments.createCheckout({
+  priceId: 'price_xxx',
+  userId: user.id,
+  successUrl: '/dashboard?success=true',
+  cancelUrl: '/pricing',
+});
+
+// 重定向到结账
+redirect(checkout.url);
+```
+
+## 客户门户
+
+允许用户管理他们的订阅：
+
+```typescript
+const portalUrl = await payments.createPortalSession(user.customerId);
+redirect(portalUrl);
+```
+
+## Webhook
+
+处理支付事件：
+
+```typescript
+// src/app/api/payments/webhook/route.ts
+import { payments } from '@/lib/payments';
+
+export async function POST(req: Request) {
+  const payload = await req.text();
+  const signature = req.headers.get('stripe-signature')!;
+
+  const event = await payments.handleWebhook(payload, signature);
+
+  switch (event.type) {
+    case 'checkout.completed':
+      await activateSubscription(event.data);
+      break;
+    case 'subscription.updated':
+      await updateSubscription(event.data);
+      break;
+    case 'subscription.canceled':
+      await cancelSubscription(event.data);
+      break;
+  }
+
+  return new Response('OK');
+}
+```
+
+## 订阅计划
+
+在 `src/config/plans.ts` 中配置计划：
+
+```typescript
+export const plans = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    description: '适合个人',
+    price: { monthly: 9, yearly: 90 },
+    features: ['5个项目', '1GB存储', '邮件支持'],
+    stripePriceId: 'price_xxx',
+    lemonPriceId: 'xxx',
+    polarPriceId: 'xxx',
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    description: '适合团队',
+    price: { monthly: 29, yearly: 290 },
+    features: ['无限项目', '10GB存储', '优先支持'],
+    stripePriceId: 'price_yyy',
+    lemonPriceId: 'yyy',
+    polarPriceId: 'yyy',
+  },
+];
+```
+
+## 积分系统
+
+ShipKit 包含基于积分的系统，用于按使用量计费：
+
+```typescript
+import { credits } from '@/lib/payments/credits';
+
+// 检查余额
+const balance = await credits.getBalance(userId);
+
+// 扣除积分
+await credits.deduct(userId, 10, 'AI生成');
+
+// 添加积分
+await credits.add(userId, 100, '每月充值');
+```
+
+详见[积分系统](/docs/payments/credits)。

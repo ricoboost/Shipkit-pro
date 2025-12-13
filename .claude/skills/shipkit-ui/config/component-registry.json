@@ -1,0 +1,157 @@
+{
+  "name": "shipkit-ui",
+  "version": "1.0.0",
+  "description": "ShipKit Pro UI component templates",
+  "categories": {
+    "landing": {
+      "description": "Landing page sections and marketing components",
+      "templates": [
+        {
+          "name": "hero-centered",
+          "description": "Centered hero with headline and CTAs",
+          "tags": ["hero", "marketing", "landing"]
+        },
+        {
+          "name": "hero-split",
+          "description": "Split hero with text and image",
+          "tags": ["hero", "marketing", "landing"]
+        },
+        {
+          "name": "hero-video",
+          "description": "Hero with video background",
+          "tags": ["hero", "marketing", "video"]
+        },
+        {
+          "name": "features-grid",
+          "description": "Grid of feature cards with icons",
+          "tags": ["features", "marketing"]
+        },
+        {
+          "name": "features-alternating",
+          "description": "Alternating feature rows with images",
+          "tags": ["features", "marketing"]
+        },
+        {
+          "name": "pricing-cards",
+          "description": "Side-by-side pricing cards",
+          "tags": ["pricing", "marketing"]
+        },
+        {
+          "name": "pricing-table",
+          "description": "Feature comparison pricing table",
+          "tags": ["pricing", "marketing"]
+        },
+        {
+          "name": "testimonials-grid",
+          "description": "Grid of testimonial cards",
+          "tags": ["testimonials", "social-proof"]
+        },
+        {
+          "name": "testimonials-carousel",
+          "description": "Swipeable testimonial carousel",
+          "tags": ["testimonials", "social-proof", "interactive"]
+        },
+        {
+          "name": "testimonials-marquee",
+          "description": "Infinite scrolling testimonials",
+          "tags": ["testimonials", "social-proof", "animation"]
+        },
+        {
+          "name": "faq-accordion",
+          "description": "Expandable FAQ accordion",
+          "tags": ["faq", "support"]
+        },
+        {
+          "name": "faq-two-column",
+          "description": "Two-column FAQ layout",
+          "tags": ["faq", "support"]
+        },
+        {
+          "name": "cta-simple",
+          "description": "Centered CTA section",
+          "tags": ["cta", "conversion"]
+        },
+        {
+          "name": "cta-banner",
+          "description": "Full-width gradient CTA banner",
+          "tags": ["cta", "conversion"]
+        }
+      ]
+    },
+    "dashboard": {
+      "description": "Dashboard and admin panel components",
+      "templates": [
+        {
+          "name": "sidebar-layout",
+          "description": "Dashboard layout with collapsible sidebar",
+          "tags": ["layout", "navigation", "dashboard"]
+        },
+        {
+          "name": "stats-cards",
+          "description": "Row of metric/KPI cards",
+          "tags": ["metrics", "dashboard"]
+        },
+        {
+          "name": "data-table",
+          "description": "Sortable, filterable data table",
+          "tags": ["table", "data", "dashboard"]
+        },
+        {
+          "name": "activity-feed",
+          "description": "Timeline of activities/events",
+          "tags": ["activity", "timeline", "dashboard"]
+        }
+      ]
+    },
+    "forms": {
+      "description": "Form components and patterns",
+      "templates": [
+        {
+          "name": "auth-form",
+          "description": "Login/signup form with social logins",
+          "tags": ["auth", "form", "login"]
+        },
+        {
+          "name": "settings-form",
+          "description": "Comprehensive settings form with sections",
+          "tags": ["settings", "form", "profile"]
+        }
+      ]
+    },
+    "common": {
+      "description": "Common reusable components",
+      "templates": [
+        {
+          "name": "navbar",
+          "description": "Responsive navigation bar",
+          "tags": ["navigation", "header"]
+        },
+        {
+          "name": "footer",
+          "description": "Site footer with links and newsletter",
+          "tags": ["footer", "navigation"]
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "required": [
+      "@/components/ui/button",
+      "@/components/ui/card",
+      "@/components/ui/input",
+      "@/lib/utils"
+    ],
+    "optional": [
+      "@/components/ui/accordion",
+      "@/components/ui/avatar",
+      "@/components/ui/badge",
+      "@/components/ui/dropdown-menu",
+      "@/components/ui/select",
+      "@/components/ui/separator",
+      "@/components/ui/sheet",
+      "@/components/ui/switch",
+      "@/components/ui/table",
+      "@/components/ui/textarea"
+    ]
+  }
+}

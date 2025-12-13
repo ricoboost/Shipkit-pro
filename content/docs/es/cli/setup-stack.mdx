@@ -1,0 +1,167 @@
+---
+title: Selector de Stack
+description: Reduce el exceso de archivos seleccionando solo las herramientas de codificación IA y estrategia de despliegue que necesitas.
+---
+
+# Selector de Stack
+
+El Selector de Stack es un paso de incorporación opcional que ayuda a reducir el exceso de archivos ignorando configuraciones no utilizadas en git. En lugar de mantener todas las configuraciones de herramientas de IA y archivos de despliegue, eliges lo que realmente usas.
+
+## Por Qué Usarlo
+
+ShipKit incluye archivos de configuración para múltiples herramientas de codificación IA y estrategias de despliegue:
+
+| Categoría | Archivos | Tamaño |
+|-----------|----------|--------|
+| Claude Code | `.claude/`, `CLAUDE.md` | ~265KB |
+| Cursor | `.cursor/` | ~8KB |
+| Windsurf | `.windsurfrules` | ~1KB |
+| Docker | `Dockerfile`, `docker-compose*.yml`, `nginx/` | ~15KB |
+
+Si solo usas Claude Code y despliegas en Vercel, puedes ignorar el resto y mantener tu proyecto limpio.
+
+## Ejecutar el Selector de Stack
+
+### Modo Interactivo
+
+```bash
+npm run setup:stack
+```
+
+Esto abre un prompt interactivo:
+
+```
+Selector de Stack (Opcional)
+
+Este paso ayuda a reducir el exceso de archivos ignorando
+configuraciones no utilizadas. Puedes omitirlo para mantener todas las opciones.
+
+¿Qué herramienta(s) de codificación IA usarás? (selecciona múltiples con comas)
+   [1] Claude Code
+   [2] Cursor
+   [3] Windsurf
+   [a] Todas / Mantener todas (predeterminado)
+   [s] Omitir este paso
+
+Tu elección: 1,2
+
+¿Qué estrategia de despliegue usarás?
+   [1] Vercel (recomendado para Next.js)
+   [2] Docker / Auto-alojado
+   [s] Omitir este paso
+
+Tu elección: 1
+```
+
+### Verificar Configuración Actual
+
+```bash
+npm run setup:stack -- --list
+```
+
+### Restaurar Todos los Archivos
+
+Si cambias de opinión, restaura todos los archivos ignorados:
+
+```bash
+npm run setup:stack -- --restore
+```
+
+## Qué Se Ignora en Git
+
+Basado en tus selecciones, el Selector de Stack agrega entradas a tu `.gitignore`:
+
+### Herramientas de Codificación IA
+
+| Herramienta | Archivos Ignorados |
+|-------------|-------------------|
+| Claude Code | `.claude/`, `CLAUDE.md` |
+| Cursor | `.cursor/` |
+| Windsurf | `.windsurfrules` |
+
+**Nota:** `AGENTS.md` se mantiene si se selecciona cualquier herramienta de IA.
+
+### Estrategia de Despliegue
+
+| Selección | Archivos Ignorados |
+|-----------|-------------------|
+| Vercel | `Dockerfile`, `docker-compose.yml`, `docker-compose.dev.yml`, `.dockerignore`, `nginx/` |
+| Docker | Ninguno (todos los archivos Docker se mantienen) |
+
+**Nota:** Los workflows de `.github/` siempre se mantienen para ambas estrategias.
+
+## Archivo de Configuración
+
+El Selector de Stack crea `.stack-config.json` para rastrear tus elecciones:
+
+```json
+{
+  "selectedAt": "2024-12-13T10:30:00.000Z",
+  "codingTools": ["claude", "cursor"],
+  "deployment": "vercel",
+  "gitignored": [
+    ".windsurfrules",
+    "Dockerfile",
+    "docker-compose.yml",
+    "docker-compose.dev.yml",
+    ".dockerignore",
+    "nginx/"
+  ]
+}
+```
+
+Este archivo permite que el comando `--restore` funcione correctamente.
+
+## Integración con el Asistente de Configuración
+
+El Selector de Stack es el primer paso opcional al ejecutar el asistente de configuración completo:
+
+```bash
+npm run setup
+```
+
+El flujo del asistente es:
+
+1. **Selector de Stack** (Opcional) - Elige tus herramientas
+2. Variables de Entorno (Requerido)
+3. Base de Datos (Requerido)
+4. Autenticación (Requerido)
+5. Pagos (Opcional)
+6. Proveedor de IA (Opcional)
+7. Usuario Administrador (Opcional)
+
+## Mejores Prácticas
+
+### Cuándo Usar el Selector de Stack
+
+- Iniciando un nuevo proyecto con herramientas específicas
+- Limpiando después de clonar el boilerplate
+- Reduciendo ruido en tu explorador de archivos
+
+### Cuándo Omitirlo
+
+- Evaluando múltiples herramientas de codificación IA
+- Planeando cambiar estrategias de despliegue
+- Trabajando en equipo con preferencias de herramientas mixtas
+
+## Solución de Problemas
+
+### Los Archivos Siguen Apareciendo Después de la Selección
+
+El Selector de Stack solo agrega archivos a `.gitignore` - no los elimina. Los archivos permanecen en tu directorio de trabajo pero no se confirmarán en git.
+
+### Quiero Eliminar Archivos en Su Lugar
+
+Después de ejecutar el Selector de Stack, puedes eliminar manualmente los archivos ignorados:
+
+```bash
+# Ver qué está ignorado
+npm run setup:stack -- --list
+
+# Eliminar manualmente si lo deseas
+rm -rf .cursor .windsurfrules
+```
+
+### La Restauración No Funciona
+
+Asegúrate de que `.stack-config.json` exista. Si fue eliminado, necesitarás eliminar manualmente la sección del Selector de Stack de `.gitignore`.

@@ -1,0 +1,64 @@
+---
+title: Erstellen Sie Ihr erstes SaaS in 30 Minuten
+description: Eine vollständige Schritt-für-Schritt-Anleitung zum Erstellen einer funktionierenden SaaS-Anwendung mit Authentifizierung, Zahlungen und Benutzer-Dashboard.
+---
+
+# Erstellen Sie Ihr erstes SaaS in 30 Minuten
+
+In diesem Tutorial erstellen Sie eine voll funktionsfähige SaaS-Anwendung von Grund auf. Am Ende haben Sie:
+
+- Benutzerauthentifizierung (Registrierung, Anmeldung, E-Mail-Verifizierung)
+- Abonnement-Abrechnung mit Stripe
+- Benutzer-Dashboard mit Kontoverwaltung
+- Admin-Panel zur Benutzerüberwachung
+
+## Voraussetzungen
+
+- **Node.js 20+** installiert
+- **PostgreSQL**-Datenbank
+- **Stripe-Konto** im Testmodus
+
+## Schritt 1: Klonen und Installieren
+
+```bash
+git clone https://github.com/your-org/shipkit mein-saas
+cd mein-saas
+npm install
+```
+
+## Schritt 2: Setup-Assistent ausführen
+
+```bash
+npm run setup
+```
+
+## Schritt 3: Stripe-Produkte konfigurieren
+
+1. Gehen Sie zum [Stripe-Dashboard](https://dashboard.stripe.com/test/products)
+2. Erstellen Sie zwei Produkte: Kostenlos und Pro
+
+## Schritt 4: Datenbank initialisieren
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+## Schritt 5: Entwicklungsserver starten
+
+```bash
+npm run dev
+```
+
+Ihre App läuft jetzt unter [http://localhost:3000](http://localhost:3000)!
+
+## Nächste Schritte
+
+<Cards>
+  <Card title="KI-Funktionen hinzufügen" href="/docs/tutorials/ai-saas">
+    Integrieren Sie KI-Fähigkeiten mit kreditbasierter Abrechnung.
+  </Card>
+  <Card title="In Produktion bereitstellen" href="/docs/tutorials/deploy-production">
+    Starten Sie Ihre App auf Vercel, Railway oder Docker.
+  </Card>
+</Cards>

@@ -1,0 +1,382 @@
+---
+title: Testimonials Components
+description: Display customer testimonials with cards, grids, carousels, and infinite scroll marquees
+---
+
+# Testimonials Components
+
+Social proof is essential for conversions. ShipKit includes 4 testimonial components with star ratings, avatars, and multiple layout options.
+
+## Available Components
+
+| Component | Description |
+|-----------|-------------|
+| `TestimonialCard` | Single testimonial card with avatar and rating |
+| `TestimonialFeatured` | Large featured testimonial with optional image |
+| `TestimonialsGrid` | Grid/masonry layout for multiple testimonials |
+| `TestimonialsCarousel` | Sliding carousel with autoplay |
+| `TestimonialsMarquee` | Infinite scroll marquee animation |
+
+---
+
+## TestimonialCard
+
+Base card component for displaying a single testimonial.
+
+### Preview
+
+<ComponentPreview title="TestimonialCard" background="muted">
+  <TestimonialCardPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { TestimonialCard } from '@/components/marketing/testimonials/testimonial-card';
+
+<TestimonialCard
+  content="ShipKit saved us months of development time. The component library is incredibly well-designed and the documentation is top-notch."
+  author={{
+    name: 'Sarah Chen',
+    title: 'CTO',
+    company: 'TechStartup Inc',
+    avatar: '/avatars/sarah.jpg',
+  }}
+  rating={5}
+  showRating={true}
+  showQuoteIcon={true}
+  size="md"
+  colorScheme="primary"
+/>
+```
+
+### Props
+
+```typescript
+interface TestimonialCardProps {
+  content: string;
+  author: {
+    name: string;
+    title?: string;
+    company?: string;
+    avatar?: string;
+  };
+  rating?: number;           // 1-5 stars
+  showRating?: boolean;      // Display star rating
+  showQuoteIcon?: boolean;   // Show quote icon decoration
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'elevated' | 'bordered' | 'ghost';
+  colorScheme?: ColorScheme;
+  className?: string;
+}
+```
+
+### Variants
+
+| Variant | Description |
+|---------|-------------|
+| `default` | Standard card with subtle border |
+| `elevated` | Card with shadow |
+| `bordered` | Thicker border emphasis |
+| `ghost` | No border or background |
+
+---
+
+## TestimonialFeatured
+
+Large format testimonial for highlighting a key customer.
+
+### Preview
+
+<ComponentPreview title="TestimonialFeatured" background="muted">
+  <TestimonialFeaturedPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { TestimonialFeatured } from '@/components/marketing/testimonials/testimonial-card';
+
+<TestimonialFeatured
+  content="Moving to ShipKit was the best decision we made. Our development velocity increased by 3x and we shipped our MVP in just 2 weeks."
+  author={{
+    name: 'Michael Park',
+    title: 'Founder',
+    company: 'LaunchPad',
+    avatar: '/avatars/michael.jpg',
+  }}
+  rating={5}
+  image="/images/testimonials/michael-full.jpg"
+  imagePosition="left"
+/>
+```
+
+### Props
+
+```typescript
+interface TestimonialFeaturedProps {
+  content: string;
+  author: {
+    name: string;
+    title?: string;
+    company?: string;
+    avatar?: string;
+  };
+  rating?: number;
+  image?: string;                    // Full-size image
+  imagePosition?: 'left' | 'right';
+  colorScheme?: ColorScheme;
+  className?: string;
+}
+```
+
+---
+
+## TestimonialsGrid
+
+Display multiple testimonials in a grid or masonry layout.
+
+### Preview
+
+<ComponentPreview title="TestimonialsGrid" background="muted">
+  <TestimonialsGridPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { TestimonialsGrid } from '@/components/marketing/testimonials/testimonials-grid';
+
+const testimonials = [
+  {
+    content: 'Incredible time saver!',
+    author: { name: 'Alex Johnson', title: 'Developer' },
+    rating: 5,
+  },
+  {
+    content: 'Best boilerplate I have ever used.',
+    author: { name: 'Emily Davis', company: 'StartupXYZ' },
+    rating: 5,
+  },
+  // ... more testimonials
+];
+
+<TestimonialsGrid
+  title="Loved by Developers"
+  subtitle="Testimonials"
+  description="See what our customers have to say about ShipKit"
+  testimonials={testimonials}
+  columns={3}
+  masonry={false}
+  showRating={true}
+/>
+```
+
+### Props
+
+```typescript
+interface TestimonialsGridProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  testimonials: TestimonialItem[];
+  columns?: 2 | 3 | 4;
+  masonry?: boolean;          // Use masonry layout (variable heights)
+  showRating?: boolean;
+  animated?: boolean;
+  colorScheme?: ColorScheme;
+  className?: string;
+}
+```
+
+### Masonry vs Grid
+
+```tsx
+// Standard grid - all cards same height
+<TestimonialsGrid masonry={false} columns={3} {...props} />
+
+// Masonry - cards vary in height based on content
+<TestimonialsGrid masonry={true} columns={3} {...props} />
+```
+
+---
+
+## TestimonialsCarousel
+
+Sliding carousel for testimonials with autoplay support.
+
+### Preview
+
+<ComponentPreview title="TestimonialsCarousel" background="muted">
+  <TestimonialsCarouselPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { TestimonialsCarousel } from '@/components/marketing/testimonials/testimonials-carousel';
+
+<TestimonialsCarousel
+  title="What Our Users Say"
+  testimonials={[
+    {
+      content: 'ShipKit is amazing...',
+      author: { name: 'Jane Smith', title: 'CEO' },
+      rating: 5,
+      image: '/images/jane.jpg',  // For featured variant
+    },
+    // ... more testimonials
+  ]}
+  variant="featured"
+  autoPlay={true}
+  autoPlayInterval={5000}
+  showControls={true}
+  showDots={true}
+/>
+```
+
+### Props
+
+```typescript
+interface TestimonialsCarouselProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  testimonials: (TestimonialItem & { image?: string })[];
+  autoPlay?: boolean;              // Auto-advance slides
+  autoPlayInterval?: number;       // Milliseconds between slides
+  showControls?: boolean;          // Show prev/next buttons
+  showDots?: boolean;              // Show navigation dots
+  variant?: 'cards' | 'featured';  // Card style or large featured
+  colorScheme?: ColorScheme;
+  className?: string;
+}
+```
+
+### Variants
+
+| Variant | Description |
+|---------|-------------|
+| `featured` | Large testimonial with optional image (default) |
+| `cards` | Standard card format, centered |
+
+---
+
+## TestimonialsMarquee
+
+Infinite scroll animation for continuous social proof.
+
+### Preview
+
+<ComponentPreview title="TestimonialsMarquee" background="muted">
+  <TestimonialsMarqueePreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { TestimonialsMarquee } from '@/components/marketing/testimonials/testimonials-marquee';
+
+<TestimonialsMarquee
+  title="Trusted by Thousands"
+  testimonials={manyTestimonials}
+  speed="medium"
+  direction="left"
+  pauseOnHover={true}
+  rows={2}
+/>
+```
+
+### Props
+
+```typescript
+interface TestimonialsMarqueeProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  testimonials: TestimonialItem[];
+  speed?: 'slow' | 'medium' | 'fast';
+  direction?: 'left' | 'right';
+  pauseOnHover?: boolean;          // Pause animation on hover
+  rows?: 1 | 2;                    // Number of scrolling rows
+  colorScheme?: ColorScheme;
+  className?: string;
+}
+```
+
+### Speed Options
+
+| Speed | Duration |
+|-------|----------|
+| `slow` | 60 seconds |
+| `medium` | 40 seconds (default) |
+| `fast` | 25 seconds |
+
+---
+
+## Color Schemes
+
+All testimonial components support 5 color schemes:
+
+```tsx
+<TestimonialsGrid colorScheme="primary" {...props} />
+<TestimonialsGrid colorScheme="secondary" {...props} />
+<TestimonialsGrid colorScheme="accent" {...props} />
+<TestimonialsGrid colorScheme="muted" {...props} />
+<TestimonialsGrid colorScheme="destructive" {...props} />
+```
+
+---
+
+## Best Practices
+
+### Include Real Details
+
+```tsx
+// Good: Specific and credible
+author: {
+  name: 'Sarah Chen',
+  title: 'CTO',
+  company: 'TechStartup Inc',
+  avatar: '/avatars/sarah.jpg',
+}
+
+// Weak: Missing credibility signals
+author: {
+  name: 'S.C.',
+}
+```
+
+### Use Star Ratings
+
+```tsx
+// Ratings add visual credibility
+rating: 5
+
+// Pair with showRating prop
+<TestimonialCard showRating={true} rating={5} {...props} />
+```
+
+### Mix Content Lengths
+
+For masonry layouts, vary testimonial lengths for visual interest:
+
+```tsx
+// Short
+{ content: 'Love it!', ... }
+
+// Medium
+{ content: 'ShipKit saved us weeks of development time.', ... }
+
+// Long
+{ content: 'We evaluated 5 different boilerplates and ShipKit was by far the most complete. The code quality, documentation, and component library are exceptional.', ... }
+```
+
+---
+
+## Accessibility
+
+- Star ratings include proper ARIA labels
+- Carousel controls are keyboard accessible
+- Marquee pauses on hover for readability
+- Avatar images include alt text from author name

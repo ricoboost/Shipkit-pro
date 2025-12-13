@@ -1,0 +1,430 @@
+---
+title: Build Your First SaaS in 30 Minutes
+description: A complete step-by-step guide to creating a working SaaS application with authentication, payments, and user dashboard.
+---
+
+# Build Your First SaaS in 30 Minutes
+
+In this tutorial, you'll create a fully functional SaaS application from scratch. By the end, you'll have:
+
+- User authentication (sign up, sign in, email verification)
+- Subscription billing with Stripe
+- User dashboard with account management
+- Admin panel for user oversight
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+- **Node.js 20+** installed ([download](https://nodejs.org/))
+- **PostgreSQL** database (local or cloud like [Neon](https://neon.tech), [Supabase](https://supabase.com))
+- **Stripe account** in test mode ([sign up](https://stripe.com))
+
+## Step 1: Clone and Install
+
+First, clone ShipKit and install dependencies:
+
+```bash
+git clone https://github.com/your-org/shipkit my-saas
+cd my-saas
+npm install
+```
+
+## Step 2: Run the Setup Wizard
+
+ShipKit includes an interactive setup wizard that configures everything for you:
+
+```bash
+npm run setup
+```
+
+The wizard will guide you through:
+
+1. **Environment Variables** - Basic app configuration
+2. **Database Connection** - PostgreSQL setup
+3. **Authentication Provider** - We'll use NextAuth for this tutorial
+4. **Payment Provider** - Stripe configuration
+
+### Manual Configuration (Alternative)
+
+If you prefer manual setup, copy the environment template:
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env` with your credentials:
+
+```bash
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME="My SaaS"
+
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
+
+# Auth (NextAuth)
+AUTH_PROVIDER=nextauth
+NEXTAUTH_SECRET="your-secret-key-here"
+NEXTAUTH_URL=http://localhost:3000
+
+# Stripe
+PAYMENT_PROVIDER=stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+## Step 3: Set Up Stripe Products
+
+Create your subscription products in Stripe:
+
+### 3.1 Create Products in Stripe Dashboard
+
+1. Go to [Stripe Dashboard](https://dashboard.stripe.com/test/products)
+2. Click "Add Product"
+3. Create two products:
+
+**Free Plan:**
+- Name: Free
+- Price: $0/month (or skip creating a price)
+
+**Pro Plan:**
+- Name: Pro
+- Price: $29/month
+- Copy the Price ID (starts with `price_`)
+
+### 3.2 Add Price IDs to Environment
+
+```bash
+# Stripe Price IDs
+STRIPE_PRO_MONTHLY_PRICE_ID=price_xxx
+STRIPE_PRO_YEARLY_PRICE_ID=price_yyy
+```
+
+### 3.3 Configure Plans in Code
+
+Edit `src/lib/payments/config.ts`:
+
+```typescript
+export const pricingPlans = [
+  {
+    id: 'free',
+    name: 'Free',
+    description: 'Get started with basic features',
+    price: { monthly: 0, yearly: 0 },
+    features: [
+      '100 API requests/month',
+      'Basic analytics',
+      'Community support',
+    ],
+    limits: {
+      apiRequests: 100,
+      storage: '100MB',
+    },
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    description: 'For growing businesses',
+    price: { monthly: 29, yearly: 290 },
+    priceIds: {
+      monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID!,
+      yearly: process.env.STRIPE_PRO_YEARLY_PRICE_ID!,
+    },
+    features: [
+      'Unlimited API requests',
+      'Advanced analytics',
+      'Priority support',
+      'Custom integrations',
+    ],
+    limits: {
+      apiRequests: -1, // unlimited
+      storage: '10GB',
+    },
+    popular: true,
+  },
+];
+```
+
+## Step 4: Initialize the Database
+
+Set up your database schema:
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Push schema to database
+npx prisma db push
+
+# (Optional) Open Prisma Studio to view data
+npx prisma studio
+```
+
+## Step 5: Start the Development Server
+
+```bash
+npm run dev
+```
+
+Your app is now running at [http://localhost:3000](http://localhost:3000)!
+
+## Step 6: Test the Complete Flow
+
+Let's verify everything works:
+
+### 6.1 Create an Account
+
+1. Go to `http://localhost:3000/signup`
+2. Enter your email and password
+3. Check your email for verification link (or check console in dev mode)
+4. Click the verification link
+
+### 6.2 Explore the Dashboard
+
+After signing in, you'll see:
+
+- **Dashboard** - Overview of your account
+- **Settings** - Profile, billing, and API keys
+- **Usage** - API usage statistics
+
+### 6.3 Upgrade to Pro
+
+1. Go to Settings > Billing
+2. Click "Upgrade to Pro"
+3. Use Stripe test card: `4242 4242 4242 4242`
+4. Any future date and any CVC
+5. Complete the checkout
+
+### 6.4 Verify Subscription
+
+After checkout:
+- Your plan should show "Pro"
+- You'll have access to Pro features
+- Billing shows next payment date
+
+## Step 7: Set Up Stripe Webhooks (Important!)
+
+For production, Stripe needs to notify your app of subscription changes:
+
+### Local Development (Stripe CLI)
+
+```bash
+# Install Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# Login to your Stripe account
+stripe login
+
+# Forward webhooks to your local server
+stripe listen --forward-to localhost:3000/api/payments/webhook
+```
+
+Copy the webhook signing secret and add to `.env`:
+
+```bash
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+### Production
+
+1. Go to Stripe Dashboard > Developers > Webhooks
+2. Add endpoint: `https://your-domain.com/api/payments/webhook`
+3. Select events:
+   - `checkout.session.completed`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+   - `invoice.paid`
+   - `invoice.payment_failed`
+
+## Understanding the Code
+
+Let's look at key files:
+
+### Authentication Flow
+
+```typescript
+// src/lib/auth/index.ts
+import { getAuth } from './nextauth';
+
+export const auth = getAuth();
+
+// Usage in any component
+import { useAuth } from '@/lib/auth';
+
+function ProfileButton() {
+  const { user, signOut, isLoading } = useAuth();
+
+  if (isLoading) return <Spinner />;
+  if (!user) return <SignInButton />;
+
+  return (
+    <DropdownMenu>
+      <span>{user.name}</span>
+      <button onClick={signOut}>Sign Out</button>
+    </DropdownMenu>
+  );
+}
+```
+
+### Protected Routes
+
+```typescript
+// src/app/[locale]/(dashboard)/layout.tsx
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+
+export default async function DashboardLayout({ children }) {
+  const session = await auth();
+
+  if (!session) {
+    redirect('/signin');
+  }
+
+  return <DashboardShell>{children}</DashboardShell>;
+}
+```
+
+### Subscription Check
+
+```typescript
+// src/lib/payments/subscriptions.ts
+import { getUserSubscription } from './subscriptions';
+
+async function checkAccess(userId: string) {
+  const subscription = await getUserSubscription(userId);
+
+  return {
+    isPro: subscription?.plan === 'pro',
+    isActive: subscription?.status === 'active',
+    features: subscription?.features || [],
+  };
+}
+
+// Usage in API route
+export async function GET(request: Request) {
+  const session = await auth();
+  const { isPro } = await checkAccess(session.user.id);
+
+  if (!isPro) {
+    return new Response('Pro plan required', { status: 403 });
+  }
+
+  // Pro-only logic here
+}
+```
+
+## Common Customizations
+
+### Change Brand Colors
+
+Edit the theme in Admin > Theme or modify `tailwind.config.ts`:
+
+```typescript
+// tailwind.config.ts
+export default {
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+      },
+    },
+  },
+};
+```
+
+### Add a Landing Page Section
+
+Edit `src/app/[locale]/(marketing)/page.tsx`:
+
+```tsx
+export default function HomePage() {
+  return (
+    <>
+      <HeroSection />
+      <FeaturesSection />
+      <PricingSection />
+      <TestimonialsSection /> {/* Add your section */}
+      <CTASection />
+    </>
+  );
+}
+```
+
+### Customize the Dashboard
+
+Edit `src/app/[locale]/(dashboard)/dashboard/page.tsx`:
+
+```tsx
+export default function DashboardPage() {
+  return (
+    <div className="space-y-6">
+      <h1>Dashboard</h1>
+      <StatsCards />
+      <RecentActivity />
+      <YourCustomWidget /> {/* Add your widget */}
+    </div>
+  );
+}
+```
+
+## Troubleshooting
+
+### "Invalid API Key" from Stripe
+
+- Ensure you're using test keys (start with `sk_test_` and `pk_test_`)
+- Check `.env` has no quotes around values
+- Restart the dev server after changing `.env`
+
+### Database Connection Failed
+
+```bash
+# Test your connection string
+npx prisma db pull
+```
+
+If it fails, check:
+- Database server is running
+- Credentials are correct
+- Network/firewall allows connection
+
+### Emails Not Sending
+
+In development, emails are logged to console. For production:
+
+```bash
+# Add email provider (Resend recommended)
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@yourdomain.com
+```
+
+## Next Steps
+
+Congratulations! You have a working SaaS application. Here's what to explore next:
+
+<Cards>
+  <Card title="Add AI Features" href="/docs/tutorials/ai-saas">
+    Integrate AI capabilities with credit-based billing.
+  </Card>
+  <Card title="Set Up Organizations" href="/docs/tutorials/multi-tenant-app">
+    Add team workspaces and role-based access.
+  </Card>
+  <Card title="Deploy to Production" href="/docs/tutorials/deploy-production">
+    Launch your app on Vercel, Railway, or Docker.
+  </Card>
+</Cards>
+
+## Complete Code Reference
+
+The complete code for this tutorial is available in the ShipKit repository. Key files:
+
+- `src/lib/auth/` - Authentication setup
+- `src/lib/payments/` - Payment configuration
+- `src/app/[locale]/(dashboard)/` - Dashboard pages
+- `src/app/[locale]/(auth)/` - Auth pages
+- `prisma/schema.prisma` - Database schema

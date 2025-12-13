@@ -1,0 +1,105 @@
+---
+title: 決済API
+description: 決済エンドポイントのAPIリファレンス。
+---
+
+# 決済API
+
+## エンドポイント
+
+### チェックアウト作成
+
+サブスクリプション用のチェックアウトセッションを作成します。
+
+```http
+POST /api/payments/checkout
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "priceId": "price_xxx",
+  "successUrl": "/dashboard?success=true",
+  "cancelUrl": "/pricing"
+}
+```
+
+**レスポンス:**
+
+```json
+{
+  "url": "https://checkout.stripe.com/...",
+  "sessionId": "cs_xxx"
+}
+```
+
+### 顧客ポータル
+
+顧客請求ポータルのURLを取得します。
+
+```http
+POST /api/payments/portal
+Authorization: Bearer <token>
+```
+
+**レスポンス:**
+
+```json
+{
+  "url": "https://billing.stripe.com/..."
+}
+```
+
+### Webhook
+
+決済プロバイダーのWebhookを処理します。
+
+```http
+POST /api/payments/webhook
+```
+
+## クレジットAPI
+
+### 残高取得
+
+```http
+GET /api/credits/balance
+Authorization: Bearer <token>
+```
+
+**レスポンス:**
+
+```json
+{
+  "balance": 100
+}
+```
+
+### 履歴取得
+
+```http
+GET /api/credits/history
+Authorization: Bearer <token>
+```
+
+**レスポンス:**
+
+```json
+{
+  "transactions": [
+    {
+      "id": "cuid",
+      "amount": -10,
+      "reason": "AI generation",
+      "createdAt": "2024-01-15T10:00:00Z"
+    }
+  ]
+}
+```
+
+## エラーコード
+
+| コード | 説明 |
+|--------|------|
+| 401 | 認証されていません |
+| 402 | 支払いが必要です |
+| 404 | サブスクリプションが見つかりません |

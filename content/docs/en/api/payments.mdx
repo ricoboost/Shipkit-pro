@@ -1,0 +1,105 @@
+---
+title: Payments API
+description: API reference for payment endpoints.
+---
+
+# Payments API
+
+## Endpoints
+
+### Create Checkout
+
+Create a checkout session for subscription.
+
+```http
+POST /api/payments/checkout
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "priceId": "price_xxx",
+  "successUrl": "/dashboard?success=true",
+  "cancelUrl": "/pricing"
+}
+```
+
+**Response:**
+
+```json
+{
+  "url": "https://checkout.stripe.com/...",
+  "sessionId": "cs_xxx"
+}
+```
+
+### Customer Portal
+
+Get URL to customer billing portal.
+
+```http
+POST /api/payments/portal
+Authorization: Bearer <token>
+```
+
+**Response:**
+
+```json
+{
+  "url": "https://billing.stripe.com/..."
+}
+```
+
+### Webhook
+
+Handle payment provider webhooks.
+
+```http
+POST /api/payments/webhook
+```
+
+## Credits API
+
+### Get Balance
+
+```http
+GET /api/credits/balance
+Authorization: Bearer <token>
+```
+
+**Response:**
+
+```json
+{
+  "balance": 100
+}
+```
+
+### Get History
+
+```http
+GET /api/credits/history
+Authorization: Bearer <token>
+```
+
+**Response:**
+
+```json
+{
+  "transactions": [
+    {
+      "id": "cuid",
+      "amount": -10,
+      "reason": "AI generation",
+      "createdAt": "2024-01-15T10:00:00Z"
+    }
+  ]
+}
+```
+
+## Error Codes
+
+| Code | Description |
+|------|-------------|
+| 401 | Unauthorized |
+| 402 | Payment required |
+| 404 | Subscription not found |

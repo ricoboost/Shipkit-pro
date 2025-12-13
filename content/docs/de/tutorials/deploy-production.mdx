@@ -1,0 +1,39 @@
+---
+title: In Produktion bereitstellen
+description: Vollständige Anleitung zur Bereitstellung Ihrer ShipKit-Anwendung auf Vercel, Railway oder Docker.
+---
+
+# In Produktion bereitstellen
+
+Dieses Tutorial behandelt die Bereitstellung Ihrer ShipKit-Anwendung in der Produktion mit ordnungsgemäßer Sicherheits-, Leistungs- und Überwachungskonfiguration.
+
+## Bereitstellungsoptionen
+
+| Plattform | Ideal für | Komplexität |
+|-----------|-----------|-------------|
+| **Vercel** | Schnellste Bereitstellung | Einfach |
+| **Railway** | Volle Kontrolle | Mittel |
+| **Docker** | Selbst gehostet | Fortgeschritten |
+
+## Option 1: Auf Vercel bereitstellen
+
+1. Gehen Sie zu [vercel.com/new](https://vercel.com/new)
+2. Importieren Sie Ihr GitHub-Repository
+3. Konfigurieren Sie Umgebungsvariablen
+4. Klicken Sie auf "Deploy"
+
+## Produktions-Checkliste
+
+- [ ] Neues `NEXTAUTH_SECRET` generiert
+- [ ] Stripe Live-Schlüssel verwenden
+- [ ] Webhook-Signaturüberprüfung aktiviert
+- [ ] Datenbankverbindungs-Pooling
+- [ ] Sentry für Fehlerverfolgung konfiguriert
+
+## Nächste Schritte
+
+<Cards>
+  <Card title="Überwachung einrichten" href="/docs/infrastructure/monitoring">
+    Konfigurieren Sie Sentry, Analytics und Uptime-Überwachung.
+  </Card>
+</Cards>

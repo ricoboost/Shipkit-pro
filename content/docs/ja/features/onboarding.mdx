@@ -1,0 +1,170 @@
+---
+title: オンボーディング & セットアップウィザード
+description: 新規インストール用の自動セットアップウィザードとガイド付きユーザーオンボーディング。
+---
+
+# オンボーディング & セットアップウィザード
+
+ShipKitには2種類のオンボーディングが含まれています：新規インストール用の**自動セットアップウィザード**と、アプリケーションを通じて新規ユーザーをガイドする**ユーザーオンボーディングフロー**です。
+
+## セットアップウィザード（初回インストール）
+
+ShipKitをクローンした後、初めて`npm run dev`を実行すると、アプリケーションは新規インストールを自動検出し、セットアッププロセスをガイドします。
+
+### 自動検出
+
+セットアップウィザードは以下の場合に自動的に表示されます：
+
+- データベースに管理者ユーザーが存在しない
+- データベースが設定されていない
+- アプリケーションの初回実行
+
+```typescript
+// src/app/[locale]/page.tsx
+const isSetupComplete = await checkSetupComplete();
+if (!isSetupComplete) {
+  redirect(`/${locale}/onboarding`);
+}
+```
+
+### セットアップ手順
+
+ウィザードは以下をガイドします：
+
+1. **データベース設定** - PostgreSQL、MySQL、SQLite、またはクラウドデータベースへの接続
+2. **認証セットアップ** - NextAuth、Supabase Auth、またはBetter Authの設定
+3. **管理者アカウント作成** - 強力なパスワード要件で最初の管理者を作成
+4. **オプション統合** - 決済、AIプロバイダーなどのセットアップ
+
+### 管理者パスワード要件
+
+セキュリティのため、管理者パスワードは以下の要件を満たす必要があります：
+
+- 最低12文字
+- 大文字を1つ以上
+- 小文字を1つ以上
+- 数字を1つ以上
+- 特殊文字を1つ以上
+
+### CLI代替手段
+
+CLIでもセットアップを実行できます：
+
+```bash
+# インタラクティブセットアップウィザード
+npm run setup
+
+# デフォルト値でクイックセットアップ
+npm run setup:quick
+
+# 個別のセットアップ手順
+npm run setup:db
+npm run setup:auth
+npm run setup:admin
+```
+
+### セットアップ後
+
+ウィザード完了後：
+
+- オンボーディングページはホームページにリダイレクト
+- 管理者アカウントでダッシュボードにアクセス可能
+- セットアップウィザードは再度表示されない（管理者が存在）
+
+## ユーザーオンボーディング（アプリケーションユーザー）
+
+初期セットアップ後、アプリケーションユーザー向けのカスタムオンボーディングフローを作成できます。
+
+### 機能
+
+- 進捗追跡付きの複数ステップウィザード
+- カスタマイズ可能なステップ
+- ユーザーごとの完了追跡
+- オンボーディングステータスに基づく条件付きレンダリング
+
+### オンボーディングステップの定義
+
+```typescript
+// src/config/onboarding.ts
+export const onboardingSteps = [
+  {
+    id: 'profile',
+    title: 'プロフィール完成',
+    description: '名前とアバターを追加',
+    component: ProfileStep,
+  },
+  {
+    id: 'organization',
+    title: '組織を作成',
+    description: 'チームワークスペースをセットアップ',
+    component: OrganizationStep,
+  },
+  {
+    id: 'invite',
+    title: 'チームを招待',
+    description: 'チームメンバーを招待',
+    component: InviteStep,
+  },
+];
+```
+
+### オンボーディングライブラリ
+
+```typescript
+import { onboarding } from '@/lib/onboarding';
+
+// ユーザーのオンボーディング進捗を取得
+const progress = await onboarding.getProgress(userId);
+
+// ステップを完了としてマーク
+await onboarding.completeStep(userId, 'profile');
+
+// オンボーディングが完了しているか確認
+const isDone = await onboarding.isComplete(userId);
+```
+
+### ウィザードコンポーネント
+
+```tsx
+import { OnboardingWizard } from '@/components/onboarding/onboarding-wizard';
+
+<OnboardingWizard
+  steps={onboardingSteps}
+  onComplete={() => router.push('/dashboard')}
+  allowSkip={true}
+/>
+```
+
+### 条件付きレンダリング
+
+新規ユーザーにのみオンボーディングを表示：
+
+```tsx
+export default async function DashboardLayout({ children }) {
+  const user = await getCurrentUser();
+  const isOnboarded = await onboarding.isComplete(user.id);
+
+  if (!isOnboarded) {
+    return <OnboardingWizard steps={onboardingSteps} />;
+  }
+
+  return children;
+}
+```
+
+## デモモード
+
+ShipKitにはセットアップウィザードをバイパスするデモモードが含まれています：
+
+- 認証なしでダッシュボードにアクセス可能
+- データはブラウザにローカル保存
+- データベース接続不要
+- デモモードがアクティブであることを示すバナーを表示
+
+## ベストプラクティス
+
+1. **ステップを最小限に** - 必要な情報のみを要求
+2. **進捗インジケーターを提供** - ユーザーにどこまで進んだかを表示
+3. **スキップを許可** - 完了前にユーザーが探索できるようにする
+4. **進捗を保存** - ユーザーに最初からやり直させない
+5. **フローをテスト** - 新規ユーザーとしてオンボーディングを体験

@@ -1,0 +1,162 @@
+---
+title: Project Structure
+description: Understanding the ShipKit codebase organization and file structure.
+---
+
+# Project Structure
+
+ShipKit follows a well-organized structure based on Next.js App Router conventions.
+
+## Directory Overview
+
+```
+shipkit/
+├── content/
+│   └── docs/           # Documentation MDX files
+├── prisma/
+│   └── schema.prisma   # Database schema
+├── public/             # Static assets
+├── src/
+│   ├── app/            # Next.js App Router pages
+│   ├── components/     # React components
+│   ├── config/         # Configuration files
+│   ├── hooks/          # Custom React hooks
+│   ├── lib/            # Core libraries and utilities
+│   └── middleware.ts   # Next.js middleware
+├── .env.example        # Environment variables template
+├── next.config.ts      # Next.js configuration
+└── package.json        # Dependencies
+```
+
+## App Directory (`src/app/`)
+
+```
+src/app/
+├── (admin)/            # Admin dashboard routes
+│   ├── admin/
+│   │   ├── page.tsx    # Admin overview
+│   │   ├── users/      # User management
+│   │   ├── analytics/  # Analytics dashboard
+│   │   └── subscriptions/
+│   └── layout.tsx      # Admin layout
+├── (auth)/             # Authentication routes
+│   ├── login/          # Login page
+│   ├── register/       # Registration page
+│   └── layout.tsx      # Auth layout
+├── (dashboard)/        # User dashboard routes
+│   ├── dashboard/      # Main dashboard
+│   ├── ai-playground/  # AI demo interface
+│   ├── settings/       # User settings
+│   │   ├── profile/
+│   │   ├── billing/
+│   │   ├── api-keys/
+│   │   └── theme/
+│   └── layout.tsx      # Dashboard layout
+├── (marketing)/        # Public marketing pages
+│   ├── page.tsx        # Landing page
+│   ├── pricing/        # Pricing page
+│   ├── blog/           # Blog pages
+│   └── layout.tsx      # Marketing layout
+├── api/                # API routes
+│   ├── auth/           # Authentication endpoints
+│   ├── payments/       # Payment endpoints
+│   ├── ai/             # AI endpoints
+│   ├── organizations/  # Organization endpoints
+│   └── newsletter/     # Newsletter endpoints
+├── docs/               # Documentation pages
+└── layout.tsx          # Root layout
+```
+
+## Library Directory (`src/lib/`)
+
+Core functionality is organized into provider-agnostic modules:
+
+```
+src/lib/
+├── auth/               # Authentication abstraction
+│   ├── index.ts        # Unified auth interface
+│   ├── types.ts        # TypeScript types
+│   ├── nextauth.ts     # NextAuth implementation
+│   ├── supabase.ts     # Supabase implementation
+│   └── betterauth.ts   # Better Auth implementation
+├── payments/           # Payment abstraction
+│   ├── index.ts        # Unified payment interface
+│   ├── types.ts        # TypeScript types
+│   ├── stripe.ts       # Stripe implementation
+│   ├── lemonsqueezy.ts # LemonSqueezy implementation
+│   ├── polar.ts        # Polar implementation
+│   └── credits.ts      # Credit system
+├── ai/                 # AI abstraction
+│   ├── index.ts        # Unified AI interface
+│   ├── types.ts        # TypeScript types
+│   ├── openrouter.ts   # OpenRouter implementation
+│   └── vercel.ts       # Vercel AI implementation
+├── organizations/      # Team/org management
+├── blog/               # Blog utilities
+├── newsletter/         # Newsletter system
+├── theme/              # Theme system
+├── admin/              # Admin utilities
+├── security/           # Rate limiting, headers
+├── onboarding/         # User onboarding
+├── referrals/          # Referral system
+├── rpc/                # Type-safe RPC (oRPC)
+├── db.ts               # Database client
+└── utils.ts            # Utility functions
+```
+
+## Components Directory (`src/components/`)
+
+```
+src/components/
+├── ui/                 # shadcn/ui base components
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── dialog.tsx
+│   └── ...
+├── auth/               # Authentication components
+│   ├── login-form.tsx
+│   ├── register-form.tsx
+│   └── social-buttons.tsx
+├── layout/             # Layout components
+│   ├── header.tsx
+│   ├── footer.tsx
+│   ├── sidebar.tsx
+│   └── dashboard-header.tsx
+├── blog/               # Blog components
+├── newsletter/         # Newsletter components
+├── theme/              # Theme builder
+├── onboarding/         # Onboarding wizard
+└── providers.tsx       # React context providers
+```
+
+## Key Concepts
+
+### Route Groups
+
+Route groups `(groupName)` organize routes without affecting the URL:
+
+- `(marketing)` - Public pages at `/`, `/pricing`, `/blog`
+- `(auth)` - Auth pages at `/login`, `/register`
+- `(dashboard)` - User pages at `/dashboard`, `/settings`
+- `(admin)` - Admin pages at `/admin`
+
+### Provider Abstraction
+
+Each major feature uses a unified interface:
+
+```typescript
+// lib/auth/index.ts exports unified interface
+export const auth = getAuthProvider(); // Returns configured provider
+
+// Usage is the same regardless of provider
+const session = await auth.getSession();
+```
+
+### Type Safety
+
+All APIs use Zod for validation and oRPC for type-safe endpoints:
+
+```typescript
+// Fully typed API calls
+const result = await rpc.users.getProfile.query();
+```

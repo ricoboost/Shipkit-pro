@@ -1,0 +1,96 @@
+---
+title: Système de Blog
+description: Blog propulsé par MDX avec ShipKit.
+---
+
+# Système de Blog
+
+ShipKit comprend un système de blog complet utilisant MDX.
+
+## Structure
+
+```
+content/
+└── blog/
+    ├── getting-started.mdx
+    ├── how-to-use-ai.mdx
+    └── release-notes.mdx
+```
+
+## Créer des Articles
+
+Créez un fichier MDX dans `content/blog/` :
+
+```mdx
+---
+title: Getting Started with ShipKit
+description: Learn how to build your SaaS with ShipKit
+date: 2024-01-15
+author: Your Name
+image: /blog/getting-started.png
+tags: [tutorial, getting-started]
+---
+
+# Getting Started
+
+Your content here...
+```
+
+## Champs Frontmatter
+
+| Champ | Requis | Description |
+|-------|----------|-------------|
+| title | Oui | Titre de l'article |
+| description | Oui | Description SEO |
+| date | Oui | Date de publication |
+| author | Non | Nom de l'auteur |
+| image | Non | Image en vedette |
+| tags | Non | Tableau d'étiquettes |
+
+## Composants
+
+### Carte d'Article
+
+```tsx
+import { PostCard } from '@/components/blog/post-card';
+
+<PostCard
+  title={post.title}
+  description={post.description}
+  date={post.date}
+  slug={post.slug}
+/>
+```
+
+### Page de Blog
+
+```tsx
+// src/app/(marketing)/blog/page.tsx
+import { getBlogPosts } from '@/lib/blog';
+
+export default async function BlogPage() {
+  const posts = await getBlogPosts();
+
+  return (
+    <div className="grid gap-6">
+      {posts.map(post => (
+        <PostCard key={post.slug} {...post} />
+      ))}
+    </div>
+  );
+}
+```
+
+## Composants MDX
+
+Utilisez des composants personnalisés dans vos articles :
+
+```mdx
+<Callout type="info">
+  This is an info callout
+</Callout>
+
+<CodeBlock language="typescript">
+const hello = "world";
+</CodeBlock>
+```

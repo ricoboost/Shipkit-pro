@@ -1,0 +1,69 @@
+---
+title: Thèmes Visuels
+description: Personnalisez l'apparence de votre application avec le constructeur de thèmes.
+---
+
+# Thèmes Visuels
+
+ShipKit comprend un constructeur de thèmes visuel pour personnaliser l'apparence de votre application.
+
+## Constructeur de Thèmes
+
+Accédez au constructeur de thèmes à `/settings/theme` dans votre tableau de bord.
+
+## Options Personnalisables
+
+- **Couleurs** : Couleurs primaires, secondaires et d'accentuation
+- **Rayon de Bordure** : Préréglages de pointu à pilule
+- **Typographie** : Familles et tailles de polices
+- **Espacement** : Échelle d'espacement cohérente
+
+## Utilisation
+
+```typescript
+import { theme } from '@/lib/theme';
+
+// Get current theme
+const currentTheme = theme.get();
+
+// Update theme
+await theme.update({
+  primaryColor: '#3b82f6',
+  borderRadius: 'md',
+});
+```
+
+## Variables CSS
+
+Les valeurs du thème sont appliquées en tant que variables CSS :
+
+```css
+:root {
+  --primary: 221.2 83.2% 53.3%;
+  --radius: 0.5rem;
+}
+```
+
+## Fournisseur de Thème
+
+```tsx
+import { ThemeProvider } from '@/components/theme/provider';
+
+<ThemeProvider>
+  <App />
+</ThemeProvider>
+```
+
+## Mode Sombre
+
+Support intégré du mode sombre :
+
+```tsx
+import { useTheme } from 'next-themes';
+
+const { theme, setTheme } = useTheme();
+
+<button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+  Toggle theme
+</button>
+```

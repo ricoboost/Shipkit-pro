@@ -1,0 +1,69 @@
+---
+title: Visuelles Theming
+description: Passen Sie das Aussehen Ihrer App mit dem Theme-Builder an.
+---
+
+# Visuelles Theming
+
+ShipKit enthält einen visuellen Theme-Builder zur Anpassung des Erscheinungsbilds Ihrer App.
+
+## Theme-Builder
+
+Greifen Sie auf den Theme-Builder unter `/settings/theme` in Ihrem Dashboard zu.
+
+## Anpassbare Optionen
+
+- **Farben**: Primär-, Sekundär- und Akzentfarben
+- **Rahmenradius**: Voreinstellungen von scharf bis Pille
+- **Typografie**: Schriftfamilien und -größen
+- **Abstände**: Konsistente Abstandsskala
+
+## Verwendung
+
+```typescript
+import { theme } from '@/lib/theme';
+
+// Get current theme
+const currentTheme = theme.get();
+
+// Update theme
+await theme.update({
+  primaryColor: '#3b82f6',
+  borderRadius: 'md',
+});
+```
+
+## CSS-Variablen
+
+Theme-Werte werden als CSS-Variablen angewendet:
+
+```css
+:root {
+  --primary: 221.2 83.2% 53.3%;
+  --radius: 0.5rem;
+}
+```
+
+## Theme-Provider
+
+```tsx
+import { ThemeProvider } from '@/components/theme/provider';
+
+<ThemeProvider>
+  <App />
+</ThemeProvider>
+```
+
+## Dunkelmodus
+
+Integrierte Unterstützung für Dunkelmodus:
+
+```tsx
+import { useTheme } from 'next-themes';
+
+const { theme, setTheme } = useTheme();
+
+<button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+  Toggle theme
+</button>
+```

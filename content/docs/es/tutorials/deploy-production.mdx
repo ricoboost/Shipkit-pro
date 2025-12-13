@@ -1,0 +1,213 @@
+---
+title: Desplegar a Producción
+description: Guía completa para desplegar tu aplicación ShipKit en Vercel, Railway o Docker con configuración lista para producción.
+---
+
+# Desplegar a Producción
+
+Este tutorial cubre el despliegue de tu aplicación ShipKit a producción con seguridad, rendimiento y configuración de monitoreo adecuados.
+
+## Opciones de Despliegue
+
+| Plataforma | Ideal Para | Complejidad |
+|------------|------------|-------------|
+| **Vercel** | Despliegue más rápido, escalado automático | Fácil |
+| **Railway** | Control total, base de datos incluida | Medio |
+| **Docker** | Auto-alojado, máximo control | Avanzado |
+
+## Requisitos Previos
+
+Antes de desplegar:
+
+- La aplicación funciona localmente sin errores
+- Todas las variables de entorno documentadas
+- Base de datos lista (Neon, Supabase o auto-alojada)
+- Endpoint de webhook de Stripe configurado
+- Nombre de dominio listo (opcional pero recomendado)
+
+---
+
+## Opción 1: Desplegar en Vercel
+
+Vercel ofrece el camino de despliegue más fácil con builds automáticos y despliegues de vista previa.
+
+### Paso 1: Conectar Repositorio
+
+1. Ve a [vercel.com/new](https://vercel.com/new)
+2. Importa tu repositorio de GitHub
+3. Vercel auto-detecta Next.js
+
+### Paso 2: Configurar Variables de Entorno
+
+Añade todas tus variables de entorno de producción:
+
+```bash
+# Configuración de la App
+NEXT_PUBLIC_APP_URL=https://tu-dominio.com
+NEXT_PUBLIC_APP_NAME="Tu SaaS"
+
+# Base de datos (usar URL con pooling de conexiones)
+DATABASE_URL="postgresql://user:pass@host:5432/db?pgbouncer=true"
+
+# Autenticación
+AUTH_PROVIDER=nextauth
+NEXTAUTH_SECRET="generar-con-openssl-rand-base64-32"
+NEXTAUTH_URL=https://tu-dominio.com
+
+# Pagos (¡claves en vivo!)
+PAYMENT_PROVIDER=stripe
+STRIPE_SECRET_KEY=sk_live_xxx
+STRIPE_PUBLISHABLE_KEY=pk_live_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+
+# IA
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=sk-or-v1-xxx
+
+# Email
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@tu-dominio.com
+```
+
+### Paso 3: Desplegar
+
+Haz clic en "Deploy" y espera a que se complete el build.
+
+### Paso 4: Configurar Dominio Personalizado
+
+1. Ve a Configuración del Proyecto > Dominios
+2. Añade tu dominio
+3. Actualiza los registros DNS según las instrucciones
+4. SSL es automático
+
+### Paso 5: Configurar Webhooks de Stripe
+
+1. Ve a Panel de Stripe > Desarrolladores > Webhooks
+2. Añade endpoint: `https://tu-dominio.com/api/payments/webhook`
+3. Selecciona eventos:
+   - `checkout.session.completed`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+   - `invoice.paid`
+   - `invoice.payment_failed`
+4. Copia el secreto de firma a las variables de entorno de Vercel
+
+---
+
+## Opción 2: Desplegar en Railway
+
+Railway proporciona una plataforma simple con PostgreSQL y Redis integrados.
+
+### Paso 1: Crear Proyecto en Railway
+
+1. Ve a [railway.app](https://railway.app)
+2. Haz clic en "New Project"
+3. Selecciona "Deploy from GitHub repo"
+
+### Paso 2: Añadir PostgreSQL
+
+1. Haz clic en "+ New" en tu proyecto
+2. Selecciona "Database" > "PostgreSQL"
+3. Railway crea la base de datos automáticamente
+
+### Paso 3: Configurar Variables de Entorno
+
+Copia el `DATABASE_URL` del servicio PostgreSQL, luego añade:
+
+```bash
+# Usar DATABASE_URL proporcionado por Railway
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+
+# Añadir otras variables de entorno
+NEXT_PUBLIC_APP_URL=https://tu-app.up.railway.app
+# ... resto de tus variables env
+```
+
+---
+
+## Opción 3: Desplegar con Docker
+
+Para máximo control, despliega con Docker a cualquier proveedor de nube.
+
+### Paso 1: Construir Imagen Docker
+
+ShipKit incluye un Dockerfile listo para producción:
+
+```bash
+# Construir imagen
+docker build -t tu-registry/shipkit:latest .
+
+# Subir a registry
+docker push tu-registry/shipkit:latest
+```
+
+### Paso 2: Docker Compose para Producción
+
+```yaml
+# docker-compose.prod.yml
+version: '3.8'
+
+services:
+  app:
+    image: tu-registry/shipkit:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/shipkit
+      - NEXTAUTH_URL=https://tu-dominio.com
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=shipkit
+      - POSTGRES_PASSWORD=contraseña-segura
+      - POSTGRES_DB=shipkit
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+```
+
+---
+
+## Lista de Verificación de Producción
+
+### Seguridad
+
+- [ ] Generar nuevo `NEXTAUTH_SECRET` (no reutilizar el secreto de dev)
+- [ ] Usar claves en vivo de Stripe (no claves de prueba)
+- [ ] Habilitar verificación de firma de webhook de Stripe
+- [ ] Configurar cookies seguras
+- [ ] Configurar CORS correctamente
+- [ ] Habilitar limitación de velocidad
+
+### Base de Datos
+
+- [ ] Usar pooling de conexiones (PgBouncer o Prisma Accelerate)
+- [ ] Habilitar SSL para conexiones de base de datos
+- [ ] Configurar backups de base de datos
+
+### Monitoreo
+
+- [ ] Configurar Sentry para seguimiento de errores
+- [ ] Configurar monitoreo de uptime
+- [ ] Habilitar Vercel Analytics o Plausible
+
+---
+
+## Próximos Pasos
+
+<Cards>
+  <Card title="Configurar Monitoreo" href="/docs/infrastructure/monitoring">
+    Configura Sentry, analíticas y monitoreo de uptime.
+  </Card>
+  <Card title="Optimizar Rendimiento" href="/docs/infrastructure/seo">
+    Mejora Core Web Vitals y SEO.
+  </Card>
+</Cards>

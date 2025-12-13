@@ -1,0 +1,194 @@
+---
+title: 支付设置
+description: 使用Stripe、Lemon Squeezy或Polar配置支付处理。
+---
+
+# 支付设置
+
+支付设置命令帮助您配置支付提供商和webhook端点。
+
+## 快速开始
+
+```bash
+npm run setup:payments
+```
+
+## 支持的提供商
+
+### Stripe
+
+具有订阅功能的行业标准支付处理。
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider stripe
+```
+
+**必需的环境变量：**
+- `STRIPE_SECRET_KEY` - 密钥（`sk_test_...`或`sk_live_...`）
+- `STRIPE_PUBLISHABLE_KEY` - 公钥（`pk_test_...`或`pk_live_...`）
+- `STRIPE_WEBHOOK_SECRET` - Webhook签名密钥（`whsec_...`）
+
+**可选：**
+- `STRIPE_PRICE_ID_BASIC` - 基础计划价格ID
+- `STRIPE_PRICE_ID_PRO` - 专业计划价格ID
+- `STRIPE_PRICE_ID_ENTERPRISE` - 企业计划价格ID
+
+### Lemon Squeezy
+
+具有自动税务处理的一体化支付。
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider lemonsqueezy
+```
+
+**必需的环境变量：**
+- `LEMONSQUEEZY_API_KEY` - 来自设置的API密钥
+- `LEMONSQUEEZY_STORE_ID` - 您的商店ID
+- `LEMONSQUEEZY_WEBHOOK_SECRET` - Webhook签名密钥
+
+### Polar
+
+面向开发者的开源友好支付。
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider polar
+```
+
+**必需的环境变量：**
+- `POLAR_ACCESS_TOKEN` - 个人访问令牌
+- `POLAR_ORGANIZATION_ID` - 您的组织ID
+- `POLAR_WEBHOOK_SECRET` - Webhook签名密钥
+
+### 无支付
+
+完全跳过支付设置：
+
+```bash
+npx tsx scripts/setup/setup-payments.ts --provider none
+```
+
+## Stripe设置指南
+
+### 1. 创建Stripe账户
+
+1. 在 [stripe.com](https://stripe.com) 注册
+2. 完成账户验证以进行正式支付
+
+### 2. 获取API密钥
+
+1. 转到**开发者 > API密钥**
+2. 复制您的**公钥**和**密钥**
+3. 开发时使用测试密钥（`sk_test_...`、`pk_test_...`）
+
+### 3. 创建产品
+
+1. 在Stripe仪表板中转到**产品**
+2. 为每个计划创建产品（基础、专业、企业）
+3. 添加定期价格（月付/年付）
+4. 复制每个计划的**价格ID**
+
+### 4. 设置Webhook
+
+#### 本地开发
+
+使用Stripe CLI转发webhook：
+
+```bash
+# 安装Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# 登录Stripe
+stripe login
+
+# 将webhook转发到本地服务器
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+将webhook签名密钥（`whsec_...`）复制到您的`.env`。
+
+#### 生产环境
+
+1. 转到**开发者 > Webhook**
+2. 添加端点：`https://您的域名.com/api/webhooks/stripe`
+3. 选择事件：
+   - `checkout.session.completed`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+   - `invoice.payment_succeeded`
+   - `invoice.payment_failed`
+4. 复制签名密钥
+
+### 5. 快速创建产品
+
+使用Stripe CLI创建测试产品：
+
+```bash
+# 创建基础计划
+stripe products create \
+  --name="基础计划" \
+  --default-price-data.unit-amount=999 \
+  --default-price-data.currency=usd \
+  --default-price-data.recurring.interval=month
+
+# 创建专业计划
+stripe products create \
+  --name="专业计划" \
+  --default-price-data.unit-amount=2999 \
+  --default-price-data.currency=usd \
+  --default-price-data.recurring.interval=month
+```
+
+## 设置执行的操作
+
+1. **提示选择提供商** - 选择Stripe、Lemon Squeezy、Polar或无
+2. **更新`.env`** - 设置`PAYMENTS_PROVIDER`变量
+3. **配置凭据** - 帮助设置API密钥
+4. **显示Webhook URL** - 提供用于webhook配置的端点
+
+## 切换提供商
+
+环境变量`PAYMENTS_PROVIDER`控制哪个提供商处于活动状态：
+
+```bash
+PAYMENTS_PROVIDER="stripe"  # 或 "lemonsqueezy" 或 "polar"
+```
+
+## 测试支付
+
+### Stripe测试卡
+
+| 卡号 | 描述 |
+|------|------|
+| `4242 4242 4242 4242` | 支付成功 |
+| `4000 0000 0000 3220` | 3D Secure认证 |
+| `4000 0000 0000 9995` | 被拒绝 |
+
+使用任意未来的过期日期和任意3位CVC。
+
+### 测试Webhook
+
+在Stripe CLI运行时，触发测试事件：
+
+```bash
+stripe trigger checkout.session.completed
+stripe trigger customer.subscription.created
+```
+
+## 故障排除
+
+### 「Webhook签名验证失败」
+
+确保`STRIPE_WEBHOOK_SECRET`与以下来源的密钥匹配：
+- Stripe CLI输出（本地开发）
+- Webhook端点设置（生产环境）
+
+### 「找不到价格」
+
+验证您`.env`中的价格ID与Stripe仪表板中的ID匹配。
+
+### 「无效的API密钥」
+
+检查您是否使用了正确类型的密钥：
+- 开发用测试密钥（`sk_test_...`）
+- 生产用正式密钥（`sk_live_...`）

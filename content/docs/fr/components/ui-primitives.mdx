@@ -1,0 +1,343 @@
+---
+title: Primitives UI
+description: Composants UI de base construits sur shadcn/ui et les primitives Radix UI
+---
+
+# Primitives UI
+
+ShipKit utilise [shadcn/ui](https://ui.shadcn.com) comme fondation pour les composants UI. Ces primitives sont entièrement personnalisables et suivent les modèles de design Radix UI.
+
+## Composants disponibles
+
+Tous les composants sont situés dans `src/components/ui/` :
+
+### Composants de formulaire
+
+| Composant | Fichier | Description |
+|-----------|------|-------------|
+| Button | `button.tsx` | Boutons d'action avec variantes |
+| Input | `input.tsx` | Champ de saisie de texte |
+| Textarea | `textarea.tsx` | Saisie de texte multiligne |
+| Select | `select.tsx` | Sélection déroulante |
+| Checkbox | `checkbox.tsx` | Sélection booléenne |
+| Switch | `switch.tsx` | Interrupteur à bascule |
+| Slider | `slider.tsx` | Curseur de plage |
+| Label | `label.tsx` | Étiquette de champ de formulaire |
+
+### Composants de mise en page
+
+| Composant | Fichier | Description |
+|-----------|------|-------------|
+| Card | `card.tsx` | Conteneur avec en-tête/contenu/pied de page |
+| Dialog | `dialog.tsx` | Dialogues modaux |
+| Alert Dialog | `alert-dialog.tsx` | Dialogues de confirmation |
+| Dropdown Menu | `dropdown-menu.tsx` | Menus contextuels |
+| Popover | `popover.tsx` | Contenu flottant |
+| Tabs | `tabs.tsx` | Contenu à onglets |
+| Scroll Area | `scroll-area.tsx` | Barres de défilement personnalisées |
+| Separator | `separator.tsx` | Séparateurs visuels |
+| Table | `table.tsx` | Tableaux de données |
+
+### Composants de retour d'information
+
+| Composant | Fichier | Description |
+|-----------|------|-------------|
+| Badge | `badge.tsx` | Indicateurs de statut |
+| Alert | `alert.tsx` | Messages en ligne |
+| Progress | `progress.tsx` | Indicateurs de progression |
+| Sonner | `sonner.tsx` | Notifications toast |
+
+### Affichage de données
+
+| Composant | Fichier | Description |
+|-----------|------|-------------|
+| Avatar | `avatar.tsx` | Avatars d'utilisateur |
+| Icon Picker | `icon-picker.tsx` | Sélecteur d'icônes Lucide |
+
+---
+
+## Button
+
+Le composant le plus couramment utilisé avec plusieurs variantes et tailles.
+
+### Utilisation
+
+```tsx
+import { Button } from '@/components/ui/button';
+
+// Variantes
+<Button>Default</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="destructive">Destructive</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="link">Link</Button>
+
+// Tailles
+<Button size="sm">Small</Button>
+<Button size="default">Default</Button>
+<Button size="lg">Large</Button>
+<Button size="icon">
+  <Icon className="h-4 w-4" />
+</Button>
+
+// États
+<Button disabled>Disabled</Button>
+<Button asChild>
+  <Link href="/somewhere">As Link</Link>
+</Button>
+```
+
+### Props
+
+```typescript
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  asChild?: boolean;
+}
+```
+
+---
+
+## Card
+
+Composant conteneur pour regrouper du contenu connexe.
+
+### Utilisation
+
+```tsx
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
+
+<Card>
+  <CardHeader>
+    <CardTitle>Card Title</CardTitle>
+    <CardDescription>Card description or subtitle</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>Main content goes here</p>
+  </CardContent>
+  <CardFooter>
+    <Button>Action</Button>
+  </CardFooter>
+</Card>
+```
+
+---
+
+## Dialog
+
+Dialogue modal pour interactions ciblées.
+
+### Utilisation
+
+```tsx
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@/components/ui/dialog';
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button>Open Dialog</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Dialog Title</DialogTitle>
+      <DialogDescription>
+        This is a description of the dialog content.
+      </DialogDescription>
+    </DialogHeader>
+    <div className="py-4">
+      Dialog content goes here
+    </div>
+    <DialogFooter>
+      <Button variant="outline">Cancel</Button>
+      <Button>Confirm</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+---
+
+## Tabs
+
+Navigation de contenu à onglets.
+
+### Utilisation
+
+```tsx
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+<Tabs defaultValue="tab1">
+  <TabsList>
+    <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+    <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+    <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+  </TabsList>
+  <TabsContent value="tab1">Content for tab 1</TabsContent>
+  <TabsContent value="tab2">Content for tab 2</TabsContent>
+  <TabsContent value="tab3">Content for tab 3</TabsContent>
+</Tabs>
+```
+
+---
+
+## Select
+
+Composant de sélection déroulante.
+
+### Utilisation
+
+```tsx
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+<Select>
+  <SelectTrigger className="w-[180px]">
+    <SelectValue placeholder="Select option" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="option1">Option 1</SelectItem>
+    <SelectItem value="option2">Option 2</SelectItem>
+    <SelectItem value="option3">Option 3</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+---
+
+## Badge
+
+Indicateurs de statut et étiquettes.
+
+### Utilisation
+
+```tsx
+import { Badge } from '@/components/ui/badge';
+
+<Badge>Default</Badge>
+<Badge variant="secondary">Secondary</Badge>
+<Badge variant="outline">Outline</Badge>
+<Badge variant="destructive">Destructive</Badge>
+```
+
+---
+
+## Alert
+
+Messages informatifs en ligne.
+
+### Utilisation
+
+```tsx
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal } from 'lucide-react';
+
+<Alert>
+  <Terminal className="h-4 w-4" />
+  <AlertTitle>Heads up!</AlertTitle>
+  <AlertDescription>
+    You can add components to your app using the CLI.
+  </AlertDescription>
+</Alert>
+
+<Alert variant="destructive">
+  <AlertTitle>Error</AlertTitle>
+  <AlertDescription>Something went wrong.</AlertDescription>
+</Alert>
+```
+
+---
+
+## Table
+
+Composant de tableau de données.
+
+### Utilisation
+
+```tsx
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
+<Table>
+  <TableCaption>A list of users</TableCaption>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+      <TableHead>Email</TableHead>
+      <TableHead>Role</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>John Doe</TableCell>
+      <TableCell>john@example.com</TableCell>
+      <TableCell>Admin</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+---
+
+## Ajout de plus de composants
+
+ShipKit est construit sur shadcn/ui, vous pouvez donc facilement ajouter plus de composants :
+
+```bash
+npx shadcn@latest add [component-name]
+```
+
+Composants disponibles : accordion, breadcrumb, calendar, carousel, chart, collapsible, command, context-menu, drawer, form, hover-card, menubar, navigation-menu, pagination, radio-group, resizable, sheet, skeleton, tooltip, et plus encore.
+
+Consultez la [documentation shadcn/ui](https://ui.shadcn.com/docs/components) pour la liste complète.
+
+---
+
+## Personnalisation
+
+Tous les composants utilisent des variables CSS pour la thématisation. Personnalisez-les dans votre `globals.css` :
+
+```css
+:root {
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  /* ... */
+}
+
+.dark {
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  /* ... */
+}
+```
+
+Ou utilisez le [Theme Builder](/docs/components/theme-builder) pour la personnalisation visuelle.

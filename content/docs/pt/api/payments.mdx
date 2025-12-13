@@ -1,0 +1,105 @@
+---
+title: API de Pagamentos
+description: Referência da API para endpoints de pagamento.
+---
+
+# API de Pagamentos
+
+## Endpoints
+
+### Criar Checkout
+
+Criar uma sessão de checkout para assinatura.
+
+```http
+POST /api/payments/checkout
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "priceId": "price_xxx",
+  "successUrl": "/dashboard?success=true",
+  "cancelUrl": "/pricing"
+}
+```
+
+**Resposta:**
+
+```json
+{
+  "url": "https://checkout.stripe.com/...",
+  "sessionId": "cs_xxx"
+}
+```
+
+### Portal do Cliente
+
+Obter URL para o portal de cobrança do cliente.
+
+```http
+POST /api/payments/portal
+Authorization: Bearer <token>
+```
+
+**Resposta:**
+
+```json
+{
+  "url": "https://billing.stripe.com/..."
+}
+```
+
+### Webhook
+
+Processar webhooks do provedor de pagamento.
+
+```http
+POST /api/payments/webhook
+```
+
+## API de Créditos
+
+### Obter Saldo
+
+```http
+GET /api/credits/balance
+Authorization: Bearer <token>
+```
+
+**Resposta:**
+
+```json
+{
+  "balance": 100
+}
+```
+
+### Obter Histórico
+
+```http
+GET /api/credits/history
+Authorization: Bearer <token>
+```
+
+**Resposta:**
+
+```json
+{
+  "transactions": [
+    {
+      "id": "cuid",
+      "amount": -10,
+      "reason": "AI generation",
+      "createdAt": "2024-01-15T10:00:00Z"
+    }
+  ]
+}
+```
+
+## Códigos de Erro
+
+| Código | Descrição |
+|--------|-----------|
+| 401 | Não autorizado |
+| 402 | Pagamento requerido |
+| 404 | Assinatura não encontrada |

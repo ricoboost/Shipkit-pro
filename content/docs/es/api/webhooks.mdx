@@ -1,0 +1,418 @@
+---
+title: Webhooks API
+description: Complete reference for all webhook events and payload formats.
+---
+
+# Webhooks API
+
+ShipKit sends webhook events for important actions in your application. Configure webhooks to sync data with external services.
+
+---
+
+## Configuration
+
+### Webhook URL
+
+Configure your webhook endpoint in the admin dashboard or via environment variable:
+
+```bash
+WEBHOOK_URL=https://your-service.com/api/webhooks/shipkit
+WEBHOOK_SECRET=whsec_your_secret_key
+```
+
+### Verifying Signatures
+
+All webhooks include a signature for verification:
+
+```typescript
+import { verifyWebhookSignature } from '@/lib/webhooks';
+
+export async function POST(req: Request) {
+  const body = await req.text();
+  const signature = req.headers.get('x-webhook-signature');
+
+  const isValid = verifyWebhookSignature(
+    body,
+    signature,
+    process.env.WEBHOOK_SECRET
+  );
+
+  if (!isValid) {
+    return new Response('Invalid signature', { status: 401 });
+  }
+
+  const event = JSON.parse(body);
+  // Handle event...
+}
+```
+
+---
+
+## Event Format
+
+All webhook events follow this format:
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "user.created",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    // Event-specific payload
+  }
+}
+```
+
+**Headers:**
+
+```http
+Content-Type: application/json
+X-Webhook-Signature: sha256=abc123...
+X-Webhook-ID: evt_clx1234567890
+X-Webhook-Timestamp: 1705312800
+```
+
+---
+
+## User Events
+
+### user.created
+
+Fired when a new user signs up.
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "user.created",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "user": {
+      "id": "usr_clx1234567890",
+      "email": "user@example.com",
+      "name": "John Doe",
+      "role": "user",
+      "created_at": "2024-01-15T10:00:00.000Z"
+    },
+    "source": "signup", // or "oauth", "invitation"
+    "provider": null // or "google", "github"
+  }
+}
+```
+
+### user.updated
+
+Fired when user profile is updated.
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "user.updated",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "user": {
+      "id": "usr_clx1234567890",
+      "email": "user@example.com",
+      "name": "Jane Doe",
+      "role": "user"
+    },
+    "changes": ["name", "image"]
+  }
+}
+```
+
+### user.deleted
+
+Fired when a user account is deleted.
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "user.deleted",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "user_id": "usr_clx1234567890",
+    "email": "user@example.com",
+    "deleted_by": "user" // or "admin"
+  }
+}
+```
+
+---
+
+## Subscription Events
+
+### subscription.created
+
+Fired when a new subscription is created.
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "subscription.created",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "subscription": {
+      "id": "sub_clx1234567890",
+      "user_id": "usr_clx1234567890",
+      "plan_id": "pro",
+      "status": "active",
+      "current_period_start": "2024-01-15T00:00:00.000Z",
+      "current_period_end": "2024-02-15T00:00:00.000Z",
+      "cancel_at_period_end": false
+    },
+    "customer": {
+      "id": "cus_xxx",
+      "email": "user@example.com"
+    }
+  }
+}
+```
+
+### subscription.updated
+
+Fired when subscription details change (plan change, renewal, etc.).
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "subscription.updated",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "subscription": {
+      "id": "sub_clx1234567890",
+      "user_id": "usr_clx1234567890",
+      "plan_id": "enterprise",
+      "status": "active",
+      "current_period_start": "2024-02-15T00:00:00.000Z",
+      "current_period_end": "2024-03-15T00:00:00.000Z"
+    },
+    "previous_plan_id": "pro",
+    "change_type": "upgrade" // or "downgrade", "renewal"
+  }
+}
+```
+
+### subscription.canceled
+
+Fired when subscription is canceled.
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "subscription.canceled",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "subscription": {
+      "id": "sub_clx1234567890",
+      "user_id": "usr_clx1234567890",
+      "plan_id": "pro",
+      "status": "canceled",
+      "canceled_at": "2024-01-15T10:00:00.000Z",
+      "ends_at": "2024-02-15T00:00:00.000Z"
+    },
+    "reason": "user_requested" // or "payment_failed", "admin"
+  }
+}
+```
+
+---
+
+## Payment Events
+
+### payment.succeeded
+
+Fired when a payment is successful.
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "payment.succeeded",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "payment": {
+      "id": "pay_clx1234567890",
+      "amount": 2900,
+      "currency": "usd",
+      "status": "succeeded"
+    },
+    "user_id": "usr_clx1234567890",
+    "invoice_id": "inv_xxx",
+    "subscription_id": "sub_clx1234567890"
+  }
+}
+```
+
+### payment.failed
+
+Fired when a payment fails.
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "payment.failed",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "payment": {
+      "id": "pay_clx1234567890",
+      "amount": 2900,
+      "currency": "usd",
+      "status": "failed",
+      "failure_reason": "card_declined"
+    },
+    "user_id": "usr_clx1234567890",
+    "retry_count": 1,
+    "next_retry_at": "2024-01-18T10:00:00.000Z"
+  }
+}
+```
+
+---
+
+## Credit Events
+
+### credits.purchased
+
+Fired when credits are purchased.
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "credits.purchased",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "user_id": "usr_clx1234567890",
+    "amount": 2000,
+    "package_id": "popular",
+    "payment_amount": 1500,
+    "currency": "usd",
+    "new_balance": 3500
+  }
+}
+```
+
+### credits.depleted
+
+Fired when credit balance reaches zero.
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "credits.depleted",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "user_id": "usr_clx1234567890",
+    "last_action": "AI chat: gpt-4-turbo",
+    "monthly_usage": 10000
+  }
+}
+```
+
+### credits.low
+
+Fired when balance falls below threshold (default: 100).
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "credits.low",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "user_id": "usr_clx1234567890",
+    "balance": 50,
+    "threshold": 100
+  }
+}
+```
+
+---
+
+## Organization Events
+
+### organization.created
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "organization.created",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "organization": {
+      "id": "org_clx1234567890",
+      "name": "Acme Corp",
+      "slug": "acme-corp"
+    },
+    "owner_id": "usr_clx1234567890"
+  }
+}
+```
+
+### organization.member_added
+
+```json
+{
+  "id": "evt_clx1234567890",
+  "type": "organization.member_added",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "data": {
+    "organization_id": "org_clx1234567890",
+    "user_id": "usr_clx0987654321",
+    "role": "member",
+    "invited_by": "usr_clx1234567890"
+  }
+}
+```
+
+---
+
+## Retry Policy
+
+Failed webhook deliveries are retried with exponential backoff:
+
+| Attempt | Delay |
+|---------|-------|
+| 1 | Immediate |
+| 2 | 1 minute |
+| 3 | 5 minutes |
+| 4 | 30 minutes |
+| 5 | 2 hours |
+| 6 | 24 hours |
+
+After 6 failed attempts, the webhook is marked as failed and requires manual retry.
+
+---
+
+## Testing Webhooks
+
+### Using CLI
+
+```bash
+# Trigger a test webhook
+npm run webhook:test user.created
+
+# Listen for webhooks locally
+npm run webhook:listen
+```
+
+### Using API
+
+```bash
+curl -X POST https://your-app.com/api/admin/webhooks/test \
+  -H "Authorization: Bearer admin_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event_type": "subscription.created",
+    "url": "https://your-service.com/webhook"
+  }'
+```
+
+---
+
+## Event Types Reference
+
+| Category | Events |
+|----------|--------|
+| User | `user.created`, `user.updated`, `user.deleted` |
+| Subscription | `subscription.created`, `subscription.updated`, `subscription.canceled` |
+| Payment | `payment.succeeded`, `payment.failed`, `payment.refunded` |
+| Credits | `credits.purchased`, `credits.depleted`, `credits.low` |
+| Organization | `organization.created`, `organization.member_added`, `organization.member_removed` |

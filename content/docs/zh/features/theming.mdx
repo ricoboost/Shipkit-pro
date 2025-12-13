@@ -1,0 +1,69 @@
+---
+title: 视觉主题
+description: 使用主题构建器自定义应用的外观。
+---
+
+# 视觉主题
+
+ShipKit包含一个可视化主题构建器，用于自定义应用的外观。
+
+## 主题构建器
+
+在仪表板的`/settings/theme`访问主题构建器。
+
+## 可自定义选项
+
+- **颜色**：主色、次色、强调色
+- **边框半径**：从尖锐到圆形的预设
+- **排版**：字体族和大小
+- **间距**：一致的间距比例
+
+## 使用方法
+
+```typescript
+import { theme } from '@/lib/theme';
+
+// Get current theme
+const currentTheme = theme.get();
+
+// Update theme
+await theme.update({
+  primaryColor: '#3b82f6',
+  borderRadius: 'md',
+});
+```
+
+## CSS变量
+
+主题值作为CSS变量应用：
+
+```css
+:root {
+  --primary: 221.2 83.2% 53.3%;
+  --radius: 0.5rem;
+}
+```
+
+## 主题提供器
+
+```tsx
+import { ThemeProvider } from '@/components/theme/provider';
+
+<ThemeProvider>
+  <App />
+</ThemeProvider>
+```
+
+## 深色模式
+
+内置深色模式支持：
+
+```tsx
+import { useTheme } from 'next-themes';
+
+const { theme, setTheme } = useTheme();
+
+<button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+  Toggle theme
+</button>
+```

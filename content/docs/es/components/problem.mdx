@@ -1,0 +1,285 @@
+---
+title: Problem/Solution
+description: Components for highlighting pain points and showcasing your solution's transformation.
+---
+
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Problem/Solution Components
+
+Powerful components for the PAS (Problem-Agitate-Solution) copywriting framework. These components help visitors identify with their pain points and see how your product transforms their situation.
+
+## Components Overview
+
+| Component | Purpose | Best For |
+|-----------|---------|----------|
+| `ProblemAgitate` | List pain points with emphasis | Building emotional connection |
+| `ProblemSolution` | Before/After transformation | Showing clear value proposition |
+| `ProblemStats` | Statistics highlighting problems | Data-driven persuasion |
+
+## Problem Agitate
+
+Highlights pain points your audience experiences to build emotional resonance.
+
+### Preview
+
+<ComponentPreview title="Problem Agitate" background="muted">
+  <ProblemAgitatePreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { ProblemAgitate } from '@/components/marketing/problem/problem-agitate';
+import { Clock, DollarSign, AlertTriangle } from 'lucide-react';
+
+<ProblemAgitate
+  subtitle="Sound Familiar?"
+  title="These Problems Are Costing You"
+  description="Every day without a solution means more wasted time and money."
+  painPoints={[
+    {
+      title: "Endless Configuration",
+      description: "Hours spent setting up tools instead of building features. Every new project feels like starting from scratch.",
+      icon: <Clock className="h-6 w-6" />
+    },
+    {
+      title: "Hidden Costs Add Up",
+      description: "Premium themes, plugins, and services quickly exceed your budget. The 'free' solution becomes expensive.",
+      icon: <DollarSign className="h-6 w-6" />
+    },
+    {
+      title: "Technical Debt Accumulates",
+      description: "Quick fixes become permanent problems. Your codebase becomes harder to maintain over time.",
+      icon: <AlertTriangle className="h-6 w-6" />
+    }
+  ]}
+  colorScheme="destructive"
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | `"Tired of These Problems?"` | Section heading |
+| `subtitle` | `string` | - | Small text above title |
+| `description` | `string` | - | Supporting text |
+| `painPoints` | `PainPoint[]` | Required | Array of pain points |
+| `animated` | `boolean` | `true` | Enable animations |
+| `colorScheme` | `string` | `'primary'` | Color variant |
+
+### PainPoint Interface
+
+```tsx
+interface PainPoint {
+  title: string;
+  description: string;
+  icon?: React.ReactNode;
+}
+```
+
+## Problem Solution
+
+Shows the transformation from before to after, with a clear visual flow.
+
+### Preview
+
+<ComponentPreview title="Problem Solution" background="muted">
+  <ProblemSolutionPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { ProblemSolution } from '@/components/marketing/problem/problem-solution';
+
+<ProblemSolution
+  subtitle="The Transformation"
+  title="From Frustration to Flow"
+  description="See how our solution changes everything."
+  solutionName="ShipKit"
+  beforeTitle="Before"
+  afterTitle="After"
+  items={[
+    {
+      before: "Hours configuring authentication",
+      after: "Auth ready in 5 minutes"
+    },
+    {
+      before: "Manual payment integration",
+      after: "Stripe pre-configured"
+    },
+    {
+      before: "Building UI from scratch",
+      after: "50+ polished components"
+    },
+    {
+      before: "Weeks before launch",
+      after: "Launch in days"
+    }
+  ]}
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | `"The Transformation"` | Section heading |
+| `subtitle` | `string` | - | Small text above title |
+| `description` | `string` | - | Supporting text |
+| `beforeTitle` | `string` | `"Before"` | Label for before column |
+| `afterTitle` | `string` | `"After"` | Label for after column |
+| `items` | `ProblemSolutionItem[]` | Required | Transformation items |
+| `solutionName` | `string` | - | Your product name (shown in middle) |
+| `animated` | `boolean` | `true` | Enable animations |
+| `colorScheme` | `string` | `'primary'` | Color variant |
+
+### ProblemSolutionItem Interface
+
+```tsx
+interface ProblemSolutionItem {
+  before: string;
+  after: string;
+}
+```
+
+## Problem Stats
+
+Display statistics that highlight the severity of problems or the impact of your solution.
+
+### Preview
+
+<ComponentPreview title="Problem Stats" background="muted">
+  <ProblemStatsPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { ProblemStats } from '@/components/marketing/problem/problem-stats';
+
+<ProblemStats
+  subtitle="The Hard Truth"
+  title="Time Lost to Manual Setup"
+  description="These numbers represent real costs to your business."
+  stats={[
+    {
+      value: "40+",
+      label: "Hours Wasted",
+      description: "Average setup time for a new SaaS project"
+    },
+    {
+      value: "$5,000",
+      label: "Lost Revenue",
+      description: "Opportunity cost of delayed launches"
+    },
+    {
+      value: "73%",
+      label: "Burnout Rate",
+      description: "Developers frustrated with boilerplate"
+    },
+    {
+      value: "3x",
+      label: "More Bugs",
+      description: "In hastily assembled codebases"
+    }
+  ]}
+  layout="grid"
+  colorScheme="destructive"
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Section heading |
+| `subtitle` | `string` | - | Small text above title |
+| `description` | `string` | - | Supporting text |
+| `stats` | `ProblemStat[]` | Required | Array of statistics |
+| `layout` | `'row' \| 'grid'` | `'row'` | Layout style |
+| `animated` | `boolean` | `true` | Enable animations |
+| `colorScheme` | `string` | `'primary'` | Color variant |
+
+### ProblemStat Interface
+
+```tsx
+interface ProblemStat {
+  value: string;
+  label: string;
+  description?: string;
+}
+```
+
+## Color Schemes
+
+All Problem/Solution components support these color schemes:
+
+- `primary` - Default background
+- `secondary` - Light secondary tint
+- `accent` - Accent color background
+- `muted` - Subtle gray background
+- `destructive` - Red-tinted (recommended for problem emphasis)
+
+<Callout type="info">
+Use `colorScheme="destructive"` for ProblemAgitate and ProblemStats to emphasize the negative aspects of not using your solution.
+</Callout>
+
+## Complete PAS Example
+
+Here's how to use all three components together for a complete Problem-Agitate-Solution flow:
+
+```tsx
+// 1. Problem - Identify the pain
+<ProblemAgitate
+  subtitle="Sound Familiar?"
+  title="Building SaaS Is Hard"
+  painPoints={[
+    { title: "Complex Setup", description: "..." },
+    { title: "Endless Decisions", description: "..." },
+    { title: "Slow Progress", description: "..." }
+  ]}
+  colorScheme="destructive"
+/>
+
+// 2. Agitate - Quantify the problem
+<ProblemStats
+  subtitle="The Real Cost"
+  title="What This Means For You"
+  stats={[
+    { value: "40+", label: "Hours Lost" },
+    { value: "$5K", label: "Wasted" },
+    { value: "2mo", label: "Delayed" }
+  ]}
+  colorScheme="destructive"
+/>
+
+// 3. Solution - Show the transformation
+<ProblemSolution
+  subtitle="There's a Better Way"
+  title="The ShipKit Difference"
+  solutionName="ShipKit"
+  items={[
+    { before: "Weeks of setup", after: "Minutes to launch" },
+    { before: "Scattered tools", after: "All-in-one platform" }
+  ]}
+/>
+```
+
+## Best Practices
+
+1. **Be Specific**: Use concrete examples and numbers
+2. **Know Your Audience**: Address pain points they actually experience
+3. **Balance Negative/Positive**: Don't dwell too long on problems
+4. **Use Icons**: Visual elements help break up text
+5. **Animate Thoughtfully**: Staggered animations create flow
+
+## Accessibility
+
+- All components use semantic HTML
+- Color contrast meets WCAG standards
+- Icons have proper aria-labels
+- Animations respect `prefers-reduced-motion`

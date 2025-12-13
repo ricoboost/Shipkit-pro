@@ -1,0 +1,55 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Next.js build output
+.next
+out
+
+# Testing
+coverage
+.nyc_output
+e2e/test-results
+e2e/playwright-report
+
+# Environment files (use Docker secrets or env vars instead)
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*
+.docker
+
+# Documentation (optional - uncomment to include)
+# README.md
+# CHANGELOG.md
+# docs/
+
+# Misc
+*.log
+*.md
+!README.md
+LICENSE
+.editorconfig
+.prettierrc*
+.eslintrc*
+eslint.config.*
+tsconfig.tsbuildinfo

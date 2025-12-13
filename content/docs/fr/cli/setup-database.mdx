@@ -1,0 +1,205 @@
+---
+title: Configuration de Base de Données
+description: Configurez votre connexion de base de données avec support pour PostgreSQL, MySQL, SQLite et fournisseurs cloud.
+---
+
+# Configuration de Base de Données
+
+La commande de configuration de base de données vous aide à configurer votre connexion de base de données et initialiser le schéma.
+
+## Démarrage Rapide
+
+```bash
+npm run setup:db
+```
+
+## Bases de Données Supportées
+
+### PostgreSQL
+
+Base de données PostgreSQL standard, locale ou hébergée dans le cloud.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider postgresql
+```
+
+Format de chaîne de connexion :
+```
+postgresql://UTILISATEUR:MOT_DE_PASSE@HOTE:5432/BASE_DE_DONNEES
+```
+
+### MySQL
+
+Base de données MySQL, locale ou hébergée dans le cloud.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider mysql
+```
+
+Format de chaîne de connexion :
+```
+mysql://UTILISATEUR:MOT_DE_PASSE@HOTE:3306/BASE_DE_DONNEES
+```
+
+### SQLite
+
+Base de données basée sur fichier, parfaite pour le développement local.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider sqlite
+```
+
+Format de chaîne de connexion :
+```
+file:./dev.db
+```
+
+<Callout type="warning">
+SQLite est excellent pour le développement mais n'est pas recommandé pour la production.
+</Callout>
+
+### Supabase
+
+PostgreSQL avec les fonctionnalités supplémentaires de Supabase.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider supabase
+```
+
+Format de chaîne de connexion :
+```
+postgresql://postgres:[MOT_DE_PASSE]@db.[PROJET].supabase.co:5432/postgres
+```
+
+Obtenez votre chaîne de connexion depuis **Paramètres > Base de données** dans le tableau de bord Supabase.
+
+### Neon
+
+PostgreSQL serverless avec support de branching.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider neon
+```
+
+Format de chaîne de connexion :
+```
+postgresql://[UTILISATEUR]:[MOT_DE_PASSE]@[HOTE].neon.tech/[BASE_DE_DONNEES]?sslmode=require
+```
+
+### PlanetScale
+
+MySQL serverless avec support de branching.
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider planetscale
+```
+
+Format de chaîne de connexion :
+```
+mysql://[UTILISATEUR]:[MOT_DE_PASSE]@[HOTE]/[BASE_DE_DONNEES]?ssl={"rejectUnauthorized":true}
+```
+
+<Callout type="info">
+PlanetScale nécessite `relationMode = "prisma"` dans votre schéma Prisma.
+</Callout>
+
+## Ce que la Configuration Fait
+
+1. **Demande le fournisseur** - Sélectionnez votre type de base de données
+2. **Configure la connexion** - Met à jour `DATABASE_URL` dans `.env`
+3. **Met à jour le schéma Prisma** - Change le fournisseur si nécessaire
+4. **Teste la connexion** - Vérifie que la base de données est accessible
+5. **Exécute les migrations** - Exécute `prisma generate` et `prisma db push`
+
+## Options de Commande
+
+Ignorer l'étape de migration :
+```bash
+npx tsx scripts/setup/setup-db.ts --skip-migrate
+```
+
+Sélectionner le fournisseur directement :
+```bash
+npx tsx scripts/setup/setup-db.ts --provider postgresql
+```
+
+## Configuration Manuelle
+
+Si vous préférez la configuration manuelle :
+
+### 1. Mettre à jour `.env`
+
+```bash
+DATABASE_URL="postgresql://utilisateur:motdepasse@localhost:5432/shipkit"
+```
+
+### 2. Générer le Client Prisma
+
+```bash
+npm run db:generate
+```
+
+### 3. Pousser le Schéma vers la Base de Données
+
+```bash
+npm run db:push
+```
+
+### 4. Vérifier avec Prisma Studio
+
+```bash
+npm run db:studio
+```
+
+## Référence des Commandes de Base de Données
+
+| Commande | Description |
+|----------|-------------|
+| `npm run db:generate` | Générer le client Prisma |
+| `npm run db:push` | Pousser le schéma vers la base de données (sans migrations) |
+| `npm run db:migrate` | Exécuter les migrations en développement |
+| `npm run db:studio` | Ouvrir Prisma Studio |
+
+## Dépannage
+
+### Connexion Refusée
+
+Assurez-vous que votre base de données est en cours d'exécution :
+
+```bash
+# PostgreSQL
+pg_isready -h localhost -p 5432
+
+# MySQL
+mysqladmin ping -h localhost
+```
+
+### Permission Refusée
+
+Vérifiez que votre utilisateur de base de données a les permissions requises :
+
+```sql
+-- PostgreSQL
+GRANT ALL PRIVILEGES ON DATABASE shipkit TO votre_utilisateur;
+
+-- MySQL
+GRANT ALL PRIVILEGES ON shipkit.* TO 'votre_utilisateur'@'localhost';
+```
+
+### SSL Requis
+
+Pour les bases de données cloud, assurez-vous que SSL est activé :
+
+```bash
+# Ajouter à la chaîne de connexion
+?sslmode=require
+```
+
+### Schéma Désynchronisé
+
+Si votre schéma est désynchronisé avec la base de données :
+
+```bash
+# Réinitialiser et pousser (ATTENTION : détruit les données)
+npx prisma db push --force-reset
+```

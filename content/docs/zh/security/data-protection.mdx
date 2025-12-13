@@ -1,0 +1,355 @@
+---
+title: Data Protection
+description: Encryption, PII handling, and GDPR compliance guidelines.
+---
+
+# Data Protection
+
+Protect user data with encryption, proper handling of personally identifiable information (PII), and compliance with data protection regulations.
+
+---
+
+## Data Classification
+
+### Sensitivity Levels
+
+| Level | Examples | Storage | Access |
+|-------|----------|---------|--------|
+| **Public** | Blog posts, pricing | Plain | Anyone |
+| **Internal** | Analytics, logs | Plain | Staff only |
+| **Confidential** | Email, name | Encrypted at rest | Authenticated users |
+| **Restricted** | Passwords, API keys | Hashed/Encrypted | System only |
+
+---
+
+## Encryption at Rest
+
+### Database Encryption
+
+Enable encryption at the database level:
+
+**PostgreSQL (Neon/Supabase):**
+- Encryption at rest is enabled by default
+- Uses AES-256 encryption
+
+**For additional field-level encryption:**
+
+```typescript
+// src/lib/encryption.ts
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+
+const ALGORITHM = 'aes-256-gcm';
+const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex');
+
+export function encrypt(text: string): string {
+  const iv = randomBytes(16);
+  const cipher = createCipheriv(ALGORITHM, KEY, iv);
+
+  let encrypted = cipher.update(text, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+
+  const authTag = cipher.getAuthTag();
+
+  return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
+}
+
+export function decrypt(encryptedText: string): string {
+  const [ivHex, authTagHex, encrypted] = encryptedText.split(':');
+
+  const iv = Buffer.from(ivHex, 'hex');
+  const authTag = Buffer.from(authTagHex, 'hex');
+  const decipher = createDecipheriv(ALGORITHM, KEY, iv);
+
+  decipher.setAuthTag(authTag);
+
+  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+
+  return decrypted;
+}
+```
+
+### Encrypting Sensitive Fields
+
+```typescript
+// src/lib/models/user.ts
+import { encrypt, decrypt } from '@/lib/encryption';
+
+// Before saving
+const encryptedSSN = encrypt(user.ssn);
+await prisma.user.update({
+  where: { id: userId },
+  data: { ssn: encryptedSSN },
+});
+
+// When reading
+const user = await prisma.user.findUnique({ where: { id: userId } });
+const decryptedSSN = decrypt(user.ssn);
+```
+
+---
+
+## PII Handling
+
+### Identifying PII
+
+| Data Type | Classification | Handling |
+|-----------|---------------|----------|
+| Email | PII | Hash for lookups, encrypt for storage |
+| Name | PII | Encrypt at rest |
+| Address | PII | Encrypt at rest |
+| Phone | PII | Encrypt at rest |
+| IP Address | PII | Anonymize or delete after 30 days |
+| Payment Info | Restricted PII | Never store - use Stripe tokens |
+| SSN/National ID | Restricted PII | Encrypt, limit access, audit logs |
+
+### Data Minimization
+
+Only collect what you need:
+
+```typescript
+// ✅ Good - minimal data
+const signUpSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+// ❌ Bad - collecting unnecessary data
+const signUpSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  phone: z.string(), // Not needed for signup
+  address: z.string(), // Not needed for signup
+  birthDate: z.string(), // Not needed for signup
+});
+```
+
+---
+
+## GDPR Compliance
+
+### User Rights Implementation
+
+#### Right to Access (Data Export)
+
+```typescript
+// src/app/api/user/export/route.ts
+export async function GET(req: Request) {
+  const session = await auth();
+  if (!session) return unauthorized();
+
+  const userData = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    include: {
+      subscriptions: true,
+      creditTransactions: true,
+      organizations: true,
+    },
+  });
+
+  // Remove sensitive internal fields
+  const exportData = {
+    profile: {
+      email: userData.email,
+      name: userData.name,
+      createdAt: userData.createdAt,
+    },
+    subscriptions: userData.subscriptions.map((s) => ({
+      plan: s.planId,
+      status: s.status,
+      startDate: s.createdAt,
+    })),
+    // ... other data
+  };
+
+  return new Response(JSON.stringify(exportData, null, 2), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Disposition': 'attachment; filename="my-data.json"',
+    },
+  });
+}
+```
+
+#### Right to Erasure (Delete Account)
+
+```typescript
+// src/app/api/user/delete/route.ts
+export async function DELETE(req: Request) {
+  const session = await auth();
+  if (!session) return unauthorized();
+
+  const userId = session.user.id;
+
+  // Cancel active subscriptions
+  await cancelAllSubscriptions(userId);
+
+  // Delete user data
+  await prisma.$transaction([
+    prisma.creditTransaction.deleteMany({ where: { userId } }),
+    prisma.session.deleteMany({ where: { userId } }),
+    prisma.apiKey.deleteMany({ where: { userId } }),
+    prisma.user.delete({ where: { id: userId } }),
+  ]);
+
+  // Log deletion for compliance
+  await logSecurityEvent({
+    type: 'ACCOUNT_DELETED',
+    userId,
+    metadata: { deletedAt: new Date().toISOString() },
+  });
+
+  return Response.json({ message: 'Account deleted' });
+}
+```
+
+#### Right to Rectification (Update Data)
+
+```typescript
+// src/app/api/user/profile/route.ts
+export async function PATCH(req: Request) {
+  const session = await auth();
+  const data = await req.json();
+
+  const updated = await prisma.user.update({
+    where: { id: session.user.id },
+    data: {
+      name: data.name,
+      email: data.email,
+    },
+  });
+
+  return Response.json({ user: updated });
+}
+```
+
+### Consent Management
+
+```typescript
+// src/lib/consent.ts
+export const CONSENT_TYPES = {
+  MARKETING: 'marketing_emails',
+  ANALYTICS: 'analytics_tracking',
+  THIRD_PARTY: 'third_party_sharing',
+} as const;
+
+export async function updateConsent(
+  userId: string,
+  type: keyof typeof CONSENT_TYPES,
+  granted: boolean
+) {
+  await prisma.userConsent.upsert({
+    where: {
+      userId_type: { userId, type: CONSENT_TYPES[type] },
+    },
+    create: {
+      userId,
+      type: CONSENT_TYPES[type],
+      granted,
+      grantedAt: granted ? new Date() : null,
+    },
+    update: {
+      granted,
+      grantedAt: granted ? new Date() : null,
+      revokedAt: granted ? null : new Date(),
+    },
+  });
+}
+```
+
+---
+
+## Data Retention
+
+### Retention Policy
+
+| Data Type | Retention Period | Action After |
+|-----------|-----------------|--------------|
+| User accounts | Until deletion | Delete all data |
+| Session data | 30 days | Auto-delete |
+| Logs | 90 days | Auto-delete |
+| Audit logs | 2 years | Archive then delete |
+| Backups | 30 days | Auto-delete |
+| Analytics | 12 months | Anonymize |
+
+### Automatic Cleanup Job
+
+```typescript
+// src/jobs/data-cleanup.ts
+export async function cleanupExpiredData() {
+  const now = new Date();
+
+  // Delete old sessions (30 days)
+  await prisma.session.deleteMany({
+    where: {
+      expires: { lt: now },
+    },
+  });
+
+  // Delete old logs (90 days)
+  const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+  await prisma.log.deleteMany({
+    where: {
+      createdAt: { lt: ninetyDaysAgo },
+    },
+  });
+
+  // Anonymize old analytics (12 months)
+  const oneYearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+  await prisma.analyticsEvent.updateMany({
+    where: {
+      createdAt: { lt: oneYearAgo },
+      anonymized: false,
+    },
+    data: {
+      userId: null,
+      ip: null,
+      anonymized: true,
+    },
+  });
+}
+```
+
+---
+
+## Privacy Policy Requirements
+
+Your privacy policy should include:
+
+1. **What data you collect** and why
+2. **How data is stored** and protected
+3. **Third parties** who receive data
+4. **User rights** and how to exercise them
+5. **Contact information** for privacy inquiries
+6. **Cookie policy** and tracking disclosure
+7. **Data retention** periods
+8. **International transfers** if applicable
+
+---
+
+## Compliance Checklist
+
+### GDPR (EU)
+
+- [ ] Privacy policy published
+- [ ] Cookie consent banner
+- [ ] Data export functionality
+- [ ] Account deletion functionality
+- [ ] Consent management
+- [ ] Data processing agreements with vendors
+- [ ] Breach notification process
+
+### CCPA (California)
+
+- [ ] "Do Not Sell" option
+- [ ] Data access requests
+- [ ] Deletion requests
+- [ ] Non-discrimination policy
+
+### SOC 2
+
+- [ ] Access controls documented
+- [ ] Encryption at rest and in transit
+- [ ] Audit logging
+- [ ] Incident response plan
+- [ ] Vendor management

@@ -1,0 +1,245 @@
+---
+title: Características
+description: Componentes para mostrar las características y beneficios de tu producto.
+---
+
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Componentes de Características
+
+Muestra las características y beneficios de tu producto con nuestros componentes de características versátiles.
+
+## Resumen de Componentes
+
+| Componente | Propósito | Mejor Para |
+|------------|-----------|------------|
+| `FeaturesGrid` | Cuadrícula de características con iconos | Lista de características estándar |
+| `FeaturesAlternating` | Filas alternadas con imágenes | Explicaciones detalladas |
+| `FeaturesAccordion` | Características expandibles | Información densa |
+| `FeaturesListicle` | Lista con numeración | Beneficios secuenciales |
+| `FeaturesTabs` | Características con pestañas | Contenido categorizado |
+| `FeaturesBento` | Diseño estilo bento grid | Diseño moderno |
+
+## Features Grid
+
+Cuadrícula responsiva de características con iconos.
+
+```tsx
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+import { Zap, Shield, Rocket, Code, Cloud, Users } from 'lucide-react';
+
+<FeaturesGrid
+  subtitle="Características"
+  title="Todo lo Que Necesitas"
+  description="Herramientas poderosas para construir tu próximo gran proyecto."
+  features={[
+    {
+      title: "Rendimiento Ultra Rápido",
+      description: "Optimizado para velocidad con las últimas tecnologías web.",
+      icon: <Zap className="h-6 w-6" />
+    },
+    {
+      title: "Seguridad de Nivel Empresarial",
+      description: "Autenticación y autorización robustas incluidas.",
+      icon: <Shield className="h-6 w-6" />
+    },
+    {
+      title: "Despliegue Instantáneo",
+      description: "Un comando para desplegar a producción.",
+      icon: <Rocket className="h-6 w-6" />
+    },
+    {
+      title: "Código Limpio",
+      description: "TypeScript, ESLint y Prettier configurados.",
+      icon: <Code className="h-6 w-6" />
+    },
+    {
+      title: "Listo para la Nube",
+      description: "Optimizado para Vercel, AWS y más.",
+      icon: <Cloud className="h-6 w-6" />
+    },
+    {
+      title: "Multi-tenancy",
+      description: "Soporte de organizaciones y equipos incluido.",
+      icon: <Users className="h-6 w-6" />
+    }
+  ]}
+  columns={3}
+/>
+```
+
+### Props
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `title` | `string` | - | Encabezado de sección |
+| `subtitle` | `string` | - | Texto pequeño sobre el título |
+| `description` | `string` | - | Texto de soporte |
+| `features` | `FeatureItem[]` | Requerido | Array de características |
+| `columns` | `2 \| 3 \| 4` | `3` | Número de columnas |
+| `animated` | `boolean` | `true` | Habilitar animaciones |
+| `colorScheme` | `string` | `'primary'` | Variante de color |
+
+## Features Alternating
+
+Filas alternadas con imagen y texto para explicaciones detalladas.
+
+```tsx
+import { FeaturesAlternating } from '@/components/marketing/features/features-alternating';
+
+<FeaturesAlternating
+  features={[
+    {
+      title: "Dashboard Intuitivo",
+      description: "Visualiza todas tus métricas en un solo lugar. Dashboards personalizables que se adaptan a tus necesidades.",
+      image: {
+        src: "/images/dashboard.png",
+        alt: "Dashboard Screenshot"
+      }
+    },
+    {
+      title: "Análisis Avanzado",
+      description: "Obtén insights profundos sobre el comportamiento de tus usuarios con nuestras herramientas de análisis.",
+      image: {
+        src: "/images/analytics.png",
+        alt: "Analytics Screenshot"
+      }
+    }
+  ]}
+/>
+```
+
+## Features Accordion
+
+Características expandibles para información densa.
+
+```tsx
+import { FeaturesAccordion } from '@/components/marketing/features/features-accordion';
+
+<FeaturesAccordion
+  title="Explora Nuestras Características"
+  features={[
+    {
+      title: "Autenticación",
+      description: "Sistema de autenticación completo con soporte para múltiples proveedores.",
+      icon: <Lock className="h-5 w-5" />,
+      details: "Incluye login social, 2FA, magic links, y más."
+    },
+    {
+      title: "Pagos",
+      description: "Integración completa con Stripe para suscripciones y pagos únicos.",
+      icon: <CreditCard className="h-5 w-5" />,
+      details: "Webhooks pre-configurados, portal de facturación, y gestión de planes."
+    }
+  ]}
+/>
+```
+
+## Features Listicle
+
+Lista numerada de características o beneficios.
+
+```tsx
+import { FeaturesListicle } from '@/components/marketing/features/features-listicle';
+
+<FeaturesListicle
+  title="Por Qué Elegirnos"
+  features={[
+    {
+      title: "Ahorra Tiempo",
+      description: "Semanas de desarrollo convertidas en horas."
+    },
+    {
+      title: "Mejores Prácticas",
+      description: "Código probado en producción y patrones modernos."
+    },
+    {
+      title: "Soporte Dedicado",
+      description: "Comunidad activa y soporte directo."
+    }
+  ]}
+/>
+```
+
+## Features Tabs
+
+Características organizadas en pestañas.
+
+```tsx
+import { FeaturesTabs } from '@/components/marketing/features/features-tabs';
+
+<FeaturesTabs
+  title="Características por Categoría"
+  tabs={[
+    {
+      label: "Desarrollo",
+      features: [/* ... */]
+    },
+    {
+      label: "Despliegue",
+      features: [/* ... */]
+    },
+    {
+      label: "Monitoreo",
+      features: [/* ... */]
+    }
+  ]}
+/>
+```
+
+## Features Bento
+
+Diseño moderno estilo bento grid.
+
+```tsx
+import { FeaturesBento } from '@/components/marketing/features/features-bento';
+
+<FeaturesBento
+  title="El Stack Completo"
+  features={[
+    {
+      title: "Next.js 14",
+      description: "El framework React más moderno.",
+      size: "large",
+      image: "/images/nextjs.png"
+    },
+    {
+      title: "TypeScript",
+      description: "Seguridad de tipos completa.",
+      size: "small"
+    },
+    // ... más características
+  ]}
+/>
+```
+
+## Interfaz FeatureItem
+
+```tsx
+interface FeatureItem {
+  title: string;
+  description: string;
+  icon?: React.ReactNode;
+  image?: {
+    src: string;
+    alt: string;
+  };
+}
+```
+
+## Esquemas de Color
+
+- `primary` - Fondo por defecto
+- `secondary` - Tinte secundario
+- `accent` - Color de acento
+- `muted` - Fondo sutil
+- `destructive` - Tinte rojo
+
+## Mejores Prácticas
+
+1. **Beneficios sobre características**: Enfócate en lo que el usuario obtiene
+2. **Iconos consistentes**: Usa el mismo set de iconos
+3. **Descripciones concisas**: 1-2 oraciones máximo
+4. **Agrupa lógicamente**: Organiza características relacionadas
+5. **Imágenes de calidad**: Usa screenshots reales cuando sea posible

@@ -1,0 +1,39 @@
+---
+title: 部署到生产环境
+description: 将ShipKit应用部署到Vercel、Railway或Docker的完整指南。
+---
+
+# 部署到生产环境
+
+本教程涵盖将您的ShipKit应用部署到生产环境。
+
+## 部署选项
+
+| 平台 | 最适合 | 复杂度 |
+|------|--------|--------|
+| **Vercel** | 最快部署 | 简单 |
+| **Railway** | 完全控制 | 中等 |
+| **Docker** | 自托管 | 高级 |
+
+## 选项1：部署到Vercel
+
+1. 访问[vercel.com/new](https://vercel.com/new)
+2. 导入您的GitHub仓库
+3. 配置环境变量
+4. 点击"Deploy"
+
+## 生产清单
+
+- [ ] 生成新的`NEXTAUTH_SECRET`
+- [ ] 使用Stripe生产密钥
+- [ ] 启用Webhook签名验证
+- [ ] 数据库连接池
+- [ ] 配置Sentry错误跟踪
+
+## 下一步
+
+<Cards>
+  <Card title="设置监控" href="/docs/infrastructure/monitoring">
+    配置Sentry、分析和正常运行时间监控。
+  </Card>
+</Cards>

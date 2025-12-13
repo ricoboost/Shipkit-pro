@@ -1,0 +1,143 @@
+---
+title: NextAuth.js
+description: 在ShipKit中配置NextAuth.js v5进行身份验证。
+---
+
+# NextAuth.js设置
+
+NextAuth.js是一个灵活的身份验证解决方案，支持OAuth提供程序、凭据和魔法链接。
+
+## 配置
+
+在您的`.env`中设置身份验证提供程序：
+
+```bash
+AUTH_PROVIDER="nextauth"
+AUTH_SECRET="your-secret-key-generate-with-openssl"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+生成密钥：
+
+```bash
+openssl rand -base64 32
+```
+
+## OAuth提供程序
+
+### Google
+
+1. 访问[Google Cloud Console](https://console.cloud.google.com/)
+2. 创建新项目或选择现有项目
+3. 启用Google+ API
+4. 创建OAuth 2.0凭据
+5. 添加授权重定向URI：`http://localhost:3000/api/auth/callback/google`
+
+```bash
+GOOGLE_CLIENT_ID="your-client-id"
+GOOGLE_CLIENT_SECRET="your-client-secret"
+```
+
+### GitHub
+
+1. 访问[GitHub开发者设置](https://github.com/settings/developers)
+2. 创建新的OAuth应用
+3. 设置回调URL：`http://localhost:3000/api/auth/callback/github`
+
+```bash
+GITHUB_CLIENT_ID="your-client-id"
+GITHUB_CLIENT_SECRET="your-client-secret"
+```
+
+## 实现详情
+
+NextAuth配置位于`src/lib/auth/nextauth.ts`：
+
+```typescript
+import NextAuth from 'next-auth';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import Google from 'next-auth/providers/google';
+import GitHub from 'next-auth/providers/github';
+import Credentials from 'next-auth/providers/credentials';
+import { db } from '@/lib/db';
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(db),
+  providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    GitHub({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    }),
+    Credentials({
+      // Email/password authentication
+    }),
+  ],
+  callbacks: {
+    session({ session, user }) {
+      session.user.id = user.id;
+      return session;
+    },
+  },
+});
+```
+
+## 凭据认证
+
+启用电子邮件/密码登录：
+
+```typescript
+Credentials({
+  credentials: {
+    email: { label: 'Email', type: 'email' },
+    password: { label: 'Password', type: 'password' },
+  },
+  async authorize(credentials) {
+    const user = await db.user.findUnique({
+      where: { email: credentials.email },
+    });
+
+    if (!user || !user.password) return null;
+
+    const isValid = await bcrypt.compare(
+      credentials.password,
+      user.password
+    );
+
+    if (!isValid) return null;
+
+    return user;
+  },
+})
+```
+
+## 会话管理
+
+获取当前会话：
+
+```typescript
+import { auth } from '@/lib/auth';
+
+// Server Component
+const session = await auth();
+
+// Client Component
+import { useSession } from 'next-auth/react';
+const { data: session } = useSession();
+```
+
+## 受保护的路由
+
+使用中间件保护路由：
+
+```typescript
+// middleware.ts
+export { auth as middleware } from '@/lib/auth';
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/settings/:path*'],
+};
+```

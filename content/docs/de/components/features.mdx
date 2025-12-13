@@ -1,0 +1,463 @@
+---
+title: Features-Komponenten
+description: Präsentieren Sie Ihre Produktfeatures mit 6 verschiedenen Layout-Varianten
+---
+
+# Features-Komponenten
+
+Feature-Sektionen helfen Besuchern zu verstehen, was Ihr Produkt wertvoll macht. ShipKit enthält 6 Feature-Komponenten-Varianten für verschiedene Präsentationsstile.
+
+## Verfügbare Varianten
+
+| Variante | Geeignet für | Hauptmerkmal |
+|---------|----------|-------------|
+| `FeaturesGrid` | Mehrere Features | Responsives Karten-Grid |
+| `FeaturesListicle` | Detaillierte Erklärungen | Nummeriertes Listenformat |
+| `FeaturesAccordion` | FAQ-Style-Inhalt | Erweiterbare Sektionen |
+| `FeaturesTabs` | Feature-Kategorien | Tab-Interface mit Bildern |
+| `FeaturesBento` | Visuelle Präsentation | Bento-Grid-Layout |
+| `FeaturesComparison` | Plan-Vergleiche | Nebeneinander-Vergleich |
+
+## Gemeinsame Props
+
+Alle Features-Komponenten teilen diese Basis-Props:
+
+```typescript
+interface FeaturesBaseProps {
+  title?: string;                   // Sektionsüberschrift
+  subtitle?: string;                // Kleiner Text über dem Titel
+  description?: string;             // Unterstützender Text
+  animated?: boolean;               // Animationen aktivieren/deaktivieren
+  colorScheme?: ColorScheme;        // Farbthema
+  className?: string;               // Zusätzliche CSS-Klassen
+}
+
+interface FeatureItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+}
+```
+
+---
+
+## FeaturesGrid
+
+Die vielseitigste Variante zeigt Features in einem responsiven Karten-Grid.
+
+### Verwendung
+
+```tsx
+import { FeaturesGrid } from '@/components/marketing/features/features-grid';
+import { Zap, Shield, Rocket, Heart, Star, Globe } from 'lucide-react';
+
+export function FeaturesSection() {
+  return (
+    <FeaturesGrid
+      title="Alles, was Sie brauchen, um schnell zu liefern"
+      subtitle="Features"
+      description="Gebaut mit modernen Best Practices und produktionsbereit vom ersten Tag an"
+      columns={3}
+      features={[
+        {
+          title: 'Blitzschnell',
+          description: 'Für Leistung optimiert mit Turbopack und Edge-Funktionen',
+          icon: <Zap className="h-6 w-6" />,
+        },
+        {
+          title: 'Unternehmenssicherheit',
+          description: 'Integrierte Auth, Rate-Limiting und Sicherheits-Header',
+          icon: <Shield className="h-6 w-6" />,
+        },
+        {
+          title: 'Mühelos skalieren',
+          description: 'Von null bis Millionen von Benutzern ohne Code-Änderungen',
+          icon: <Rocket className="h-6 w-6" />,
+        },
+        {
+          title: 'Entwicklererfahrung',
+          description: 'TypeScript, ESLint, Prettier sofort einsatzbereit',
+          icon: <Heart className="h-6 w-6" />,
+        },
+        {
+          title: 'KI-bereit',
+          description: 'OpenRouter und Vercel AI SDK Integration integriert',
+          icon: <Star className="h-6 w-6" />,
+        },
+        {
+          title: 'Global standardmäßig',
+          description: '7 Sprachen unterstützt mit next-intl',
+          icon: <Globe className="h-6 w-6" />,
+        },
+      ]}
+      colorScheme="primary"
+    />
+  );
+}
+```
+
+### Zusätzliche Props
+
+```typescript
+interface FeaturesGridProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  columns?: 2 | 3 | 4;              // Grid-Spalten (Standard: 3)
+}
+```
+
+---
+
+## FeaturesListicle
+
+Nummeriertes Listenformat ideal für schrittweise Features oder geordnete Vorteile.
+
+### Verwendung
+
+```tsx
+import { FeaturesListicle } from '@/components/marketing/features/features-listicle';
+
+export function HowItWorks() {
+  return (
+    <FeaturesListicle
+      title="So funktioniert es"
+      subtitle="Erste Schritte"
+      features={[
+        {
+          title: 'Repository klonen',
+          description: 'Ein Befehl, um mit dem kompletten Stack zu beginnen',
+        },
+        {
+          title: 'Provider konfigurieren',
+          description: 'Verwenden Sie unseren Setup-Assistenten, um Auth, Zahlungen und KI zu konfigurieren',
+        },
+        {
+          title: 'Theme anpassen',
+          description: 'Verwenden Sie den visuellen Theme-Builder, um Ihre Marke anzupassen',
+        },
+        {
+          title: 'In Produktion deployen',
+          description: 'Ein-Klick-Bereitstellung auf Vercel oder verwenden Sie Docker für Self-Hosting',
+        },
+      ]}
+    />
+  );
+}
+```
+
+### Zusätzliche Props
+
+```typescript
+interface FeaturesListicleProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  numbered?: boolean;               // Nummern anzeigen (Standard: true)
+  orientation?: 'vertical' | 'horizontal';
+}
+```
+
+---
+
+## FeaturesAccordion
+
+Erweiterbare Akkordeon-Sektionen für detaillierte Feature-Erklärungen.
+
+### Verwendung
+
+```tsx
+import { FeaturesAccordion } from '@/components/marketing/features/features-accordion';
+
+export function DetailedFeatures() {
+  return (
+    <FeaturesAccordion
+      title="Detaillierte Features"
+      features={[
+        {
+          title: 'Multi-Provider-Authentifizierung',
+          description: 'Unterstützung für NextAuth.js, Supabase Auth und Better-Auth. Wechseln Sie zwischen Providern mit einer einzigen Umgebungsvariable. Enthält OAuth, Magic Links und Credentials.',
+        },
+        {
+          title: 'Flexible Zahlungsintegration',
+          description: 'Vorgefertigte Integrationen mit Stripe, LemonSqueezy und Polar. Unterstützung für Abonnements, einmalige Zahlungen und nutzungsbasierte Abrechnung.',
+        },
+        {
+          title: 'KI-native Architektur',
+          description: 'OpenRouter-Integration für 100+ KI-Modelle. Vercel AI SDK für Streaming-Antworten. Integrierte Chat- und Bildgenerierungs-Demos.',
+        },
+      ]}
+      defaultOpen={0}
+    />
+  );
+}
+```
+
+### Zusätzliche Props
+
+```typescript
+interface FeaturesAccordionProps extends FeaturesBaseProps {
+  features: FeatureItem[];
+  defaultOpen?: number;             // Index des anfänglich geöffneten Elements
+  allowMultiple?: boolean;          // Mehrere offen erlauben (Standard: false)
+}
+```
+
+---
+
+## FeaturesTabs
+
+Tab-Interface mit Features und Bildern, ideal für Feature-Kategorien.
+
+### Verwendung
+
+```tsx
+import { FeaturesTabs } from '@/components/marketing/features/features-tabs';
+import { Palette, Lock, CreditCard } from 'lucide-react';
+
+export function FeatureCategories() {
+  return (
+    <FeaturesTabs
+      title="Erkunden Sie unsere Features"
+      tabs={[
+        {
+          id: 'theming',
+          label: 'Theming',
+          icon: <Palette className="h-4 w-4" />,
+          title: 'Visueller Theme-Builder',
+          description: 'Passen Sie jeden Aspekt Ihrer Anwendung mit unserem visuellen Theme-Builder an. Wählen Sie aus Vorlagen oder erstellen Sie Ihren eigenen einzigartigen Look.',
+          image: {
+            src: '/images/features/theming.png',
+            alt: 'Theme-Builder-Oberfläche',
+          },
+          highlights: [
+            '5 Farbschema-Vorlagen',
+            'HSL-Farbwähler',
+            'Light- und Dark-Mode-Unterstützung',
+            'Als CSS exportieren',
+          ],
+        },
+        {
+          id: 'auth',
+          label: 'Authentifizierung',
+          icon: <Lock className="h-4 w-4" />,
+          title: 'Flexible Authentifizierung',
+          description: 'Wählen Sie aus mehreren Auth-Providern oder verwenden Sie sie zusammen. Alle wichtigen OAuth-Provider unterstützt.',
+          image: {
+            src: '/images/features/auth.png',
+            alt: 'Authentifizierungsoptionen',
+          },
+          highlights: [
+            'NextAuth.js, Supabase, Better-Auth',
+            'OAuth mit Google, GitHub usw.',
+            'Magic Links und Credentials',
+            'Zwei-Faktor-Authentifizierung',
+          ],
+        },
+        {
+          id: 'payments',
+          label: 'Zahlungen',
+          icon: <CreditCard className="h-4 w-4" />,
+          title: 'Zahlungsabwicklung',
+          description: 'Akzeptieren Sie Zahlungen weltweit mit Ihrem gewählten Zahlungsabwickler. Abonnements, einmalige und nutzungsbasierte Abrechnung.',
+          image: {
+            src: '/images/features/payments.png',
+            alt: 'Zahlungsintegration',
+          },
+          highlights: [
+            'Stripe, LemonSqueezy, Polar',
+            'Abonnementverwaltung',
+            'Kundenportal',
+            'Webhook-Verarbeitung',
+          ],
+        },
+      ]}
+      defaultTab="theming"
+    />
+  );
+}
+```
+
+### Zusätzliche Props
+
+```typescript
+interface FeatureTab {
+  id: string;
+  label: string;
+  icon?: ReactNode;
+  title: string;
+  description: string;
+  image?: { src: string; alt: string };
+  highlights?: string[];
+}
+
+interface FeaturesTabsProps extends FeaturesBaseProps {
+  tabs: FeatureTab[];
+  defaultTab?: string;              // ID des standardmäßig aktiven Tabs
+}
+```
+
+---
+
+## FeaturesBento
+
+Bento-Grid-Layout für visuell beeindruckende Feature-Präsentationen.
+
+### Verwendung
+
+```tsx
+import { FeaturesBento } from '@/components/marketing/features/features-bento';
+import { Zap, Shield, Rocket, Code2, Palette, Globe } from 'lucide-react';
+
+export function BentoShowcase() {
+  return (
+    <FeaturesBento
+      title="Gebaut für moderne Entwicklung"
+      subtitle="Features"
+      items={[
+        {
+          title: 'Blitzschnell',
+          description: 'Turbopack-gestützte Entwicklung mit sofortigem HMR',
+          icon: <Zap className="h-6 w-6" />,
+          size: 'large',
+        },
+        {
+          title: 'Standardmäßig sicher',
+          description: 'Unternehmenssicherheit integriert',
+          icon: <Shield className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: 'KI-nativ',
+          description: 'OpenRouter und Vercel AI SDK bereit',
+          icon: <Rocket className="h-6 w-6" />,
+          size: 'wide',
+        },
+        {
+          title: 'TypeScript',
+          description: 'Vollständige Typsicherheit über den Stack',
+          icon: <Code2 className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: 'Themeable',
+          description: 'Visueller Theme-Builder inklusive',
+          icon: <Palette className="h-6 w-6" />,
+          size: 'default',
+        },
+        {
+          title: 'i18n-bereit',
+          description: '7 Sprachen sofort einsatzbereit',
+          icon: <Globe className="h-6 w-6" />,
+          size: 'tall',
+        },
+      ]}
+    />
+  );
+}
+```
+
+### Zusätzliche Props
+
+```typescript
+interface BentoItem {
+  title: string;
+  description: string;
+  icon?: ReactNode;
+  size?: 'default' | 'large' | 'wide' | 'tall';
+}
+
+interface FeaturesBentoProps extends FeaturesBaseProps {
+  items: BentoItem[];
+}
+```
+
+### Größenoptionen
+
+| Größe | Grid-Span | Geeignet für |
+|------|-----------|----------|
+| `default` | 1x1 | Standard-Features |
+| `large` | 2x2 | Hero-Features |
+| `wide` | 2x1 | Features mit längeren Titeln |
+| `tall` | 1x2 | Features mit längeren Beschreibungen |
+
+---
+
+## FeaturesComparison
+
+Nebeneinander-Vergleichstabelle für Pläne oder Produktversionen.
+
+### Verwendung
+
+```tsx
+import { FeaturesComparison } from '@/components/marketing/features/features-comparison';
+
+export function PlanComparison() {
+  return (
+    <FeaturesComparison
+      title="Pläne vergleichen"
+      columns={[
+        { name: 'Starter', price: 'Kostenlos' },
+        { name: 'Pro', price: '19€/Mo', highlighted: true },
+        { name: 'Enterprise', price: 'Individuell' },
+      ]}
+      features={[
+        { name: 'Benutzer', values: ['1', 'Unbegrenzt', 'Unbegrenzt'] },
+        { name: 'API-Aufrufe', values: ['1.000/Mo', '100.000/Mo', 'Unbegrenzt'] },
+        { name: 'Support', values: ['Community', 'Priorität', '24/7 Dediziert'] },
+        { name: 'Custom Domain', values: [false, true, true] },
+        { name: 'Analytics', values: [false, true, true] },
+        { name: 'SSO', values: [false, false, true] },
+      ]}
+    />
+  );
+}
+```
+
+### Zusätzliche Props
+
+```typescript
+interface ComparisonColumn {
+  name: string;
+  price?: string;
+  highlighted?: boolean;
+  cta?: { label: string; href: string };
+}
+
+interface ComparisonFeature {
+  name: string;
+  values: (string | boolean)[];     // Boolean wird als Häkchen/X dargestellt
+}
+
+interface FeaturesComparisonProps extends FeaturesBaseProps {
+  columns: ComparisonColumn[];
+  features: ComparisonFeature[];
+}
+```
+
+---
+
+## Farbschemata
+
+Alle Feature-Varianten unterstützen 5 Farbschemata:
+
+```tsx
+<FeaturesGrid colorScheme="primary" {...props} />   // Standard-Markenfarben
+<FeaturesGrid colorScheme="secondary" {...props} /> // Dezenter sekundär
+<FeaturesGrid colorScheme="accent" {...props} />    // Auffällige Akzente
+<FeaturesGrid colorScheme="muted" {...props} />     // Neutral, gedämpft
+<FeaturesGrid colorScheme="destructive" {...props} /> // Warnstil
+```
+
+## Animationen
+
+Alle Komponenten enthalten scroll-getriggerte Animationen:
+
+```tsx
+// Standardmäßig aktiviert
+<FeaturesGrid animated={true} {...props} />
+
+// Für Leistung/Barrierefreiheit deaktivieren
+<FeaturesGrid animated={false} {...props} />
+```
+
+Animationsfunktionen:
+- **Gestaffelte Enthüllung**: Elemente erscheinen nacheinander
+- **Fade up**: Elemente erscheinen mit Aufwärtsbewegung
+- **Viewport-Trigger**: Animiert beim Scrollen in Ansicht

@@ -1,0 +1,88 @@
+---
+title: CLI-Tools Übersicht
+description: ShipKit bietet leistungsstarke CLI-Tools für Einrichtung, Scaffolding und Entwicklungsautomatisierung.
+---
+
+# CLI-Tools
+
+ShipKit enthält eine umfassende Suite von CLI-Tools zur Optimierung Ihres Entwicklungsworkflows. Von der Ersteinrichtung bis zur Codegenerierung helfen Ihnen diese Tools, schnell voranzukommen.
+
+## Schnellstart
+
+Führen Sie den interaktiven Einrichtungsassistenten aus, um Ihre gesamte Anwendung zu konfigurieren:
+
+```bash
+npm run setup
+```
+
+Oder für eine schnelle Einrichtung mit sinnvollen Standardwerten:
+
+```bash
+npm run setup:quick
+```
+
+## Verfügbare Tools
+
+### Einrichtungsbefehle
+
+Konfigurieren Sie Ihre Anwendung Schritt für Schritt:
+
+| Befehl | Beschreibung |
+|--------|--------------|
+| `npm run setup` | Interaktiver Einrichtungsassistent |
+| `npm run setup:quick` | Schnelle Einrichtung mit Standardwerten |
+| `npm run setup:stack` | Stack-Selektor (Bloat reduzieren) |
+| `npm run setup:env` | Umgebungsvariablen konfigurieren |
+| `npm run setup:db` | Datenbankverbindung konfigurieren |
+| `npm run setup:auth` | Authentifizierungsanbieter konfigurieren |
+| `npm run setup:payments` | Zahlungsanbieter konfigurieren |
+| `npm run setup:ai` | KI-Anbieter konfigurieren |
+| `npm run setup:admin` | Admin-Benutzer erstellen |
+
+### Generator-Befehle
+
+Generieren Sie neuen Code mit integrierten Best Practices:
+
+| Befehl | Beschreibung |
+|--------|--------------|
+| `npm run generate:page` | Neue Seite mit i18n generieren |
+| `npm run generate:api` | Neue API-Route generieren |
+| `npm run generate:component` | Neue Komponente generieren |
+
+### Datenbankbefehle
+
+Verwalten Sie Ihr Datenbankschema:
+
+| Befehl | Beschreibung |
+|--------|--------------|
+| `npm run db:generate` | Prisma-Client generieren |
+| `npm run db:push` | Schemaänderungen zur Datenbank pushen |
+| `npm run db:migrate` | Datenbankmigrationen ausführen |
+| `npm run db:studio` | Prisma Studio GUI öffnen |
+
+## Claude Code Integration
+
+ShipKit enthält Slash-Befehle für Claude Code-Benutzer. Diese bieten kontextbezogene Hilfe und können Einrichtungsaufgaben ausführen:
+
+- `/setup` - Vollständige Einrichtungsassistent-Dokumentation
+- `/setup-env` - Umgebungskonfigurationsanleitung
+- `/setup-db` - Datenbank-Einrichtungsanleitung
+- `/setup-auth` - Authentifizierungs-Einrichtungsanleitung
+- `/setup-payments` - Zahlungs-Einrichtungsanleitung
+- `/setup-ai` - KI-Anbieter-Einrichtungsanleitung
+- `/create-admin` - Admin-Benutzer-Erstellungsanleitung
+- `/scaffold-page` - Neue Seite generieren
+- `/scaffold-api` - API-Route generieren
+- `/scaffold-component` - Komponente generieren
+- `/add-test` - Testdateien generieren
+
+## Nächste Schritte
+
+<Cards>
+  <Card title="Einrichtungsassistent" href="/docs/cli/setup-wizard">
+    Starten Sie mit dem interaktiven Einrichtungsassistenten.
+  </Card>
+  <Card title="Code-Generatoren" href="/docs/cli/generators">
+    Erfahren Sie, wie Sie Seiten, APIs und Komponenten generieren.
+  </Card>
+</Cards>

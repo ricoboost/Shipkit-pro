@@ -1,0 +1,70 @@
+---
+title: Integraciones
+description: Integraciones con servicios de terceros para monitoreo, email, almacenamiento y más.
+---
+
+# Integraciones
+
+ShipKit se integra con servicios populares de terceros para proporcionar monitoreo, entrega de emails, almacenamiento y capacidades de caché.
+
+---
+
+## Integraciones Disponibles
+
+<Cards>
+  <Card title="Sentry" href="/docs/integrations/sentry">
+    Seguimiento de errores y monitoreo de rendimiento.
+  </Card>
+  <Card title="Resend" href="/docs/integrations/resend">
+    Entrega de emails transaccionales.
+  </Card>
+  <Card title="Analytics" href="/docs/integrations/analytics">
+    Google Analytics, PostHog y Plausible.
+  </Card>
+  <Card title="Upstash" href="/docs/integrations/upstash">
+    Caché Redis y limitación de velocidad.
+  </Card>
+  <Card title="Almacenamiento" href="/docs/integrations/storage">
+    AWS S3, Cloudflare R2 y carga de archivos.
+  </Card>
+</Cards>
+
+---
+
+## Guía de Configuración Rápida
+
+### Servicios Esenciales
+
+| Servicio | Propósito | Requerido |
+|----------|-----------|-----------|
+| [Sentry](/docs/integrations/sentry) | Seguimiento de errores | Recomendado |
+| [Resend](/docs/integrations/resend) | Entrega de emails | Requerido para auth |
+| [Upstash](/docs/integrations/upstash) | Limitación de velocidad | Recomendado |
+| [Analytics](/docs/integrations/analytics) | Análisis de usuarios | Opcional |
+| [Almacenamiento](/docs/integrations/storage) | Carga de archivos | Opcional |
+
+---
+
+## Variables de Entorno
+
+Añade estas a tu archivo `.env` según los servicios que uses:
+
+```bash
+# Sentry - Seguimiento de Errores
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+SENTRY_ORG=tu-org
+SENTRY_PROJECT=tu-proyecto
+SENTRY_AUTH_TOKEN=sntrys_xxx
+
+# Resend - Email
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@tu-dominio.com
+
+# Upstash - Redis
+UPSTASH_REDIS_REST_URL=https://xxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=xxx
+
+# Analytics
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+```

@@ -1,0 +1,39 @@
+---
+title: 本番環境にデプロイ
+description: ShipKitアプリケーションをVercel、Railway、またはDockerにデプロイするための完全ガイド。
+---
+
+# 本番環境にデプロイ
+
+このチュートリアルでは、ShipKitアプリケーションを本番環境にデプロイする方法を説明します。
+
+## デプロイオプション
+
+| プラットフォーム | 最適な用途 | 複雑さ |
+|-----------------|-----------|--------|
+| **Vercel** | 最速のデプロイ | 簡単 |
+| **Railway** | 完全な制御 | 中程度 |
+| **Docker** | セルフホスト | 上級 |
+
+## オプション1: Vercelにデプロイ
+
+1. [vercel.com/new](https://vercel.com/new)にアクセス
+2. GitHubリポジトリをインポート
+3. 環境変数を設定
+4. 「Deploy」をクリック
+
+## 本番チェックリスト
+
+- [ ] 新しい`NEXTAUTH_SECRET`を生成
+- [ ] Stripeライブキーを使用
+- [ ] Webhook署名検証を有効化
+- [ ] データベース接続プーリング
+- [ ] エラー追跡用にSentryを設定
+
+## 次のステップ
+
+<Cards>
+  <Card title="モニタリングを設定" href="/docs/infrastructure/monitoring">
+    Sentry、アナリティクス、稼働時間モニタリングを設定します。
+  </Card>
+</Cards>

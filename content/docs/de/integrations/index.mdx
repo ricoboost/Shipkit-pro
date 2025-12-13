@@ -1,0 +1,70 @@
+---
+title: Integrationen
+description: Drittanbieter-Service-Integrationen für Überwachung, E-Mail, Speicher und mehr.
+---
+
+# Integrationen
+
+ShipKit integriert sich mit beliebten Drittanbieterdiensten für Überwachung, E-Mail-Zustellung, Speicher und Caching-Funktionen.
+
+---
+
+## Verfügbare Integrationen
+
+<Cards>
+  <Card title="Sentry" href="/docs/integrations/sentry">
+    Fehlerverfolgung und Leistungsüberwachung.
+  </Card>
+  <Card title="Resend" href="/docs/integrations/resend">
+    Transaktionale E-Mail-Zustellung.
+  </Card>
+  <Card title="Analytics" href="/docs/integrations/analytics">
+    Google Analytics, PostHog und Plausible.
+  </Card>
+  <Card title="Upstash" href="/docs/integrations/upstash">
+    Redis-Caching und Rate Limiting.
+  </Card>
+  <Card title="Speicher" href="/docs/integrations/storage">
+    AWS S3, Cloudflare R2 und Datei-Uploads.
+  </Card>
+</Cards>
+
+---
+
+## Schnelleinrichtung
+
+### Wesentliche Dienste
+
+| Dienst | Zweck | Erforderlich |
+|--------|-------|--------------|
+| [Sentry](/docs/integrations/sentry) | Fehlerverfolgung | Empfohlen |
+| [Resend](/docs/integrations/resend) | E-Mail-Zustellung | Für Auth erforderlich |
+| [Upstash](/docs/integrations/upstash) | Rate Limiting | Empfohlen |
+| [Analytics](/docs/integrations/analytics) | Benutzeranalyse | Optional |
+| [Speicher](/docs/integrations/storage) | Datei-Uploads | Optional |
+
+---
+
+## Umgebungsvariablen
+
+Fügen Sie diese zu Ihrer `.env`-Datei hinzu:
+
+```bash
+# Sentry - Fehlerverfolgung
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+SENTRY_ORG=ihre-org
+SENTRY_PROJECT=ihr-projekt
+SENTRY_AUTH_TOKEN=sntrys_xxx
+
+# Resend - E-Mail
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@ihre-domain.com
+
+# Upstash - Redis
+UPSTASH_REDIS_REST_URL=https://xxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=xxx
+
+# Analytics
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+```

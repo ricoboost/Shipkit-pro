@@ -1,0 +1,496 @@
+---
+title: Resend Integration
+description: Transactional email delivery with Resend.
+---
+
+# Resend Integration
+
+Resend provides reliable transactional email delivery with a modern developer experience and React email templates.
+
+---
+
+## Setup
+
+### 1. Create Resend Account
+
+1. Go to [resend.com](https://resend.com) and create an account
+2. Verify your domain (recommended) or use Resend's test domain
+3. Create an API key in the dashboard
+
+---
+
+### 2. Install Dependencies
+
+```bash
+npm install resend @react-email/components
+```
+
+---
+
+### 3. Environment Variables
+
+```bash
+# .env
+RESEND_API_KEY=re_xxxxx
+EMAIL_FROM=noreply@your-domain.com
+
+# Optional: for development testing
+EMAIL_FROM=onboarding@resend.dev
+```
+
+---
+
+## Basic Configuration
+
+### Create Resend Client
+
+```typescript
+// src/lib/resend.ts
+import { Resend } from 'resend';
+
+export const resend = new Resend(process.env.RESEND_API_KEY);
+```
+
+---
+
+### Send Simple Email
+
+```typescript
+import { resend } from '@/lib/resend';
+
+await resend.emails.send({
+  from: process.env.EMAIL_FROM!,
+  to: 'user@example.com',
+  subject: 'Welcome to ShipKit!',
+  html: '<p>Thanks for signing up!</p>',
+});
+```
+
+---
+
+## React Email Templates
+
+### Create Email Template
+
+```tsx
+// src/emails/welcome.tsx
+import {
+  Body,
+  Button,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Section,
+  Text,
+} from '@react-email/components';
+
+interface WelcomeEmailProps {
+  name: string;
+  loginUrl: string;
+}
+
+export function WelcomeEmail({ name, loginUrl }: WelcomeEmailProps) {
+  return (
+    <Html>
+      <Head />
+      <Preview>Welcome to ShipKit - Let's get started!</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Heading style={h1}>Welcome, {name}!</Heading>
+          <Text style={text}>
+            Thanks for signing up for ShipKit. We're excited to have you on board.
+          </Text>
+          <Section style={buttonContainer}>
+            <Button style={button} href={loginUrl}>
+              Go to Dashboard
+            </Button>
+          </Section>
+          <Text style={footer}>
+            If you didn't create this account, you can ignore this email.
+          </Text>
+        </Container>
+      </Body>
+    </Html>
+  );
+}
+
+const main = {
+  backgroundColor: '#f6f9fc',
+  fontFamily: '-apple-system, sans-serif',
+};
+
+const container = {
+  backgroundColor: '#ffffff',
+  margin: '0 auto',
+  padding: '40px',
+  borderRadius: '8px',
+};
+
+const h1 = {
+  color: '#1f2937',
+  fontSize: '24px',
+  fontWeight: '600',
+};
+
+const text = {
+  color: '#4b5563',
+  fontSize: '16px',
+  lineHeight: '24px',
+};
+
+const buttonContainer = {
+  textAlign: 'center' as const,
+  margin: '32px 0',
+};
+
+const button = {
+  backgroundColor: '#2563eb',
+  borderRadius: '6px',
+  color: '#fff',
+  fontSize: '16px',
+  fontWeight: '600',
+  padding: '12px 24px',
+  textDecoration: 'none',
+};
+
+const footer = {
+  color: '#9ca3af',
+  fontSize: '14px',
+};
+```
+
+---
+
+### Send Template Email
+
+```typescript
+import { resend } from '@/lib/resend';
+import { WelcomeEmail } from '@/emails/welcome';
+
+await resend.emails.send({
+  from: process.env.EMAIL_FROM!,
+  to: user.email,
+  subject: 'Welcome to ShipKit!',
+  react: WelcomeEmail({
+    name: user.name,
+    loginUrl: `${process.env.NEXT_PUBLIC_APP_URL}/login`,
+  }),
+});
+```
+
+---
+
+## Common Email Templates
+
+### Password Reset
+
+```tsx
+// src/emails/password-reset.tsx
+import {
+  Body,
+  Button,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Text,
+} from '@react-email/components';
+
+interface PasswordResetEmailProps {
+  resetUrl: string;
+  expiresIn: string;
+}
+
+export function PasswordResetEmail({ resetUrl, expiresIn }: PasswordResetEmailProps) {
+  return (
+    <Html>
+      <Head />
+      <Preview>Reset your ShipKit password</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Heading style={h1}>Reset Your Password</Heading>
+          <Text style={text}>
+            We received a request to reset your password. Click the button below
+            to create a new password.
+          </Text>
+          <Button style={button} href={resetUrl}>
+            Reset Password
+          </Button>
+          <Text style={footer}>
+            This link expires in {expiresIn}. If you didn't request this,
+            you can safely ignore this email.
+          </Text>
+        </Container>
+      </Body>
+    </Html>
+  );
+}
+```
+
+---
+
+### Invoice Email
+
+```tsx
+// src/emails/invoice.tsx
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Section,
+  Text,
+  Row,
+  Column,
+} from '@react-email/components';
+
+interface InvoiceEmailProps {
+  invoiceNumber: string;
+  amount: string;
+  items: { name: string; price: string }[];
+  invoiceUrl: string;
+}
+
+export function InvoiceEmail({
+  invoiceNumber,
+  amount,
+  items,
+  invoiceUrl,
+}: InvoiceEmailProps) {
+  return (
+    <Html>
+      <Head />
+      <Preview>Invoice #{invoiceNumber} - ${amount}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Heading style={h1}>Invoice #{invoiceNumber}</Heading>
+          <Section style={table}>
+            {items.map((item, index) => (
+              <Row key={index} style={row}>
+                <Column>{item.name}</Column>
+                <Column style={priceColumn}>{item.price}</Column>
+              </Row>
+            ))}
+            <Row style={totalRow}>
+              <Column><strong>Total</strong></Column>
+              <Column style={priceColumn}><strong>${amount}</strong></Column>
+            </Row>
+          </Section>
+          <Text style={text}>
+            <a href={invoiceUrl}>View Invoice Online</a>
+          </Text>
+        </Container>
+      </Body>
+    </Html>
+  );
+}
+```
+
+---
+
+## Email Service Layer
+
+### Create Email Service
+
+```typescript
+// src/lib/email.ts
+import { resend } from './resend';
+import { WelcomeEmail } from '@/emails/welcome';
+import { PasswordResetEmail } from '@/emails/password-reset';
+
+const FROM = process.env.EMAIL_FROM!;
+
+export const emailService = {
+  async sendWelcome(to: string, name: string) {
+    return resend.emails.send({
+      from: FROM,
+      to,
+      subject: 'Welcome to ShipKit!',
+      react: WelcomeEmail({
+        name,
+        loginUrl: `${process.env.NEXT_PUBLIC_APP_URL}/login`,
+      }),
+    });
+  },
+
+  async sendPasswordReset(to: string, token: string) {
+    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`;
+
+    return resend.emails.send({
+      from: FROM,
+      to,
+      subject: 'Reset Your Password',
+      react: PasswordResetEmail({
+        resetUrl,
+        expiresIn: '1 hour',
+      }),
+    });
+  },
+
+  async sendVerification(to: string, code: string) {
+    return resend.emails.send({
+      from: FROM,
+      to,
+      subject: 'Verify Your Email',
+      html: `<p>Your verification code is: <strong>${code}</strong></p>`,
+    });
+  },
+};
+```
+
+---
+
+## API Route Example
+
+```typescript
+// src/app/api/auth/forgot-password/route.ts
+import { prisma } from '@/lib/prisma';
+import { emailService } from '@/lib/email';
+import { randomBytes } from 'crypto';
+
+export async function POST(req: Request) {
+  const { email } = await req.json();
+
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  // Don't reveal if user exists
+  if (!user) {
+    return Response.json({ message: 'If an account exists, we sent a reset link.' });
+  }
+
+  // Generate reset token
+  const token = randomBytes(32).toString('hex');
+  const expires = new Date(Date.now() + 3600000); // 1 hour
+
+  await prisma.passwordResetToken.create({
+    data: { userId: user.id, token, expires },
+  });
+
+  // Send email
+  await emailService.sendPasswordReset(email, token);
+
+  return Response.json({ message: 'If an account exists, we sent a reset link.' });
+}
+```
+
+---
+
+## Domain Verification
+
+### Add DNS Records
+
+1. Go to Resend Dashboard → Domains
+2. Add your domain
+3. Add these DNS records:
+
+| Type | Name | Value |
+|------|------|-------|
+| MX | send | feedback-smtp.us-east-1.amazonses.com |
+| TXT | resend._domainkey | (provided by Resend) |
+| TXT | @ | v=spf1 include:amazonses.com ~all |
+
+4. Wait for verification (usually under 24 hours)
+
+---
+
+## Rate Limiting Emails
+
+```typescript
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+const emailRateLimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(5, '1 h'), // 5 emails per hour
+  prefix: 'ratelimit:email',
+});
+
+async function sendEmailWithRateLimit(to: string, options: EmailOptions) {
+  const { success } = await emailRateLimit.limit(to);
+
+  if (!success) {
+    throw new Error('Email rate limit exceeded');
+  }
+
+  return resend.emails.send(options);
+}
+```
+
+---
+
+## Testing Emails
+
+### Preview Emails Locally
+
+```bash
+# Create email preview server
+npm install -D email-dev
+npx email dev
+```
+
+Or view in browser:
+
+```typescript
+// pages/api/preview/welcome.tsx (for development only)
+import { WelcomeEmail } from '@/emails/welcome';
+
+export default function PreviewWelcome() {
+  return (
+    <WelcomeEmail
+      name="Test User"
+      loginUrl="http://localhost:3000/login"
+    />
+  );
+}
+```
+
+---
+
+## Error Handling
+
+```typescript
+import { resend } from '@/lib/resend';
+import * as Sentry from '@sentry/nextjs';
+
+async function sendEmailSafely(options: EmailOptions) {
+  try {
+    const { data, error } = await resend.emails.send(options);
+
+    if (error) {
+      console.error('Email error:', error);
+      Sentry.captureException(error);
+      return { success: false, error };
+    }
+
+    return { success: true, id: data?.id };
+  } catch (error) {
+    console.error('Email failed:', error);
+    Sentry.captureException(error);
+    return { success: false, error };
+  }
+}
+```
+
+---
+
+## Best Practices
+
+1. **Use React Email** for consistent, maintainable templates
+2. **Verify your domain** for better deliverability
+3. **Don't reveal user existence** in password reset flows
+4. **Rate limit** email sending to prevent abuse
+5. **Log email events** for debugging and compliance
+6. **Test emails** before deploying to production
+
+---
+
+## Resources
+
+- [Resend Documentation](https://resend.com/docs)
+- [React Email](https://react.email)
+- [Email Templates Gallery](https://react.email/examples)

@@ -1,0 +1,130 @@
+---
+title: Primitivos de UI
+description: Componentes base de shadcn/ui incluidos en ShipKit.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Primitivos de UI
+
+ShipKit incluye una colección completa de componentes de UI basados en [shadcn/ui](https://ui.shadcn.com). Estos componentes son totalmente personalizables y siguen los patrones de diseño de Radix UI.
+
+## Componentes Incluidos
+
+### Formularios e Inputs
+
+| Componente | Descripción |
+|------------|-------------|
+| `Button` | Botones con múltiples variantes y tamaños |
+| `Input` | Campo de entrada de texto |
+| `Textarea` | Área de texto multilínea |
+| `Select` | Menú desplegable de selección |
+| `Checkbox` | Casilla de verificación |
+| `Radio Group` | Grupo de botones de radio |
+| `Switch` | Interruptor toggle |
+| `Slider` | Control deslizante |
+| `Form` | Wrapper de formulario con validación |
+
+### Navegación
+
+| Componente | Descripción |
+|------------|-------------|
+| `Navigation Menu` | Menú de navegación principal |
+| `Dropdown Menu` | Menú desplegable contextual |
+| `Tabs` | Navegación por pestañas |
+| `Breadcrumb` | Migas de pan |
+| `Pagination` | Controles de paginación |
+
+### Feedback
+
+| Componente | Descripción |
+|------------|-------------|
+| `Alert` | Mensajes de alerta |
+| `Toast` | Notificaciones temporales |
+| `Progress` | Barra de progreso |
+| `Skeleton` | Placeholder de carga |
+| `Badge` | Etiquetas y badges |
+
+### Contenedores
+
+| Componente | Descripción |
+|------------|-------------|
+| `Card` | Contenedor de tarjeta |
+| `Dialog` | Modal de diálogo |
+| `Sheet` | Panel deslizable |
+| `Popover` | Contenido emergente |
+| `Tooltip` | Información al hover |
+| `Accordion` | Secciones colapsables |
+
+### Datos
+
+| Componente | Descripción |
+|------------|-------------|
+| `Table` | Tabla de datos |
+| `Avatar` | Imagen de usuario |
+| `Calendar` | Selector de fecha |
+| `Command` | Paleta de comandos |
+
+## Uso
+
+```tsx
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
+export function MyComponent() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Mi Formulario</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Input placeholder="Tu nombre" />
+        <Button>Enviar</Button>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+## Personalización
+
+Todos los componentes están construidos con Tailwind CSS y son fácilmente personalizables:
+
+```tsx
+// Variantes de botón
+<Button variant="default">Por defecto</Button>
+<Button variant="destructive">Destructivo</Button>
+<Button variant="outline">Contorno</Button>
+<Button variant="secondary">Secundario</Button>
+<Button variant="ghost">Fantasma</Button>
+<Button variant="link">Enlace</Button>
+
+// Tamaños
+<Button size="sm">Pequeño</Button>
+<Button size="default">Normal</Button>
+<Button size="lg">Grande</Button>
+```
+
+## Temas
+
+Los componentes respetan automáticamente el tema de tu aplicación (claro/oscuro) usando variables CSS.
+
+<Callout type="info">
+Consulta la [documentación de shadcn/ui](https://ui.shadcn.com) para detalles completos de cada componente.
+</Callout>
+
+## Agregar Nuevos Componentes
+
+Puedes agregar más componentes de shadcn/ui usando el CLI:
+
+```bash
+npx shadcn-ui@latest add [nombre-componente]
+```
+
+Por ejemplo:
+```bash
+npx shadcn-ui@latest add carousel
+npx shadcn-ui@latest add drawer
+npx shadcn-ui@latest add sonner
+```

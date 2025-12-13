@@ -1,0 +1,322 @@
+---
+title: Security Headers
+description: Configure CSP, HSTS, and other HTTP security headers for your application.
+---
+
+# Security Headers
+
+HTTP security headers protect your application from common web vulnerabilities. ShipKit includes secure defaults that you can customize.
+
+---
+
+## Default Configuration
+
+ShipKit configures security headers in `next.config.ts`:
+
+```typescript
+// next.config.ts
+const securityHeaders = [
+  // DNS Prefetch Control
+  {
+    key: 'X-DNS-Prefetch-Control',
+    value: 'on',
+  },
+  // Strict Transport Security (HSTS)
+  {
+    key: 'Strict-Transport-Security',
+    value: 'max-age=63072000; includeSubDomains; preload',
+  },
+  // Prevent clickjacking
+  {
+    key: 'X-Frame-Options',
+    value: 'SAMEORIGIN',
+  },
+  // Prevent MIME type sniffing
+  {
+    key: 'X-Content-Type-Options',
+    value: 'nosniff',
+  },
+  // Referrer Policy
+  {
+    key: 'Referrer-Policy',
+    value: 'strict-origin-when-cross-origin',
+  },
+  // Permissions Policy
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=()',
+  },
+];
+
+const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: securityHeaders,
+      },
+    ];
+  },
+};
+```
+
+---
+
+## Content Security Policy (CSP)
+
+CSP prevents XSS attacks by specifying allowed content sources.
+
+### Basic CSP Configuration
+
+```typescript
+// src/lib/security/csp.ts
+export function generateCSP() {
+  const policy = {
+    'default-src': ["'self'"],
+    'script-src': [
+      "'self'",
+      "'unsafe-eval'", // Required for Next.js dev
+      "'unsafe-inline'", // Required for some components
+      'https://js.stripe.com',
+      'https://www.googletagmanager.com',
+    ],
+    'style-src': [
+      "'self'",
+      "'unsafe-inline'", // Required for styled-components/tailwind
+    ],
+    'img-src': [
+      "'self'",
+      'data:',
+      'blob:',
+      'https://*.googleusercontent.com',
+      'https://*.githubusercontent.com',
+      'https://*.stripe.com',
+    ],
+    'font-src': ["'self'", 'data:'],
+    'connect-src': [
+      "'self'",
+      'https://api.stripe.com',
+      'https://openrouter.ai',
+      'https://*.sentry.io',
+    ],
+    'frame-src': [
+      "'self'",
+      'https://js.stripe.com',
+      'https://hooks.stripe.com',
+    ],
+    'object-src': ["'none'"],
+    'base-uri': ["'self'"],
+    'form-action': ["'self'"],
+    'frame-ancestors': ["'none'"],
+    'upgrade-insecure-requests': [],
+  };
+
+  return Object.entries(policy)
+    .map(([key, values]) => {
+      if (values.length === 0) return key;
+      return `${key} ${values.join(' ')}`;
+    })
+    .join('; ');
+}
+```
+
+### Apply CSP in Next.js
+
+```typescript
+// next.config.ts
+import { generateCSP } from './src/lib/security/csp';
+
+const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: generateCSP(),
+          },
+          // ... other headers
+        ],
+      },
+    ];
+  },
+};
+```
+
+### CSP with Nonce (Recommended)
+
+For stricter CSP without `unsafe-inline`:
+
+```typescript
+// src/middleware.ts
+import { NextResponse } from 'next/server';
+
+export function middleware(request: Request) {
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+
+  const csp = `
+    default-src 'self';
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
+    style-src 'self' 'nonce-${nonce}';
+    img-src 'self' blob: data:;
+    font-src 'self';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+  `.replace(/\s{2,}/g, ' ').trim();
+
+  const response = NextResponse.next();
+  response.headers.set('Content-Security-Policy', csp);
+  response.headers.set('x-nonce', nonce);
+
+  return response;
+}
+```
+
+---
+
+## Strict-Transport-Security (HSTS)
+
+Force HTTPS connections:
+
+```typescript
+{
+  key: 'Strict-Transport-Security',
+  value: 'max-age=63072000; includeSubDomains; preload',
+}
+```
+
+**Parameters:**
+- `max-age=63072000`: Remember for 2 years
+- `includeSubDomains`: Apply to all subdomains
+- `preload`: Allow browser preload list inclusion
+
+**Note:** Only enable HSTS when HTTPS is fully configured.
+
+---
+
+## X-Frame-Options
+
+Prevent clickjacking:
+
+```typescript
+// Prevent all framing
+{
+  key: 'X-Frame-Options',
+  value: 'DENY',
+}
+
+// Allow same-origin framing
+{
+  key: 'X-Frame-Options',
+  value: 'SAMEORIGIN',
+}
+```
+
+---
+
+## Referrer-Policy
+
+Control referrer information:
+
+```typescript
+{
+  key: 'Referrer-Policy',
+  value: 'strict-origin-when-cross-origin',
+}
+```
+
+**Options:**
+- `no-referrer`: Never send referrer
+- `strict-origin`: Send origin only for same-protocol
+- `strict-origin-when-cross-origin`: Full URL for same-origin, origin for cross-origin
+
+---
+
+## Permissions-Policy
+
+Control browser features:
+
+```typescript
+{
+  key: 'Permissions-Policy',
+  value: 'camera=(), microphone=(), geolocation=(), payment=(self)',
+}
+```
+
+**Common Features:**
+- `camera`: Camera access
+- `microphone`: Microphone access
+- `geolocation`: Location access
+- `payment`: Payment API
+- `fullscreen`: Fullscreen API
+- `autoplay`: Media autoplay
+
+---
+
+## Testing Security Headers
+
+### Using SecurityHeaders.com
+
+Visit [securityheaders.com](https://securityheaders.com) and enter your URL to get a security grade.
+
+### Using curl
+
+```bash
+curl -I https://your-app.com
+```
+
+### Expected Output
+
+```http
+HTTP/2 200
+strict-transport-security: max-age=63072000; includeSubDomains; preload
+x-frame-options: SAMEORIGIN
+x-content-type-options: nosniff
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: default-src 'self'; ...
+permissions-policy: camera=(), microphone=(), geolocation=()
+```
+
+---
+
+## Vercel Configuration
+
+For Vercel deployments, you can also configure headers in `vercel.json`:
+
+```json
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## Security Headers Checklist
+
+| Header | Status | Notes |
+|--------|--------|-------|
+| `Strict-Transport-Security` | ✅ Required | Enable after HTTPS setup |
+| `X-Frame-Options` | ✅ Required | Use DENY or SAMEORIGIN |
+| `X-Content-Type-Options` | ✅ Required | Always nosniff |
+| `Content-Security-Policy` | ✅ Required | Customize for your needs |
+| `Referrer-Policy` | ✅ Required | strict-origin recommended |
+| `Permissions-Policy` | Recommended | Disable unused features |
+| `X-XSS-Protection` | Deprecated | CSP is better |

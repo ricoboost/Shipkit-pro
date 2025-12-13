@@ -1,0 +1,674 @@
+---
+title: Payments Overview
+description: ShipKit supports multiple payment providers with a unified interface.
+---
+
+# Payments
+
+ShipKit provides a unified payment layer supporting multiple providers. Switch between them with one environment variable.
+
+## Quick Start
+
+Get payments running in 3 steps:
+
+```bash
+# 1. Set your payment provider
+PAYMENT_PROVIDER="stripe"
+
+# 2. Run the setup wizard
+npm run setup:payments
+
+# 3. Configure webhooks and start!
+npm run dev
+```
+
+## Provider Comparison
+
+| Feature | Stripe | LemonSqueezy | Polar |
+|---------|--------|--------------|-------|
+| **Fees** | 2.9% + 30¢ | 5% + 50¢ | 5% |
+| **Tax Handling** | You handle | MoR (included) | MoR (included) |
+| **Global Reach** | 46+ countries | 100+ countries | Global |
+| **Subscription** | ✅ | ✅ | ✅ |
+| **One-time** | ✅ | ✅ | ✅ |
+| **Usage-based** | ✅ | ❌ | ❌ |
+| **Best For** | Full control | Tax compliance | Open source |
+
+## Supported Providers
+
+<Cards>
+  <Card title="Stripe" href="/docs/payments/stripe">
+    Full control over payments with global reach. 2.9% + 30¢ per transaction.
+  </Card>
+  <Card title="LemonSqueezy" href="/docs/payments/lemonsqueezy">
+    Merchant of Record - handles taxes and compliance. 5% + 50¢ per transaction.
+  </Card>
+  <Card title="Polar" href="/docs/payments/polar">
+    Open source focused payment solution. 5% per transaction.
+  </Card>
+</Cards>
+
+## Switching Providers
+
+```bash
+# .env
+PAYMENT_PROVIDER="stripe"  # or "lemonsqueezy" or "polar"
+```
+
+## Unified Interface
+
+```typescript
+// src/lib/payments/types.ts
+export interface PaymentProvider {
+  createCheckout(params: CheckoutParams): Promise<CheckoutResult>;
+  createPortalSession(customerId: string): Promise<string>;
+  handleWebhook(payload: any, signature: string): Promise<WebhookEvent>;
+  getSubscription(subscriptionId: string): Promise<Subscription>;
+  cancelSubscription(subscriptionId: string): Promise<void>;
+}
+```
+
+## Creating Checkouts
+
+```typescript
+import { payments } from '@/lib/payments';
+
+// Create checkout session
+const checkout = await payments.createCheckout({
+  priceId: 'price_xxx',
+  userId: user.id,
+  successUrl: '/dashboard?success=true',
+  cancelUrl: '/pricing',
+});
+
+// Redirect to checkout
+redirect(checkout.url);
+```
+
+## Customer Portal
+
+Allow users to manage their subscription:
+
+```typescript
+const portalUrl = await payments.createPortalSession(user.customerId);
+redirect(portalUrl);
+```
+
+## Webhooks
+
+Handle payment events:
+
+```typescript
+// src/app/api/payments/webhook/route.ts
+import { payments } from '@/lib/payments';
+
+export async function POST(req: Request) {
+  const payload = await req.text();
+  const signature = req.headers.get('stripe-signature')!;
+
+  const event = await payments.handleWebhook(payload, signature);
+
+  switch (event.type) {
+    case 'checkout.completed':
+      await activateSubscription(event.data);
+      break;
+    case 'subscription.updated':
+      await updateSubscription(event.data);
+      break;
+    case 'subscription.canceled':
+      await cancelSubscription(event.data);
+      break;
+  }
+
+  return new Response('OK');
+}
+```
+
+## Subscription Plans
+
+Configure plans in `src/config/plans.ts`:
+
+```typescript
+export const plans = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    description: 'For individuals',
+    price: { monthly: 9, yearly: 90 },
+    features: ['5 projects', '1GB storage', 'Email support'],
+    stripePriceId: 'price_xxx',
+    lemonPriceId: 'xxx',
+    polarPriceId: 'xxx',
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    description: 'For teams',
+    price: { monthly: 29, yearly: 290 },
+    features: ['Unlimited projects', '10GB storage', 'Priority support'],
+    stripePriceId: 'price_yyy',
+    lemonPriceId: 'yyy',
+    polarPriceId: 'yyy',
+  },
+];
+```
+
+## Credits System
+
+ShipKit includes a credit-based system for usage-based billing:
+
+```typescript
+import { credits } from '@/lib/payments/credits';
+
+// Check balance
+const balance = await credits.getBalance(userId);
+
+// Deduct credits
+await credits.deduct(userId, 10, 'AI generation');
+
+// Add credits
+await credits.add(userId, 100, 'Monthly refill');
+```
+
+See [Credits System](/docs/payments/credits) for details.
+
+## Complete Pricing Page Implementation
+
+Here's a full example of building a pricing page with ShipKit:
+
+```tsx
+// src/app/[locale]/(marketing)/pricing/page.tsx
+import { getTranslations } from 'next-intl/server';
+import { auth } from '@/lib/auth';
+import { plans } from '@/config/plans';
+import { PricingCard } from '@/components/pricing-card';
+
+export default async function PricingPage() {
+  const t = await getTranslations('pricing');
+  const session = await auth.getSession();
+
+  // Get user's current subscription
+  const subscription = session?.user
+    ? await db.subscription.findUnique({
+        where: { userId: session.user.id },
+      })
+    : null;
+
+  return (
+    <div className="container py-16">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold">{t('title')}</h1>
+        <p className="mt-4 text-xl text-muted-foreground">{t('subtitle')}</p>
+      </div>
+
+      <div className="mt-16 grid gap-8 md:grid-cols-3">
+        {plans.map((plan) => (
+          <PricingCard
+            key={plan.id}
+            plan={plan}
+            currentPlanId={subscription?.planId}
+            userId={session?.user?.id}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### Pricing Card Component
+
+```tsx
+// src/components/pricing-card.tsx
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Check } from 'lucide-react';
+import { createCheckout } from '@/actions/payments';
+
+interface PricingCardProps {
+  plan: Plan;
+  currentPlanId?: string;
+  userId?: string;
+}
+
+export function PricingCard({ plan, currentPlanId, userId }: PricingCardProps) {
+  const t = useTranslations('pricing');
+  const [isLoading, setIsLoading] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+
+  const isCurrentPlan = currentPlanId === plan.id;
+  const price = plan.price[billingPeriod];
+
+  const handleSubscribe = async () => {
+    setIsLoading(true);
+    try {
+      const result = await createCheckout({
+        planId: plan.id,
+        billingPeriod,
+      });
+      window.location.href = result.checkoutUrl;
+    } catch (error) {
+      toast.error(t('checkoutError'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Card className={plan.popular ? 'border-primary shadow-lg' : ''}>
+      <CardHeader>
+        {plan.popular && (
+          <Badge className="mb-2 w-fit">{t('mostPopular')}</Badge>
+        )}
+        <h3 className="text-2xl font-bold">{plan.name}</h3>
+        <p className="text-muted-foreground">{plan.description}</p>
+      </CardHeader>
+      <CardContent>
+        <div className="mb-6">
+          <span className="text-4xl font-bold">${price}</span>
+          <span className="text-muted-foreground">/{billingPeriod === 'monthly' ? 'mo' : 'yr'}</span>
+          {billingPeriod === 'yearly' && (
+            <Badge variant="secondary" className="ml-2">
+              {t('save20')}
+            </Badge>
+          )}
+        </div>
+        <ul className="space-y-3">
+          {plan.features.map((feature) => (
+            <li key={feature} className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-green-500" />
+              <span>{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+      <CardFooter>
+        <Button
+          className="w-full"
+          variant={plan.popular ? 'default' : 'outline'}
+          onClick={handleSubscribe}
+          disabled={isLoading || isCurrentPlan}
+        >
+          {isCurrentPlan ? t('currentPlan') : t('subscribe')}
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+}
+```
+
+### Checkout Server Action
+
+```typescript
+// src/actions/payments.ts
+'use server';
+
+import { auth } from '@/lib/auth';
+import { payments } from '@/lib/payments';
+import { plans } from '@/config/plans';
+import { redirect } from 'next/navigation';
+
+export async function createCheckout(params: {
+  planId: string;
+  billingPeriod: 'monthly' | 'yearly';
+}) {
+  const session = await auth.getSession();
+
+  if (!session) {
+    redirect('/login?redirect=/pricing');
+  }
+
+  const plan = plans.find((p) => p.id === params.planId);
+  if (!plan) {
+    throw new Error('Plan not found');
+  }
+
+  const priceId = params.billingPeriod === 'monthly'
+    ? plan.stripePriceIdMonthly
+    : plan.stripePriceIdYearly;
+
+  const checkout = await payments.createCheckout({
+    priceId,
+    userId: session.user.id,
+    userEmail: session.user.email,
+    successUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true`,
+    cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
+    metadata: {
+      planId: plan.id,
+      billingPeriod: params.billingPeriod,
+    },
+  });
+
+  return { checkoutUrl: checkout.url };
+}
+```
+
+## Subscription Management Dashboard
+
+```tsx
+// src/app/[locale]/(dashboard)/settings/billing/page.tsx
+import { getTranslations } from 'next-intl/server';
+import { auth } from '@/lib/auth';
+import { payments } from '@/lib/payments';
+import { redirect } from 'next/navigation';
+import { SubscriptionCard } from './subscription-card';
+import { UsageChart } from './usage-chart';
+import { InvoiceHistory } from './invoice-history';
+
+export default async function BillingPage() {
+  const t = await getTranslations('settings.billing');
+  const session = await auth.getSession();
+
+  if (!session) redirect('/login');
+
+  const subscription = await db.subscription.findUnique({
+    where: { userId: session.user.id },
+    include: { plan: true },
+  });
+
+  const usage = await db.usage.findMany({
+    where: { userId: session.user.id },
+    orderBy: { createdAt: 'desc' },
+    take: 30,
+  });
+
+  const invoices = await payments.listInvoices(session.user.customerId);
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
+        <p className="text-muted-foreground">{t('description')}</p>
+      </div>
+
+      {/* Current Subscription */}
+      <SubscriptionCard subscription={subscription} />
+
+      {/* Usage Overview */}
+      <div className="grid gap-8 md:grid-cols-2">
+        <UsageChart usage={usage} />
+        <div className="space-y-4">
+          <h3 className="font-semibold">{t('currentUsage')}</h3>
+          <div className="space-y-2">
+            <UsageBar
+              label={t('apiCalls')}
+              current={usage.apiCalls}
+              limit={subscription?.plan.apiLimit ?? 1000}
+            />
+            <UsageBar
+              label={t('storage')}
+              current={usage.storage}
+              limit={subscription?.plan.storageLimit ?? 1}
+              unit="GB"
+            />
+            <UsageBar
+              label={t('teamMembers')}
+              current={usage.teamMembers}
+              limit={subscription?.plan.teamLimit ?? 1}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Invoice History */}
+      <InvoiceHistory invoices={invoices} />
+    </div>
+  );
+}
+```
+
+### Manage Subscription Button
+
+```tsx
+// src/components/manage-subscription-button.tsx
+'use client';
+
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
+import { createPortalSession } from '@/actions/payments';
+
+export function ManageSubscriptionButton() {
+  const t = useTranslations('settings.billing');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleManage = async () => {
+    setIsLoading(true);
+    try {
+      const { url } = await createPortalSession();
+      window.location.href = url;
+    } catch (error) {
+      toast.error(t('portalError'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Button onClick={handleManage} disabled={isLoading}>
+      {isLoading ? t('loading') : t('manageSubscription')}
+    </Button>
+  );
+}
+```
+
+## Complete Webhook Handler
+
+Handle all payment events reliably:
+
+```typescript
+// src/app/api/payments/webhook/route.ts
+import { payments } from '@/lib/payments';
+import { db } from '@/lib/db';
+import { headers } from 'next/headers';
+
+export async function POST(req: Request) {
+  const body = await req.text();
+  const signature = headers().get('stripe-signature')!;
+
+  let event;
+
+  try {
+    event = await payments.handleWebhook(body, signature);
+  } catch (err) {
+    console.error('Webhook signature verification failed:', err);
+    return new Response('Invalid signature', { status: 400 });
+  }
+
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const { userId, planId } = event.data.metadata;
+
+        await db.subscription.upsert({
+          where: { userId },
+          create: {
+            userId,
+            planId,
+            status: 'active',
+            customerId: event.data.customerId,
+            subscriptionId: event.data.subscriptionId,
+            currentPeriodEnd: event.data.currentPeriodEnd,
+          },
+          update: {
+            planId,
+            status: 'active',
+            subscriptionId: event.data.subscriptionId,
+            currentPeriodEnd: event.data.currentPeriodEnd,
+          },
+        });
+
+        // Grant initial credits for AI plans
+        if (planId === 'pro' || planId === 'enterprise') {
+          await credits.add(userId, 1000, 'Subscription activation');
+        }
+
+        // Send welcome email
+        await sendEmail({
+          to: event.data.customerEmail,
+          template: 'subscription-welcome',
+          data: { planId },
+        });
+        break;
+      }
+
+      case 'customer.subscription.updated': {
+        const subscription = await db.subscription.findUnique({
+          where: { subscriptionId: event.data.subscriptionId },
+        });
+
+        if (subscription) {
+          await db.subscription.update({
+            where: { id: subscription.id },
+            data: {
+              status: event.data.status,
+              cancelAtPeriodEnd: event.data.cancelAtPeriodEnd,
+              currentPeriodEnd: event.data.currentPeriodEnd,
+            },
+          });
+        }
+        break;
+      }
+
+      case 'customer.subscription.deleted': {
+        await db.subscription.update({
+          where: { subscriptionId: event.data.subscriptionId },
+          data: { status: 'canceled' },
+        });
+
+        // Downgrade user to free tier
+        await db.user.update({
+          where: { id: event.data.metadata.userId },
+          data: { tier: 'free' },
+        });
+        break;
+      }
+
+      case 'invoice.payment_failed': {
+        const subscription = await db.subscription.findUnique({
+          where: { subscriptionId: event.data.subscriptionId },
+        });
+
+        if (subscription) {
+          await db.subscription.update({
+            where: { id: subscription.id },
+            data: { status: 'past_due' },
+          });
+
+          // Notify user
+          await sendEmail({
+            to: event.data.customerEmail,
+            template: 'payment-failed',
+            data: { invoiceUrl: event.data.hostedInvoiceUrl },
+          });
+        }
+        break;
+      }
+    }
+
+    return new Response('OK');
+  } catch (error) {
+    console.error('Webhook handler error:', error);
+    return new Response('Webhook handler failed', { status: 500 });
+  }
+}
+```
+
+## Testing Payments Locally
+
+### 1. Use Stripe CLI for Webhooks
+
+```bash
+# Install Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# Login to Stripe
+stripe login
+
+# Forward webhooks to your local server
+stripe listen --forward-to localhost:3000/api/payments/webhook
+
+# Copy the webhook signing secret
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+```
+
+### 2. Test Card Numbers
+
+| Card Number | Scenario |
+|-------------|----------|
+| `4242424242424242` | Successful payment |
+| `4000000000000002` | Card declined |
+| `4000002500003155` | Requires 3D Secure |
+| `4000000000009995` | Insufficient funds |
+
+### 3. Test Subscription Scenarios
+
+```bash
+# Trigger a subscription renewal
+stripe trigger customer.subscription.updated
+
+# Trigger a payment failure
+stripe trigger invoice.payment_failed
+
+# Trigger a subscription cancellation
+stripe trigger customer.subscription.deleted
+```
+
+## Common Use Cases
+
+### Metered/Usage-Based Billing
+
+```typescript
+// Report usage to Stripe
+await payments.reportUsage({
+  subscriptionItemId: subscription.stripeItemId,
+  quantity: apiCallsThisMonth,
+  timestamp: Math.floor(Date.now() / 1000),
+});
+```
+
+### One-Time Purchases
+
+```typescript
+const checkout = await payments.createCheckout({
+  mode: 'payment', // Not 'subscription'
+  lineItems: [
+    { priceId: 'price_xxx', quantity: 1 },
+  ],
+  successUrl: '/purchase/success',
+  cancelUrl: '/products',
+});
+```
+
+### Lifetime Deals
+
+```typescript
+// Create a one-time payment that grants permanent access
+const checkout = await payments.createCheckout({
+  mode: 'payment',
+  priceId: 'price_lifetime',
+  metadata: {
+    grantLifetimeAccess: 'true',
+  },
+});
+
+// In webhook handler
+if (event.data.metadata.grantLifetimeAccess === 'true') {
+  await db.user.update({
+    where: { id: event.data.metadata.userId },
+    data: { hasLifetimeAccess: true },
+  });
+}
+```
+
+## Next Steps
+
+- [Stripe Setup](/docs/payments/stripe) - Detailed Stripe configuration
+- [LemonSqueezy Setup](/docs/payments/lemonsqueezy) - Tax-compliant payments
+- [Polar Setup](/docs/payments/polar) - Open source friendly
+- [Credits System](/docs/payments/credits) - Usage-based billing

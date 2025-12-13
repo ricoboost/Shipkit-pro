@@ -1,0 +1,343 @@
+---
+title: Primitivos de UI
+description: Componentes de UI principais construídos sobre shadcn/ui e primitivos Radix UI
+---
+
+# Primitivos de UI
+
+O ShipKit usa [shadcn/ui](https://ui.shadcn.com) como base para componentes de UI. Esses primitivos são totalmente personalizáveis e seguem os padrões de design do Radix UI.
+
+## Componentes Disponíveis
+
+Todos os componentes estão localizados em `src/components/ui/`:
+
+### Componentes de Formulário
+
+| Componente | Arquivo | Descrição |
+|-----------|------|-------------|
+| Button | `button.tsx` | Botões de ação com variantes |
+| Input | `input.tsx` | Campo de entrada de texto |
+| Textarea | `textarea.tsx` | Entrada de texto multilinha |
+| Select | `select.tsx` | Seleção dropdown |
+| Checkbox | `checkbox.tsx` | Seleção booleana |
+| Switch | `switch.tsx` | Interruptor de alternância |
+| Slider | `slider.tsx` | Controle deslizante de intervalo |
+| Label | `label.tsx` | Rótulo de campo de formulário |
+
+### Componentes de Layout
+
+| Componente | Arquivo | Descrição |
+|-----------|------|-------------|
+| Card | `card.tsx` | Container com header/content/footer |
+| Dialog | `dialog.tsx` | Diálogos modais |
+| Alert Dialog | `alert-dialog.tsx` | Diálogos de confirmação |
+| Dropdown Menu | `dropdown-menu.tsx` | Menus contextuais |
+| Popover | `popover.tsx` | Conteúdo flutuante |
+| Tabs | `tabs.tsx` | Conteúdo com abas |
+| Scroll Area | `scroll-area.tsx` | Barras de rolagem personalizadas |
+| Separator | `separator.tsx` | Divisores visuais |
+| Table | `table.tsx` | Tabelas de dados |
+
+### Componentes de Feedback
+
+| Componente | Arquivo | Descrição |
+|-----------|------|-------------|
+| Badge | `badge.tsx` | Indicadores de status |
+| Alert | `alert.tsx` | Mensagens inline |
+| Progress | `progress.tsx` | Indicadores de progresso |
+| Sonner | `sonner.tsx` | Notificações toast |
+
+### Exibição de Dados
+
+| Componente | Arquivo | Descrição |
+|-----------|------|-------------|
+| Avatar | `avatar.tsx` | Avatares de usuário |
+| Icon Picker | `icon-picker.tsx` | Seletor de ícones Lucide |
+
+---
+
+## Button
+
+O componente mais usado com múltiplas variantes e tamanhos.
+
+### Uso
+
+```tsx
+import { Button } from '@/components/ui/button';
+
+// Variantes
+<Button>Padrão</Button>
+<Button variant="secondary">Secundário</Button>
+<Button variant="destructive">Destrutivo</Button>
+<Button variant="outline">Contorno</Button>
+<Button variant="ghost">Fantasma</Button>
+<Button variant="link">Link</Button>
+
+// Tamanhos
+<Button size="sm">Pequeno</Button>
+<Button size="default">Padrão</Button>
+<Button size="lg">Grande</Button>
+<Button size="icon">
+  <Icon className="h-4 w-4" />
+</Button>
+
+// Estados
+<Button disabled>Desabilitado</Button>
+<Button asChild>
+  <Link href="/somewhere">Como Link</Link>
+</Button>
+```
+
+### Props
+
+```typescript
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  asChild?: boolean;
+}
+```
+
+---
+
+## Card
+
+Componente container para agrupar conteúdo relacionado.
+
+### Uso
+
+```tsx
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
+
+<Card>
+  <CardHeader>
+    <CardTitle>Título do Cartão</CardTitle>
+    <CardDescription>Descrição ou subtítulo do cartão</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>O conteúdo principal vai aqui</p>
+  </CardContent>
+  <CardFooter>
+    <Button>Ação</Button>
+  </CardFooter>
+</Card>
+```
+
+---
+
+## Dialog
+
+Diálogo modal para interações focadas.
+
+### Uso
+
+```tsx
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@/components/ui/dialog';
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button>Abrir Diálogo</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Título do Diálogo</DialogTitle>
+      <DialogDescription>
+        Esta é uma descrição do conteúdo do diálogo.
+      </DialogDescription>
+    </DialogHeader>
+    <div className="py-4">
+      O conteúdo do diálogo vai aqui
+    </div>
+    <DialogFooter>
+      <Button variant="outline">Cancelar</Button>
+      <Button>Confirmar</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+---
+
+## Tabs
+
+Navegação de conteúdo com abas.
+
+### Uso
+
+```tsx
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+<Tabs defaultValue="tab1">
+  <TabsList>
+    <TabsTrigger value="tab1">Aba 1</TabsTrigger>
+    <TabsTrigger value="tab2">Aba 2</TabsTrigger>
+    <TabsTrigger value="tab3">Aba 3</TabsTrigger>
+  </TabsList>
+  <TabsContent value="tab1">Conteúdo da aba 1</TabsContent>
+  <TabsContent value="tab2">Conteúdo da aba 2</TabsContent>
+  <TabsContent value="tab3">Conteúdo da aba 3</TabsContent>
+</Tabs>
+```
+
+---
+
+## Select
+
+Componente de seleção dropdown.
+
+### Uso
+
+```tsx
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+<Select>
+  <SelectTrigger className="w-[180px]">
+    <SelectValue placeholder="Selecione uma opção" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="option1">Opção 1</SelectItem>
+    <SelectItem value="option2">Opção 2</SelectItem>
+    <SelectItem value="option3">Opção 3</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+---
+
+## Badge
+
+Indicadores de status e rótulos.
+
+### Uso
+
+```tsx
+import { Badge } from '@/components/ui/badge';
+
+<Badge>Padrão</Badge>
+<Badge variant="secondary">Secundário</Badge>
+<Badge variant="outline">Contorno</Badge>
+<Badge variant="destructive">Destrutivo</Badge>
+```
+
+---
+
+## Alert
+
+Mensagens informativas inline.
+
+### Uso
+
+```tsx
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal } from 'lucide-react';
+
+<Alert>
+  <Terminal className="h-4 w-4" />
+  <AlertTitle>Atenção!</AlertTitle>
+  <AlertDescription>
+    Você pode adicionar componentes ao seu app usando a CLI.
+  </AlertDescription>
+</Alert>
+
+<Alert variant="destructive">
+  <AlertTitle>Erro</AlertTitle>
+  <AlertDescription>Algo deu errado.</AlertDescription>
+</Alert>
+```
+
+---
+
+## Table
+
+Componente de tabela de dados.
+
+### Uso
+
+```tsx
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
+<Table>
+  <TableCaption>Uma lista de usuários</TableCaption>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Nome</TableHead>
+      <TableHead>Email</TableHead>
+      <TableHead>Função</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>João Silva</TableCell>
+      <TableCell>joao@exemplo.com</TableCell>
+      <TableCell>Admin</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+---
+
+## Adicionando Mais Componentes
+
+O ShipKit é construído sobre shadcn/ui, então você pode facilmente adicionar mais componentes:
+
+```bash
+npx shadcn@latest add [nome-do-componente]
+```
+
+Componentes disponíveis: accordion, breadcrumb, calendar, carousel, chart, collapsible, command, context-menu, drawer, form, hover-card, menubar, navigation-menu, pagination, radio-group, resizable, sheet, skeleton, tooltip, e mais.
+
+Veja a [documentação do shadcn/ui](https://ui.shadcn.com/docs/components) para a lista completa.
+
+---
+
+## Personalização
+
+Todos os componentes usam variáveis CSS para temas. Personalize-os em seu `globals.css`:
+
+```css
+:root {
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  /* ... */
+}
+
+.dark {
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  /* ... */
+}
+```
+
+Ou use o [Theme Builder](/docs/components/theme-builder) para personalização visual.

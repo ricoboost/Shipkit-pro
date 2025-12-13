@@ -1,0 +1,56 @@
+---
+title: Construa Seu Primeiro SaaS em 30 Minutos
+description: Um guia completo passo a passo para criar uma aplicação SaaS funcional com autenticação, pagamentos e painel de usuário.
+---
+
+# Construa Seu Primeiro SaaS em 30 Minutos
+
+Neste tutorial, você criará uma aplicação SaaS totalmente funcional do zero.
+
+## Pré-requisitos
+
+- **Node.js 20+** instalado
+- Banco de dados **PostgreSQL**
+- **Conta Stripe** em modo de teste
+
+## Passo 1: Clonar e Instalar
+
+```bash
+git clone https://github.com/your-org/shipkit meu-saas
+cd meu-saas
+npm install
+```
+
+## Passo 2: Executar o Assistente de Configuração
+
+```bash
+npm run setup
+```
+
+## Passo 3: Configurar Produtos Stripe
+
+Crie seus produtos de assinatura no Dashboard do Stripe.
+
+## Passo 4: Inicializar o Banco de Dados
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+## Passo 5: Iniciar o Servidor de Desenvolvimento
+
+```bash
+npm run dev
+```
+
+## Próximos Passos
+
+<Cards>
+  <Card title="Adicionar Funcionalidades de IA" href="/docs/tutorials/ai-saas">
+    Integre capacidades de IA com cobrança baseada em créditos.
+  </Card>
+  <Card title="Deploy em Produção" href="/docs/tutorials/deploy-production">
+    Lance sua app no Vercel, Railway ou Docker.
+  </Card>
+</Cards>

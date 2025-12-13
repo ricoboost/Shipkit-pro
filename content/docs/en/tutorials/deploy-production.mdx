@@ -1,0 +1,563 @@
+---
+title: Deploy to Production
+description: Complete guide to deploying your ShipKit application to Vercel, Railway, or Docker with production-ready configuration.
+---
+
+# Deploy to Production
+
+This tutorial covers deploying your ShipKit application to production with proper security, performance, and monitoring configuration.
+
+## Deployment Options
+
+| Platform | Best For | Complexity |
+|----------|----------|------------|
+| **Vercel** | Fastest deployment, automatic scaling | Easy |
+| **Railway** | Full control, database included | Medium |
+| **Docker** | Self-hosted, maximum control | Advanced |
+
+## Prerequisites
+
+Before deploying:
+
+- Application works locally without errors
+- All environment variables documented
+- Database ready (Neon, Supabase, or self-hosted)
+- Stripe webhook endpoint configured
+- Domain name ready (optional but recommended)
+
+---
+
+## Option 1: Deploy to Vercel
+
+Vercel offers the easiest deployment path with automatic builds and preview deployments.
+
+### Step 1: Connect Repository
+
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import your GitHub repository
+3. Vercel auto-detects Next.js
+
+### Step 2: Configure Environment Variables
+
+Add all your production environment variables:
+
+```bash
+# App Configuration
+NEXT_PUBLIC_APP_URL=https://your-domain.com
+NEXT_PUBLIC_APP_NAME="Your SaaS"
+
+# Database (use connection pooling URL)
+DATABASE_URL="postgresql://user:pass@host:5432/db?pgbouncer=true"
+
+# Authentication
+AUTH_PROVIDER=nextauth
+NEXTAUTH_SECRET="generate-with-openssl-rand-base64-32"
+NEXTAUTH_URL=https://your-domain.com
+
+# OAuth Providers (production credentials)
+GOOGLE_CLIENT_ID=xxx
+GOOGLE_CLIENT_SECRET=xxx
+GITHUB_CLIENT_ID=xxx
+GITHUB_CLIENT_SECRET=xxx
+
+# Payments (live keys!)
+PAYMENT_PROVIDER=stripe
+STRIPE_SECRET_KEY=sk_live_xxx
+STRIPE_PUBLISHABLE_KEY=pk_live_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+
+# AI
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=sk-or-v1-xxx
+
+# Email
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@your-domain.com
+```
+
+### Step 3: Configure Build Settings
+
+Vercel should auto-detect these, but verify:
+
+- **Framework Preset**: Next.js
+- **Build Command**: `npm run build`
+- **Output Directory**: `.next`
+- **Install Command**: `npm install`
+
+### Step 4: Deploy
+
+Click "Deploy" and wait for the build to complete.
+
+### Step 5: Set Up Custom Domain
+
+1. Go to Project Settings > Domains
+2. Add your domain
+3. Update DNS records as instructed
+4. SSL is automatic
+
+### Step 6: Configure Stripe Webhooks
+
+1. Go to Stripe Dashboard > Webhooks
+2. Add endpoint: `https://your-domain.com/api/payments/webhook`
+3. Select events:
+   - `checkout.session.completed`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+   - `invoice.paid`
+   - `invoice.payment_failed`
+4. Copy signing secret to Vercel environment variables
+
+### Vercel-Specific Optimizations
+
+```typescript
+// next.config.ts
+const nextConfig = {
+  // Enable Vercel optimizations
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+  },
+
+  // Image optimization
+  images: {
+    remotePatterns: [
+      { hostname: 'your-cdn.com' },
+    ],
+  },
+};
+```
+
+---
+
+## Option 2: Deploy to Railway
+
+Railway provides a simple platform with built-in PostgreSQL and Redis.
+
+### Step 1: Create Railway Project
+
+1. Go to [railway.app](https://railway.app)
+2. Click "New Project"
+3. Select "Deploy from GitHub repo"
+
+### Step 2: Add PostgreSQL
+
+1. Click "+ New" in your project
+2. Select "Database" > "PostgreSQL"
+3. Railway creates the database automatically
+
+### Step 3: Configure Environment Variables
+
+Copy the `DATABASE_URL` from the PostgreSQL service, then add:
+
+```bash
+# Use Railway's provided DATABASE_URL
+DATABASE_URL=${{Postgres.DATABASE_URL}}
+
+# Add other environment variables
+NEXT_PUBLIC_APP_URL=https://your-app.up.railway.app
+# ... rest of your env vars
+```
+
+### Step 4: Configure Build
+
+Create `railway.json` in your project root:
+
+```json
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm run build"
+  },
+  "deploy": {
+    "startCommand": "npm start",
+    "healthcheckPath": "/api/health",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+```
+
+### Step 5: Set Up Custom Domain
+
+1. Go to Service Settings > Domains
+2. Add custom domain
+3. Configure DNS as instructed
+
+---
+
+## Option 3: Deploy with Docker
+
+For maximum control, deploy with Docker to any cloud provider.
+
+### Step 1: Build Docker Image
+
+ShipKit includes a production-ready Dockerfile:
+
+```dockerfile
+# Dockerfile (already included)
+FROM node:20-alpine AS base
+
+# Dependencies
+FROM base AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+
+# Build
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED 1
+RUN npx prisma generate
+RUN npm run build
+
+# Production
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3000
+ENV PORT 3000
+
+CMD ["node", "server.js"]
+```
+
+### Step 2: Build and Push
+
+```bash
+# Build image
+docker build -t your-registry/shipkit:latest .
+
+# Push to registry
+docker push your-registry/shipkit:latest
+```
+
+### Step 3: Docker Compose for Production
+
+```yaml
+# docker-compose.prod.yml
+version: '3.8'
+
+services:
+  app:
+    image: your-registry/shipkit:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/shipkit
+      - NEXTAUTH_URL=https://your-domain.com
+      # ... other env vars
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=shipkit
+      - POSTGRES_PASSWORD=secure-password
+      - POSTGRES_DB=shipkit
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+```
+
+### Step 4: Nginx Configuration
+
+```nginx
+# nginx.conf
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream app {
+        server app:3000;
+    }
+
+    server {
+        listen 80;
+        server_name your-domain.com;
+        return 301 https://$server_name$request_uri;
+    }
+
+    server {
+        listen 443 ssl http2;
+        server_name your-domain.com;
+
+        ssl_certificate /etc/nginx/certs/fullchain.pem;
+        ssl_certificate_key /etc/nginx/certs/privkey.pem;
+
+        location / {
+            proxy_pass http://app;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_cache_bypass $http_upgrade;
+        }
+    }
+}
+```
+
+---
+
+## Production Checklist
+
+### Security
+
+- [ ] Generate new `NEXTAUTH_SECRET` (don't reuse dev secret)
+- [ ] Use live Stripe keys (not test keys)
+- [ ] Enable Stripe webhook signature verification
+- [ ] Set secure cookie settings
+- [ ] Configure CORS properly
+- [ ] Enable rate limiting
+
+```typescript
+// Verify secure settings
+// src/lib/auth/nextauth.ts
+export const authOptions: NextAuthOptions = {
+  // ...
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: true, // Must be true in production
+      },
+    },
+  },
+};
+```
+
+### Database
+
+- [ ] Use connection pooling (PgBouncer or Prisma Accelerate)
+- [ ] Enable SSL for database connections
+- [ ] Set up database backups
+- [ ] Create read replicas for scaling
+
+```bash
+# Connection pooling URL
+DATABASE_URL="postgresql://user:pass@host:5432/db?pgbouncer=true&connection_limit=10"
+```
+
+### Monitoring
+
+- [ ] Set up Sentry for error tracking
+- [ ] Configure uptime monitoring
+- [ ] Enable Vercel Analytics or Plausible
+- [ ] Set up log aggregation
+
+```bash
+# Sentry
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@sentry.io/xxx
+SENTRY_ORG=your-org
+SENTRY_PROJECT=your-project
+```
+
+### Performance
+
+- [ ] Enable caching headers
+- [ ] Configure CDN for static assets
+- [ ] Optimize images with Next.js Image
+- [ ] Enable compression
+
+### Email
+
+- [ ] Verify domain with Resend
+- [ ] Set up SPF, DKIM, DMARC records
+- [ ] Test transactional emails
+
+---
+
+## Environment Variables Reference
+
+Complete list for production:
+
+```bash
+# ===== REQUIRED =====
+
+# App
+NEXT_PUBLIC_APP_URL=https://your-domain.com
+NEXT_PUBLIC_APP_NAME="Your SaaS"
+
+# Database
+DATABASE_URL="postgresql://..."
+
+# Auth
+AUTH_PROVIDER=nextauth
+NEXTAUTH_SECRET=xxx
+NEXTAUTH_URL=https://your-domain.com
+
+# Payments
+PAYMENT_PROVIDER=stripe
+STRIPE_SECRET_KEY=sk_live_xxx
+STRIPE_PUBLISHABLE_KEY=pk_live_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+
+# ===== RECOMMENDED =====
+
+# OAuth
+GOOGLE_CLIENT_ID=xxx
+GOOGLE_CLIENT_SECRET=xxx
+
+# Email
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@your-domain.com
+
+# AI (if using)
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=xxx
+
+# Error Tracking
+NEXT_PUBLIC_SENTRY_DSN=xxx
+
+# Analytics
+NEXT_PUBLIC_PLAUSIBLE_DOMAIN=your-domain.com
+
+# ===== OPTIONAL =====
+
+# Feature Flags
+ENABLE_WAITLIST=false
+ENABLE_BLOG=true
+
+# Rate Limiting (Upstash)
+UPSTASH_REDIS_REST_URL=xxx
+UPSTASH_REDIS_REST_TOKEN=xxx
+```
+
+---
+
+## Post-Deployment
+
+### 1. Create Admin User
+
+```bash
+# Run setup to create admin
+npm run setup:admin
+```
+
+Or manually in the database:
+
+```sql
+UPDATE users SET role = 'admin' WHERE email = 'admin@your-domain.com';
+```
+
+### 2. Test Critical Flows
+
+1. **Sign Up** - Create a new account
+2. **Sign In** - Verify authentication works
+3. **Subscription** - Complete a test purchase
+4. **Webhook** - Verify Stripe webhooks are received
+5. **Email** - Check transactional emails arrive
+
+### 3. Monitor First 24 Hours
+
+Watch for:
+- Error rates in Sentry
+- Response times in Vercel/Railway analytics
+- Failed webhook deliveries in Stripe
+- Database connection issues
+
+---
+
+## Troubleshooting
+
+### Build Fails
+
+```bash
+# Check build locally first
+npm run build
+
+# Common issues:
+# - Missing environment variables
+# - TypeScript errors
+# - Import path issues
+```
+
+### Database Connection Issues
+
+```bash
+# Test connection
+npx prisma db pull
+
+# Common fixes:
+# - Add ?pgbouncer=true for pooling
+# - Check SSL requirements
+# - Verify IP allowlist
+```
+
+### Stripe Webhooks Not Working
+
+1. Check webhook endpoint is correct
+2. Verify signing secret matches
+3. Check Stripe dashboard for failed deliveries
+4. Test with Stripe CLI locally
+
+### 500 Errors in Production
+
+1. Check Sentry for stack traces
+2. Review Vercel/Railway function logs
+3. Verify all environment variables are set
+4. Check database connectivity
+
+---
+
+## Next Steps
+
+<Cards>
+  <Card title="Set Up Monitoring" href="/docs/infrastructure/monitoring">
+    Configure Sentry, analytics, and uptime monitoring.
+  </Card>
+  <Card title="Optimize Performance" href="/docs/infrastructure/seo">
+    Improve Core Web Vitals and SEO.
+  </Card>
+  <Card title="Scale Your App" href="/docs/development/scaling">
+    Handle increased traffic and users.
+  </Card>
+</Cards>

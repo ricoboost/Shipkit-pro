@@ -1,0 +1,307 @@
+---
+title: Logo Cloud
+description: Components for displaying partner, client, or technology logos as social proof.
+---
+
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Logo Cloud Components
+
+Social proof through partner and client logos. These components help establish credibility by showcasing the companies you work with.
+
+## Components Overview
+
+| Component | Purpose | Best For |
+|-----------|---------|----------|
+| `LogoCloud` | Static grid of logos | Clean, professional display |
+| `LogoMarquee` | Infinite scrolling logos | Dynamic, space-efficient |
+| `LogoShowcase` | Rich cards with details | Partner highlights, integrations |
+
+## Logo Cloud
+
+A clean, responsive grid of logos perfect for "Trusted by" sections.
+
+### Preview
+
+<ComponentPreview title="Logo Cloud" background="muted">
+  <LogoCloudPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { LogoCloud } from '@/components/marketing/logos/logo-cloud';
+
+<LogoCloud
+  title="Trusted by Industry Leaders"
+  subtitle="Join thousands of companies"
+  logos={[
+    { name: "Vercel", src: "/logos/vercel.svg", href: "https://vercel.com" },
+    { name: "Stripe", src: "/logos/stripe.svg", href: "https://stripe.com" },
+    { name: "GitHub", src: "/logos/github.svg", href: "https://github.com" },
+    { name: "Shopify", src: "/logos/shopify.svg" },
+    { name: "Slack", src: "/logos/slack.svg" },
+    { name: "Notion", src: "/logos/notion.svg" }
+  ]}
+  columns={6}
+  variant="grayscale"
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Section heading |
+| `subtitle` | `string` | - | Small text above title |
+| `logos` | `Logo[]` | Required | Array of logo items |
+| `variant` | `'default' \| 'grayscale' \| 'bordered'` | `'default'` | Visual style |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Logo size preset |
+| `columns` | `3 \| 4 \| 5 \| 6` | `6` | Number of columns |
+| `animated` | `boolean` | `true` | Enable animations |
+| `colorScheme` | `string` | `'primary'` | Color variant |
+
+### Logo Interface
+
+```tsx
+interface Logo {
+  name: string;         // Alt text and aria-label
+  src: string;          // Image path
+  href?: string;        // Optional link
+  width?: number;       // Custom width (overrides size)
+  height?: number;      // Custom height (overrides size)
+}
+```
+
+### Variants
+
+- **default** - Full color logos
+- **grayscale** - Muted grayscale, color on hover
+- **bordered** - Logos in bordered cards
+
+#### Grayscale Variant Preview
+
+<ComponentPreview title="Logo Cloud Grayscale" background="muted">
+  <LogoCloudGrayscalePreview />
+</ComponentPreview>
+
+## Logo Marquee
+
+Infinitely scrolling logo banner for a dynamic, space-efficient display.
+
+### Preview
+
+<ComponentPreview title="Logo Marquee" background="muted">
+  <LogoMarqueePreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { LogoMarquee } from '@/components/marketing/logos/logo-marquee';
+
+<LogoMarquee
+  title="Powering teams at"
+  logos={[
+    { name: "Vercel", src: "/logos/vercel.svg" },
+    { name: "Stripe", src: "/logos/stripe.svg" },
+    { name: "GitHub", src: "/logos/github.svg" },
+    { name: "Shopify", src: "/logos/shopify.svg" },
+    { name: "Slack", src: "/logos/slack.svg" },
+    { name: "Notion", src: "/logos/notion.svg" },
+    { name: "Linear", src: "/logos/linear.svg" },
+    { name: "Figma", src: "/logos/figma.svg" }
+  ]}
+  speed="normal"
+  direction="left"
+  pauseOnHover
+  variant="grayscale"
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Section heading |
+| `subtitle` | `string` | - | Small text above title |
+| `logos` | `MarqueeLogo[]` | Required | Array of logos |
+| `speed` | `'slow' \| 'normal' \| 'fast'` | `'normal'` | Animation speed |
+| `direction` | `'left' \| 'right'` | `'left'` | Scroll direction |
+| `pauseOnHover` | `boolean` | `true` | Pause animation on hover |
+| `variant` | `'default' \| 'grayscale'` | `'default'` | Visual style |
+| `colorScheme` | `string` | `'primary'` | Color variant |
+
+### Speed Values
+
+| Speed | Duration |
+|-------|----------|
+| `slow` | 60 seconds |
+| `normal` | 40 seconds |
+| `fast` | 20 seconds |
+
+<Callout type="info">
+The marquee duplicates logos automatically for seamless infinite scrolling. Provide at least 6-8 logos for best results.
+</Callout>
+
+## Logo Showcase
+
+Rich logo cards with descriptions, perfect for highlighting partners or integrations.
+
+### Preview
+
+<ComponentPreview title="Logo Showcase" background="muted">
+  <LogoShowcasePreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { LogoShowcase } from '@/components/marketing/logos/logo-showcase';
+
+<LogoShowcase
+  subtitle="Integrations"
+  title="Works With Your Stack"
+  description="Seamlessly integrate with your favorite tools."
+  logos={[
+    {
+      name: "Next.js",
+      src: "/logos/nextjs.svg",
+      description: "React framework",
+      featured: true
+    },
+    {
+      name: "Vercel",
+      src: "/logos/vercel.svg",
+      description: "Deployment platform",
+      href: "https://vercel.com"
+    },
+    {
+      name: "Stripe",
+      src: "/logos/stripe.svg",
+      description: "Payments"
+    },
+    {
+      name: "Prisma",
+      src: "/logos/prisma.svg",
+      description: "Database ORM"
+    },
+    {
+      name: "Tailwind",
+      src: "/logos/tailwind.svg",
+      description: "CSS framework"
+    },
+    {
+      name: "TypeScript",
+      src: "/logos/typescript.svg",
+      description: "Type safety"
+    }
+  ]}
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | - | Section heading |
+| `subtitle` | `string` | - | Small text above title |
+| `description` | `string` | - | Supporting text |
+| `logos` | `ShowcaseLogo[]` | Required | Array of showcase logos |
+| `animated` | `boolean` | `true` | Enable animations |
+| `colorScheme` | `string` | `'primary'` | Color variant |
+
+### ShowcaseLogo Interface
+
+```tsx
+interface ShowcaseLogo {
+  name: string;
+  src: string;
+  description?: string;
+  href?: string;
+  featured?: boolean;  // Makes the card larger (2x2)
+}
+```
+
+## Color Schemes
+
+All Logo components support these color schemes:
+
+- `primary` - Default background
+- `secondary` - Light secondary tint
+- `accent` - Accent color background
+- `muted` - Subtle gray background
+- `destructive` - Red-tinted background
+
+## Usage Examples
+
+### Minimal Trust Bar
+
+```tsx
+<LogoCloud
+  title="Trusted by 500+ companies"
+  logos={[...]}
+  columns={6}
+  variant="grayscale"
+  colorScheme="muted"
+/>
+```
+
+### Dynamic Hero Addition
+
+```tsx
+<LogoMarquee
+  title="Powering the world's best teams"
+  logos={[...]}
+  speed="slow"
+  variant="default"
+/>
+```
+
+### Integration Page
+
+```tsx
+<LogoShowcase
+  subtitle="Ecosystem"
+  title="Powerful Integrations"
+  description="Connect with 50+ tools you already use."
+  logos={[
+    { name: "Slack", src: "...", description: "Team communication", featured: true },
+    { name: "Jira", src: "...", description: "Project tracking" },
+    // ... more integrations
+  ]}
+/>
+```
+
+## Best Practices
+
+1. **Optimize Images**: Use SVG for crisp logos at any size
+2. **Get Permission**: Ensure you have rights to display logos
+3. **Consistent Sizing**: Use similar aspect ratios for visual balance
+4. **Grayscale Works**: Muted logos look professional and don't distract
+5. **Limit Count**: 6-12 logos is ideal; too many reduces impact
+6. **Meaningful Selection**: Choose recognizable brands when possible
+
+## Creating Logo Assets
+
+For best results:
+
+```
+/public/logos/
+├── company-name.svg    # Horizontal logo, ~140x40
+├── company-name-dark.svg   # Optional dark mode version
+```
+
+Recommended specifications:
+- Format: SVG (preferred) or PNG with transparency
+- Size: 140-200px width for horizontal logos
+- Aspect ratio: Keep consistent across all logos
+- Background: Transparent
+
+## Accessibility
+
+- All logos have `alt` attributes from `name` prop
+- Links have `aria-label` for screen readers
+- Animations can be paused
+- Color contrast maintained in all variants

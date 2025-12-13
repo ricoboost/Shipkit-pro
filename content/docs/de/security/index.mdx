@@ -1,0 +1,71 @@
+---
+title: Sicherheit
+description: Best Practices und Leitfäden zur Sicherheit Ihrer ShipKit-Anwendung.
+---
+
+# Sicherheit
+
+Schützen Sie Ihre ShipKit-Anwendung mit diesen Best Practices und Sicherheitsleitfäden.
+
+---
+
+## Sicherheitsleitfäden
+
+<Cards>
+  <Card title="Authentifizierungssicherheit" href="/docs/security/authentication">
+    Sitzungsverwaltung, Passwort-Hashing und OAuth-Sicherheit.
+  </Card>
+  <Card title="API-Sicherheit" href="/docs/security/api-security">
+    Rate Limiting, API-Schlüssel und Eingabevalidierung.
+  </Card>
+  <Card title="Sicherheits-Header" href="/docs/security/headers">
+    CSP, HSTS und andere HTTP-Sicherheitsheader.
+  </Card>
+  <Card title="Datenschutz" href="/docs/security/data-protection">
+    Verschlüsselung, PII-Handhabung und DSGVO-Konformität.
+  </Card>
+</Cards>
+
+---
+
+## Sicherheitsübersicht
+
+### Authentifizierung
+- ✅ bcrypt-Hashing mit Kostenfaktor 12
+- ✅ Sichere Sitzungs-Cookies (HttpOnly, SameSite)
+- ✅ OAuth-Statusparameter
+- ✅ Zwei-Faktor-Authentifizierung
+
+### API-Sicherheit
+- ✅ Rate Limiting auf allen Endpunkten
+- ✅ Eingabevalidierung mit Zod
+- ✅ API-Schlüssel-Authentifizierung
+- ✅ Webhook-Signaturverifizierung
+
+### Datenschutz
+- ✅ Verschlüsselung im Ruhezustand (AES-256)
+- ✅ Erzwungenes HTTPS (HSTS)
+- ✅ DSGVO-Konformität
+- ✅ Datenaufbewahrungsrichtlinien
+
+---
+
+## Sicherheits-Checkliste
+
+### Vor dem Start
+
+- [ ] Sichere Umgebungsvariablen konfiguriert
+- [ ] HTTPS mit HSTS aktiviert
+- [ ] Sicherheitsheader konfiguriert
+- [ ] Rate Limiting aktiviert
+- [ ] Eingabevalidierung auf allen API-Routen
+- [ ] Auth-Geheimnisse von Entwicklungswerten rotiert
+- [ ] Datenbankberechtigungen überprüft
+- [ ] Fehlerüberwachung aktiviert (Sentry)
+
+### Laufend
+
+- [ ] Regelmäßige Sicherheitsaudits
+- [ ] Dependency-Updates
+- [ ] Zugriffsprotokollprüfungen
+- [ ] Dokumentierter Incident-Response-Plan

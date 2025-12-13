@@ -1,0 +1,191 @@
+---
+title: Maintenance Mode
+description: Temporarily block public access while performing updates or maintenance.
+---
+
+# Maintenance Mode
+
+ShipKit includes a maintenance mode feature that allows you to temporarily block access to your application while performing updates, deployments, or critical maintenance tasks.
+
+## Overview
+
+When maintenance mode is enabled:
+
+- All non-admin users are redirected to a maintenance page
+- Admin users can still access the entire application
+- API routes remain accessible for internal operations
+- An emergency bypass is available via environment variable
+
+## Enabling Maintenance Mode
+
+### Via Admin Panel
+
+1. Go to **Admin** > **Settings** > **Feature Flags**
+2. Toggle **Maintenance Mode** to enabled
+3. All non-admin visitors will immediately see the maintenance page
+
+### Via API
+
+```typescript
+// Enable maintenance mode
+const response = await fetch('/api/admin/settings/flags', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ maintenanceMode: true }),
+});
+```
+
+### Via Database
+
+```typescript
+import { db } from '@/lib/db';
+
+await db.appConfig.upsert({
+  where: { id: 'default' },
+  update: { maintenanceMode: true },
+  create: { id: 'default', maintenanceMode: true },
+});
+```
+
+## How It Works
+
+### Middleware Enforcement
+
+The middleware checks for maintenance mode on every request:
+
+```typescript
+// src/middleware.ts
+if (flags.maintenanceMode && !isAdmin) {
+  if (!shouldBypassMaintenance(pathname)) {
+    return NextResponse.redirect(new URL('/maintenance', request.url));
+  }
+}
+```
+
+### Bypass Paths
+
+These paths are always accessible during maintenance:
+
+- `/maintenance` - The maintenance page itself
+- `/login` - Authentication page (so admins can log in)
+- `/api/auth/*` - Auth API routes
+- `/onboarding` - Initial setup (if no admin exists)
+
+### Admin Detection
+
+Admin status is determined via a cookie (`shipkit-is-admin`) that is set when users log in. This allows the Edge middleware to check admin status without database queries.
+
+## Emergency Recovery
+
+If you accidentally enable maintenance mode and can't access the admin panel:
+
+### Option 1: Environment Variable Bypass
+
+Add to your `.env` file:
+
+```bash
+BYPASS_MAINTENANCE=true
+```
+
+This completely disables maintenance mode checks, allowing you to access the site and disable maintenance mode from the admin panel.
+
+### Option 2: Direct Database Update
+
+```bash
+# Using Prisma
+npx prisma db execute --stdin <<< "UPDATE app_config SET \"maintenanceMode\" = false WHERE id = 'default';"
+```
+
+### Option 3: Prisma Studio
+
+```bash
+npx prisma studio
+```
+
+Navigate to `AppConfig` and set `maintenanceMode` to `false`.
+
+## Customizing the Maintenance Page
+
+### Page Location
+
+The maintenance page is located at:
+
+```
+src/app/[locale]/maintenance/page.tsx
+```
+
+### Default Content
+
+The default maintenance page shows:
+
+- A wrench icon
+- "Under Maintenance" title
+- Description explaining the situation
+- "Back to Home" link
+
+### Customization
+
+Edit the page component to customize:
+
+```tsx
+// src/app/[locale]/maintenance/page.tsx
+export default async function MaintenancePage() {
+  const t = await getTranslations('maintenance');
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1>{t('title')}</h1>
+        <p>{t('description')}</p>
+        {/* Add custom content here */}
+        <p>Expected completion: 2 hours</p>
+        <p>Contact: support@yoursite.com</p>
+      </div>
+    </div>
+  );
+}
+```
+
+### Translations
+
+Maintenance page text is translated via the `maintenance` namespace in each locale file:
+
+```json
+{
+  "maintenance": {
+    "title": "Under Maintenance",
+    "description": "We're currently performing scheduled maintenance.",
+    "checkBack": "Please check back soon.",
+    "backToHome": "Back to Home"
+  }
+}
+```
+
+## Database Schema
+
+Maintenance mode is stored in the `AppConfig` model:
+
+```prisma
+model AppConfig {
+  id              String   @id @default("default")
+  maintenanceMode Boolean  @default(false)
+  // ... other fields
+}
+```
+
+## Best Practices
+
+1. **Notify users in advance** - If possible, announce scheduled maintenance
+2. **Keep maintenance short** - Minimize user disruption
+3. **Test admin access first** - Verify you can log in as admin before enabling
+4. **Have recovery plan** - Know how to use `BYPASS_MAINTENANCE` if needed
+5. **Use staging first** - Test maintenance mode in staging before production
+
+## Comparison: Maintenance vs Waitlist Mode
+
+| Feature | Maintenance Mode | Waitlist Mode |
+|---------|------------------|---------------|
+| Blocks existing users | Yes | No |
+| Blocks new signups | Yes | Yes |
+| Admin bypass | Yes | Yes |
+| Use case | Updates, emergencies | Pre-launch, controlled access |

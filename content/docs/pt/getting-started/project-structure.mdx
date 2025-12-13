@@ -1,0 +1,162 @@
+---
+title: Estrutura do Projeto
+description: Entendendo a organização da base de código e a estrutura de arquivos do ShipKit.
+---
+
+# Estrutura do Projeto
+
+O ShipKit segue uma estrutura bem organizada baseada nas convenções do Next.js App Router.
+
+## Visão Geral dos Diretórios
+
+```
+shipkit/
+├── content/
+│   └── docs/           # Arquivos MDX de documentação
+├── prisma/
+│   └── schema.prisma   # Schema do banco de dados
+├── public/             # Recursos estáticos
+├── src/
+│   ├── app/            # Páginas do Next.js App Router
+│   ├── components/     # Componentes React
+│   ├── config/         # Arquivos de configuração
+│   ├── hooks/          # Hooks personalizados do React
+│   ├── lib/            # Bibliotecas principais e utilitários
+│   └── middleware.ts   # Middleware do Next.js
+├── .env.example        # Template de variáveis de ambiente
+├── next.config.ts      # Configuração do Next.js
+└── package.json        # Dependências
+```
+
+## Diretório App (`src/app/`)
+
+```
+src/app/
+├── (admin)/            # Rotas do painel administrativo
+│   ├── admin/
+│   │   ├── page.tsx    # Visão geral do admin
+│   │   ├── users/      # Gestão de usuários
+│   │   ├── analytics/  # Painel de análises
+│   │   └── subscriptions/
+│   └── layout.tsx      # Layout do admin
+├── (auth)/             # Rotas de autenticação
+│   ├── login/          # Página de login
+│   ├── register/       # Página de registro
+│   └── layout.tsx      # Layout de autenticação
+├── (dashboard)/        # Rotas do painel do usuário
+│   ├── dashboard/      # Painel principal
+│   ├── ai-playground/  # Interface de demonstração de IA
+│   ├── settings/       # Configurações do usuário
+│   │   ├── profile/
+│   │   ├── billing/
+│   │   ├── api-keys/
+│   │   └── theme/
+│   └── layout.tsx      # Layout do painel
+├── (marketing)/        # Páginas públicas de marketing
+│   ├── page.tsx        # Página inicial
+│   ├── pricing/        # Página de preços
+│   ├── blog/           # Páginas do blog
+│   └── layout.tsx      # Layout de marketing
+├── api/                # Rotas de API
+│   ├── auth/           # Endpoints de autenticação
+│   ├── payments/       # Endpoints de pagamentos
+│   ├── ai/             # Endpoints de IA
+│   ├── organizations/  # Endpoints de organizações
+│   └── newsletter/     # Endpoints de newsletter
+├── docs/               # Páginas de documentação
+└── layout.tsx          # Layout raiz
+```
+
+## Diretório de Bibliotecas (`src/lib/`)
+
+A funcionalidade principal é organizada em módulos independentes de provedor:
+
+```
+src/lib/
+├── auth/               # Abstração de autenticação
+│   ├── index.ts        # Interface unificada de autenticação
+│   ├── types.ts        # Tipos TypeScript
+│   ├── nextauth.ts     # Implementação NextAuth
+│   ├── supabase.ts     # Implementação Supabase
+│   └── betterauth.ts   # Implementação Better Auth
+├── payments/           # Abstração de pagamentos
+│   ├── index.ts        # Interface unificada de pagamentos
+│   ├── types.ts        # Tipos TypeScript
+│   ├── stripe.ts       # Implementação Stripe
+│   ├── lemonsqueezy.ts # Implementação LemonSqueezy
+│   ├── polar.ts        # Implementação Polar
+│   └── credits.ts      # Sistema de créditos
+├── ai/                 # Abstração de IA
+│   ├── index.ts        # Interface unificada de IA
+│   ├── types.ts        # Tipos TypeScript
+│   ├── openrouter.ts   # Implementação OpenRouter
+│   └── vercel.ts       # Implementação Vercel AI
+├── organizations/      # Gestão de equipes/organizações
+├── blog/               # Utilitários do blog
+├── newsletter/         # Sistema de newsletter
+├── theme/              # Sistema de temas
+├── admin/              # Utilitários administrativos
+├── security/           # Limitação de taxa, cabeçalhos
+├── onboarding/         # Integração de usuários
+├── referrals/          # Sistema de referências
+├── rpc/                # RPC com tipagem segura (oRPC)
+├── db.ts               # Cliente de banco de dados
+└── utils.ts            # Funções utilitárias
+```
+
+## Diretório de Componentes (`src/components/`)
+
+```
+src/components/
+├── ui/                 # Componentes base shadcn/ui
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── dialog.tsx
+│   └── ...
+├── auth/               # Componentes de autenticação
+│   ├── login-form.tsx
+│   ├── register-form.tsx
+│   └── social-buttons.tsx
+├── layout/             # Componentes de layout
+│   ├── header.tsx
+│   ├── footer.tsx
+│   ├── sidebar.tsx
+│   └── dashboard-header.tsx
+├── blog/               # Componentes do blog
+├── newsletter/         # Componentes de newsletter
+├── theme/              # Construtor de temas
+├── onboarding/         # Assistente de integração
+└── providers.tsx       # Provedores de contexto React
+```
+
+## Conceitos-Chave
+
+### Grupos de Rotas
+
+Grupos de rotas `(groupName)` organizam rotas sem afetar a URL:
+
+- `(marketing)` - Páginas públicas em `/`, `/pricing`, `/blog`
+- `(auth)` - Páginas de autenticação em `/login`, `/register`
+- `(dashboard)` - Páginas de usuário em `/dashboard`, `/settings`
+- `(admin)` - Páginas administrativas em `/admin`
+
+### Abstração de Provedores
+
+Cada recurso principal usa uma interface unificada:
+
+```typescript
+// lib/auth/index.ts exporta interface unificada
+export const auth = getAuthProvider(); // Retorna provedor configurado
+
+// O uso é o mesmo independentemente do provedor
+const session = await auth.getSession();
+```
+
+### Segurança de Tipos
+
+Todas as APIs usam Zod para validação e oRPC para endpoints com tipagem segura:
+
+```typescript
+// Chamadas de API completamente tipadas
+const result = await rpc.users.getProfile.query();
+```

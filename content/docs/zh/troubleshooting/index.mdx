@@ -1,0 +1,124 @@
+---
+title: 故障排除
+description: ShipKit应用程序的常见问题和解决方案。
+---
+
+# 故障排除
+
+查找使用ShipKit开发时常见问题的解决方案。
+
+---
+
+## 快速诊断
+
+### 您的开发服务器正在运行吗？
+
+```bash
+npm run dev
+```
+
+如果失败，请尝试：
+
+```bash
+rm -rf node_modules .next
+npm install
+npm run dev
+```
+
+### 检查TypeScript错误
+
+```bash
+npm run typecheck
+```
+
+### 检查环境变量
+
+```bash
+node -e "console.log(Object.keys(process.env).filter(k => k.startsWith('NEXT_')))"
+```
+
+---
+
+## 常见问题
+
+<Cards>
+  <Card title="构建和类型错误" href="/docs/troubleshooting/common-errors">
+    TypeScript错误、构建失败和模块问题。
+  </Card>
+  <Card title="身份验证问题" href="/docs/troubleshooting/auth-issues">
+    OAuth失败、会话问题和登录错误。
+  </Card>
+  <Card title="支付问题" href="/docs/troubleshooting/payment-issues">
+    Webhook失败、订阅同步和结账问题。
+  </Card>
+  <Card title="部署问题" href="/docs/troubleshooting/deployment-issues">
+    Vercel、Railway和Docker部署问题。
+  </Card>
+  <Card title="数据库问题" href="/docs/troubleshooting/database-issues">
+    连接错误、迁移和Prisma问题。
+  </Card>
+</Cards>
+
+---
+
+## 紧急修复
+
+### 应用无法启动
+
+```bash
+# 核选项 - 重置所有内容
+rm -rf node_modules .next prisma/migrations
+npm install
+npx prisma generate
+npx prisma db push
+npm run dev
+```
+
+### 数据库不同步
+
+```bash
+# 重置数据库（销毁数据）
+npx prisma db push --force-reset
+
+# 或创建新迁移
+npx prisma migrate dev --name fix_schema
+```
+
+### 环境未加载
+
+```bash
+# 检查.env是否存在且有效
+cat .env | head -5
+
+# 重启开发服务器（.env更改后必需）
+npm run dev
+```
+
+---
+
+## 获取帮助
+
+### 1. 检查日志
+
+```bash
+# Next.js日志
+npm run dev 2>&1 | tee dev.log
+
+# Prisma日志
+DEBUG="prisma:*" npm run dev
+```
+
+### 2. 搜索现有issue
+
+在[GitHub Issues](https://github.com/your-org/shipkit/issues)上查找类似问题。
+
+### 3. 寻求帮助
+
+寻求帮助时，请包括：
+
+- [ ] 错误消息（完整堆栈跟踪）
+- [ ] 重现步骤
+- [ ] Node.js版本（`node -v`）
+- [ ] 包版本（`npm list`）
+- [ ] 操作系统
+- [ ] 相关配置文件

@@ -1,0 +1,124 @@
+---
+title: Solución de Problemas
+description: Problemas comunes y soluciones para aplicaciones ShipKit.
+---
+
+# Solución de Problemas
+
+Encuentra soluciones a problemas comunes al desarrollar con ShipKit.
+
+---
+
+## Diagnóstico Rápido
+
+### ¿Está funcionando tu servidor de desarrollo?
+
+```bash
+npm run dev
+```
+
+Si falla, intenta:
+
+```bash
+rm -rf node_modules .next
+npm install
+npm run dev
+```
+
+### Verifica errores de TypeScript
+
+```bash
+npm run typecheck
+```
+
+### Verifica variables de entorno
+
+```bash
+node -e "console.log(Object.keys(process.env).filter(k => k.startsWith('NEXT_')))"
+```
+
+---
+
+## Problemas Comunes
+
+<Cards>
+  <Card title="Errores de Build y Tipos" href="/docs/troubleshooting/common-errors">
+    Errores de TypeScript, fallos de build y problemas de módulos.
+  </Card>
+  <Card title="Problemas de Autenticación" href="/docs/troubleshooting/auth-issues">
+    Fallos de OAuth, problemas de sesión y errores de login.
+  </Card>
+  <Card title="Problemas de Pagos" href="/docs/troubleshooting/payment-issues">
+    Fallos de webhooks, sincronización de suscripciones y problemas de checkout.
+  </Card>
+  <Card title="Problemas de Despliegue" href="/docs/troubleshooting/deployment-issues">
+    Problemas de despliegue en Vercel, Railway y Docker.
+  </Card>
+  <Card title="Problemas de Base de Datos" href="/docs/troubleshooting/database-issues">
+    Errores de conexión, migraciones y problemas de Prisma.
+  </Card>
+</Cards>
+
+---
+
+## Correcciones de Emergencia
+
+### La app no inicia
+
+```bash
+# Opción nuclear - reinicia todo
+rm -rf node_modules .next prisma/migrations
+npm install
+npx prisma generate
+npx prisma db push
+npm run dev
+```
+
+### Base de datos desincronizada
+
+```bash
+# Reiniciar base de datos (DESTRUYE DATOS)
+npx prisma db push --force-reset
+
+# O crear nueva migración
+npx prisma migrate dev --name fix_schema
+```
+
+### Entorno no se carga
+
+```bash
+# Verifica que .env existe y es válido
+cat .env | head -5
+
+# Reinicia el servidor de desarrollo (requerido después de cambios en .env)
+npm run dev
+```
+
+---
+
+## Obtener Ayuda
+
+### 1. Revisa los logs
+
+```bash
+# Logs de Next.js
+npm run dev 2>&1 | tee dev.log
+
+# Logs de Prisma
+DEBUG="prisma:*" npm run dev
+```
+
+### 2. Busca issues existentes
+
+Revisa [GitHub Issues](https://github.com/your-org/shipkit/issues) para problemas similares.
+
+### 3. Pide ayuda
+
+Al pedir ayuda, incluye:
+
+- [ ] Mensaje de error (stack trace completo)
+- [ ] Pasos para reproducir
+- [ ] Versión de Node.js (`node -v`)
+- [ ] Versiones de paquetes (`npm list`)
+- [ ] Sistema operativo
+- [ ] Archivos de configuración relevantes

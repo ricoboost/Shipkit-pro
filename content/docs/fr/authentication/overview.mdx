@@ -1,0 +1,151 @@
+---
+title: Vue d'ensemble de l'Authentification
+description: ShipKit prend en charge plusieurs fournisseurs d'authentification avec une interface unifiée.
+---
+
+# Authentification
+
+ShipKit fournit une couche d'authentification unifiée qui prend en charge plusieurs fournisseurs. Basculez entre eux avec une seule variable d'environnement.
+
+## Fournisseurs Pris en Charge
+
+<Cards>
+  <Card title="NextAuth.js" href="/docs/authentication/nextauth">
+    Authentification flexible et auto-hébergée avec OAuth, identifiants et liens magiques.
+  </Card>
+  <Card title="Supabase Auth" href="/docs/authentication/supabase">
+    Intégré à la base de données Supabase, prend en charge OAuth, e-mail et authentification téléphonique.
+  </Card>
+  <Card title="Better Auth" href="/docs/authentication/better-auth">
+    Bibliothèque d'authentification moderne avec un excellent support TypeScript.
+  </Card>
+</Cards>
+
+## Changer de Fournisseur
+
+Modifiez la variable d'environnement `AUTH_PROVIDER` :
+
+```bash
+# .env
+AUTH_PROVIDER="nextauth"  # ou "supabase" ou "betterauth"
+```
+
+C'est tout ! L'interface unifiée gère le reste.
+
+## Interface Unifiée
+
+Tous les fournisseurs implémentent la même interface :
+
+```typescript
+// src/lib/auth/types.ts
+export interface AuthProvider {
+  signIn(credentials: SignInCredentials): Promise<AuthResult>;
+  signUp(credentials: SignUpCredentials): Promise<AuthResult>;
+  signOut(): Promise<void>;
+  getSession(): Promise<Session | null>;
+  getUser(): Promise<User | null>;
+}
+```
+
+## Utilisation dans les Composants
+
+```tsx
+'use client';
+
+import { useAuth } from '@/hooks/use-auth';
+
+export function ProfileButton() {
+  const { user, signOut, isLoading } = useAuth();
+
+  if (isLoading) return <Skeleton />;
+  if (!user) return <LoginButton />;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Avatar src={user.image} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => signOut()}>
+          Se déconnecter
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+```
+
+## Utilisation dans les Composants Serveur
+
+```tsx
+import { auth } from '@/lib/auth';
+
+export default async function DashboardPage() {
+  const session = await auth.getSession();
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  return <Dashboard user={session.user} />;
+}
+```
+
+## Routes API
+
+```typescript
+// src/app/api/protected/route.ts
+import { auth } from '@/lib/auth';
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  const session = await auth.getSession();
+
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  return NextResponse.json({ data: 'Protected data' });
+}
+```
+
+## Protection par Middleware
+
+```typescript
+// src/middleware.ts
+import { auth } from '@/lib/auth';
+
+export async function middleware(request: NextRequest) {
+  const session = await auth.getSession();
+
+  if (!session && request.nextUrl.pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+}
+```
+
+## Fournisseurs OAuth
+
+Configurez les fournisseurs OAuth dans votre `.env` :
+
+```bash
+# Google
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+
+# GitHub
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+
+# Discord
+DISCORD_CLIENT_ID=""
+DISCORD_CLIENT_SECRET=""
+```
+
+## Prochaines Étapes
+
+Choisissez votre fournisseur d'authentification préféré :
+
+- [Configuration de NextAuth.js](/docs/authentication/nextauth)
+- [Configuration de Supabase Auth](/docs/authentication/supabase)
+- [Configuration de Better Auth](/docs/authentication/better-auth)

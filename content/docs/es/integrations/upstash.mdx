@@ -1,0 +1,486 @@
+---
+title: Upstash Integration
+description: Redis caching and rate limiting with Upstash.
+---
+
+# Upstash Integration
+
+Upstash provides serverless Redis for caching, rate limiting, and session storage with a pay-per-request pricing model.
+
+---
+
+## Setup
+
+### 1. Create Upstash Account
+
+1. Go to [upstash.com](https://upstash.com) and create an account
+2. Create a new Redis database
+3. Choose a region close to your deployment
+
+---
+
+### 2. Install SDK
+
+```bash
+npm install @upstash/redis @upstash/ratelimit
+```
+
+---
+
+### 3. Environment Variables
+
+```bash
+# .env
+UPSTASH_REDIS_REST_URL=https://xxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=xxx
+```
+
+---
+
+## Redis Client
+
+### Basic Setup
+
+```typescript
+// src/lib/redis.ts
+import { Redis } from '@upstash/redis';
+
+export const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+// Or use environment auto-detection
+export const redis = Redis.fromEnv();
+```
+
+---
+
+### Basic Operations
+
+```typescript
+import { redis } from '@/lib/redis';
+
+// Set value
+await redis.set('key', 'value');
+await redis.set('key', 'value', { ex: 3600 }); // Expires in 1 hour
+
+// Get value
+const value = await redis.get('key');
+
+// Delete key
+await redis.del('key');
+
+// Check if key exists
+const exists = await redis.exists('key');
+
+// Set multiple keys
+await redis.mset({
+  key1: 'value1',
+  key2: 'value2',
+});
+
+// Get multiple keys
+const values = await redis.mget('key1', 'key2');
+```
+
+---
+
+## Rate Limiting
+
+### Setup Rate Limiter
+
+```typescript
+// src/lib/rate-limit.ts
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+const redis = Redis.fromEnv();
+
+// Different rate limiters for different purposes
+export const rateLimiters = {
+  // API routes: 100 requests per minute
+  api: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(100, '1 m'),
+    prefix: 'ratelimit:api',
+  }),
+
+  // Auth endpoints: 5 requests per minute
+  auth: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(5, '1 m'),
+    prefix: 'ratelimit:auth',
+  }),
+
+  // AI endpoints: 20 requests per minute
+  ai: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(20, '1 m'),
+    prefix: 'ratelimit:ai',
+  }),
+
+  // Expensive operations: 10 per hour
+  expensive: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, '1 h'),
+    prefix: 'ratelimit:expensive',
+  }),
+};
+```
+
+---
+
+### Rate Limit Middleware
+
+```typescript
+// src/lib/rate-limit.ts
+import { NextResponse } from 'next/server';
+import { rateLimiters } from './rate-limiters';
+
+export async function rateLimit(
+  identifier: string,
+  type: keyof typeof rateLimiters = 'api'
+) {
+  const limiter = rateLimiters[type];
+  const { success, limit, remaining, reset } = await limiter.limit(identifier);
+
+  const headers = {
+    'X-RateLimit-Limit': limit.toString(),
+    'X-RateLimit-Remaining': remaining.toString(),
+    'X-RateLimit-Reset': reset.toString(),
+  };
+
+  if (!success) {
+    return {
+      success: false,
+      response: NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429, headers }
+      ),
+    };
+  }
+
+  return { success: true, headers };
+}
+```
+
+---
+
+### Usage in API Routes
+
+```typescript
+// src/app/api/ai/route.ts
+import { rateLimit } from '@/lib/rate-limit';
+import { auth } from '@/lib/auth';
+
+export async function POST(req: Request) {
+  const session = await auth();
+  const identifier = session?.user?.id || req.headers.get('x-forwarded-for') || 'anonymous';
+
+  const result = await rateLimit(identifier, 'ai');
+  if (!result.success) {
+    return result.response;
+  }
+
+  // Process AI request...
+  return Response.json({ result: '...' }, { headers: result.headers });
+}
+```
+
+---
+
+## Caching
+
+### Cache Wrapper
+
+```typescript
+// src/lib/cache.ts
+import { redis } from './redis';
+
+interface CacheOptions {
+  ttl?: number; // Time to live in seconds
+  staleWhileRevalidate?: boolean;
+}
+
+export async function cache<T>(
+  key: string,
+  fetcher: () => Promise<T>,
+  options: CacheOptions = {}
+): Promise<T> {
+  const { ttl = 3600 } = options;
+
+  // Try to get from cache
+  const cached = await redis.get<T>(key);
+  if (cached !== null) {
+    return cached;
+  }
+
+  // Fetch fresh data
+  const data = await fetcher();
+
+  // Store in cache
+  await redis.set(key, data, { ex: ttl });
+
+  return data;
+}
+
+// Invalidate cache
+export async function invalidateCache(pattern: string) {
+  const keys = await redis.keys(pattern);
+  if (keys.length > 0) {
+    await redis.del(...keys);
+  }
+}
+```
+
+---
+
+### Cache Usage Examples
+
+```typescript
+import { cache, invalidateCache } from '@/lib/cache';
+
+// Cache user profile
+const user = await cache(
+  `user:${userId}`,
+  () => prisma.user.findUnique({ where: { id: userId } }),
+  { ttl: 300 } // 5 minutes
+);
+
+// Cache expensive computation
+const stats = await cache(
+  `stats:${organizationId}`,
+  () => computeOrganizationStats(organizationId),
+  { ttl: 3600 } // 1 hour
+);
+
+// Invalidate on update
+await prisma.user.update({ where: { id: userId }, data: { name: 'New Name' } });
+await invalidateCache(`user:${userId}`);
+```
+
+---
+
+## Session Storage
+
+### Store Sessions in Redis
+
+```typescript
+// src/lib/session.ts
+import { redis } from './redis';
+import { randomBytes } from 'crypto';
+
+const SESSION_TTL = 7 * 24 * 60 * 60; // 7 days
+
+interface SessionData {
+  userId: string;
+  email: string;
+  role: string;
+  createdAt: number;
+}
+
+export async function createSession(data: SessionData): Promise<string> {
+  const sessionId = randomBytes(32).toString('hex');
+  await redis.set(`session:${sessionId}`, data, { ex: SESSION_TTL });
+  return sessionId;
+}
+
+export async function getSession(sessionId: string): Promise<SessionData | null> {
+  return redis.get<SessionData>(`session:${sessionId}`);
+}
+
+export async function deleteSession(sessionId: string): Promise<void> {
+  await redis.del(`session:${sessionId}`);
+}
+
+export async function extendSession(sessionId: string): Promise<void> {
+  await redis.expire(`session:${sessionId}`, SESSION_TTL);
+}
+```
+
+---
+
+## Pub/Sub & Real-time
+
+### Real-time Features with Redis Streams
+
+```typescript
+// For WebSocket or SSE implementations
+import { redis } from '@/lib/redis';
+
+// Publish event
+export async function publishEvent(channel: string, event: object) {
+  await redis.publish(channel, JSON.stringify(event));
+}
+
+// Usage
+await publishEvent('notifications', {
+  type: 'new_message',
+  userId: '123',
+  message: 'Hello!',
+});
+```
+
+---
+
+## Queue System
+
+### Simple Job Queue
+
+```typescript
+// src/lib/queue.ts
+import { redis } from './redis';
+
+interface Job {
+  id: string;
+  type: string;
+  data: any;
+  createdAt: number;
+}
+
+export async function enqueue(type: string, data: any): Promise<string> {
+  const job: Job = {
+    id: crypto.randomUUID(),
+    type,
+    data,
+    createdAt: Date.now(),
+  };
+
+  await redis.rpush('job-queue', JSON.stringify(job));
+  return job.id;
+}
+
+export async function dequeue(): Promise<Job | null> {
+  const result = await redis.lpop<string>('job-queue');
+  if (!result) return null;
+  return JSON.parse(result);
+}
+
+// Usage
+await enqueue('send-email', { to: 'user@example.com', template: 'welcome' });
+await enqueue('process-image', { imageId: '123', resize: [800, 600] });
+```
+
+---
+
+## Counters & Analytics
+
+### Real-time Counters
+
+```typescript
+// src/lib/counters.ts
+import { redis } from './redis';
+
+// Increment page views
+export async function incrementPageViews(page: string): Promise<number> {
+  const key = `pageviews:${page}:${new Date().toISOString().slice(0, 10)}`;
+  return redis.incr(key);
+}
+
+// Get page views
+export async function getPageViews(page: string, days: number = 7): Promise<number[]> {
+  const keys = Array.from({ length: days }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    return `pageviews:${page}:${date.toISOString().slice(0, 10)}`;
+  });
+
+  const values = await redis.mget<number[]>(...keys);
+  return values.map(v => v || 0);
+}
+
+// Track unique visitors
+export async function trackUniqueVisitor(visitorId: string): Promise<boolean> {
+  const key = `visitors:${new Date().toISOString().slice(0, 10)}`;
+  const added = await redis.sadd(key, visitorId);
+  return added === 1; // True if new visitor
+}
+
+export async function getUniqueVisitorCount(): Promise<number> {
+  const key = `visitors:${new Date().toISOString().slice(0, 10)}`;
+  return redis.scard(key);
+}
+```
+
+---
+
+## Best Practices
+
+### 1. Use Meaningful Key Prefixes
+
+```typescript
+// Good key naming
+`user:${userId}:profile`
+`session:${sessionId}`
+`ratelimit:api:${ip}`
+`cache:products:${productId}`
+
+// Avoid generic keys
+`data`
+`temp`
+`123`
+```
+
+---
+
+### 2. Set TTL on All Keys
+
+```typescript
+// Always set expiration
+await redis.set('key', 'value', { ex: 3600 }); // 1 hour
+
+// Don't leave keys without TTL (memory leak)
+await redis.set('key', 'value'); // ❌ No expiration
+```
+
+---
+
+### 3. Handle Connection Errors
+
+```typescript
+import { redis } from '@/lib/redis';
+
+async function safeRedisOperation<T>(
+  operation: () => Promise<T>,
+  fallback: T
+): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    console.error('Redis error:', error);
+    return fallback;
+  }
+}
+
+// Usage
+const cachedData = await safeRedisOperation(
+  () => redis.get('key'),
+  null
+);
+```
+
+---
+
+## Monitoring
+
+### Track Redis Usage
+
+```typescript
+// Log slow queries
+const start = Date.now();
+const result = await redis.get('key');
+const duration = Date.now() - start;
+
+if (duration > 100) {
+  console.warn(`Slow Redis query: ${duration}ms`);
+}
+```
+
+---
+
+## Resources
+
+- [Upstash Documentation](https://docs.upstash.com/)
+- [Upstash Rate Limit](https://github.com/upstash/ratelimit)
+- [Redis Commands Reference](https://redis.io/commands/)

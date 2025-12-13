@@ -1,0 +1,155 @@
+---
+title: Hero
+description: Componentes de sección hero para páginas de aterrizaje con múltiples diseños y variantes.
+---
+
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Componentes Hero
+
+Crea secciones hero impactantes para tus páginas de aterrizaje. Múltiples variantes de diseño para adaptarse a diferentes estilos y necesidades de contenido.
+
+## Resumen de Componentes
+
+| Componente | Propósito | Mejor Para |
+|------------|-----------|------------|
+| `HeroCentered` | Texto y CTAs centrados | Diseño clásico de landing |
+| `HeroSplit` | Contenido + imagen lado a lado | Exhibición de productos |
+| `HeroMinimal` | Diseño limpio y minimalista | Portafolios, apps |
+| `HeroGradient` | Fondo con gradiente vibrante | Productos llamativos |
+| `HeroVideo` | Fondo de video | Alto impacto visual |
+
+## Hero Centrado
+
+El diseño hero clásico centrado con título, descripción y botones CTA.
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+
+<HeroCentered
+  badge="Nuevo en v3.0"
+  title="Construye Productos SaaS Más Rápido"
+  description="El kit de inicio completo para aplicaciones web modernas. Autenticación, pagos y más - todo pre-configurado."
+  primaryCTA={{ label: "Comenzar", href: "/register" }}
+  secondaryCTA={{ label: "Ver Demo", href: "/demo" }}
+  animated
+/>
+```
+
+### Props
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `badge` | `string` | - | Badge opcional sobre el título |
+| `title` | `string` | Requerido | Encabezado principal |
+| `description` | `string` | - | Texto de soporte |
+| `primaryCTA` | `CTAButton` | - | Botón de acción principal |
+| `secondaryCTA` | `CTAButton` | - | Botón de acción secundario |
+| `animated` | `boolean` | `true` | Habilitar animaciones de entrada |
+| `colorScheme` | `string` | `'primary'` | Variante de color |
+
+## Hero Dividido
+
+Diseño de dos columnas con contenido en un lado e imagen/ilustración en el otro.
+
+```tsx
+import { HeroSplit } from '@/components/marketing/hero/hero-split';
+
+<HeroSplit
+  title="Tu Idea, Lanzada en Días"
+  description="Deja de perder tiempo en boilerplate. ShipKit te da todo lo que necesitas para lanzar tu SaaS."
+  primaryCTA={{ label: "Comenzar Ahora", href: "/register" }}
+  image={{
+    src: "/images/hero-dashboard.png",
+    alt: "Vista del Dashboard"
+  }}
+  imagePosition="right"
+/>
+```
+
+### Props
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `title` | `string` | Requerido | Encabezado principal |
+| `description` | `string` | - | Texto de soporte |
+| `primaryCTA` | `CTAButton` | - | Botón de acción principal |
+| `secondaryCTA` | `CTAButton` | - | Botón de acción secundario |
+| `image` | `{ src: string, alt: string }` | - | Configuración de imagen |
+| `imagePosition` | `'left' \| 'right'` | `'right'` | Posición de imagen |
+| `animated` | `boolean` | `true` | Habilitar animaciones |
+| `colorScheme` | `string` | `'primary'` | Variante de color |
+
+## Hero Minimalista
+
+Diseño limpio y minimalista para un look moderno.
+
+```tsx
+import { HeroMinimal } from '@/components/marketing/hero/hero-minimal';
+
+<HeroMinimal
+  title="Simple. Rápido. Elegante."
+  description="Todo lo que necesitas, nada que no."
+  primaryCTA={{ label: "Explorar", href: "/features" }}
+/>
+```
+
+## Hero con Gradiente
+
+Hero vibrante con fondos de gradiente.
+
+```tsx
+import { HeroGradient } from '@/components/marketing/hero/hero-gradient';
+
+<HeroGradient
+  title="El Futuro de SaaS"
+  description="Construye, lanza y escala con confianza."
+  primaryCTA={{ label: "Únete a la Lista de Espera", href: "/waitlist" }}
+  gradient="from-primary via-accent to-secondary"
+/>
+```
+
+## Hero con Video
+
+Hero de alto impacto con fondo de video.
+
+```tsx
+import { HeroVideo } from '@/components/marketing/hero/hero-video';
+
+<HeroVideo
+  title="Mira la Magia"
+  description="Observa cómo transformamos tu flujo de trabajo."
+  videoSrc="/videos/hero-bg.mp4"
+  posterSrc="/images/hero-poster.jpg"
+  primaryCTA={{ label: "Comenzar", href: "/register" }}
+/>
+```
+
+## Interfaz CTAButton
+
+```tsx
+interface CTAButton {
+  label: string;
+  href: string;
+  variant?: 'default' | 'outline' | 'ghost';
+}
+```
+
+## Esquemas de Color
+
+Todos los componentes Hero soportan estos esquemas de color:
+
+- `primary` - Fondo por defecto
+- `secondary` - Tinte secundario claro
+- `accent` - Fondo de color de acento
+- `muted` - Fondo gris sutil
+- `destructive` - Fondo con tinte rojo
+
+## Mejores Prácticas
+
+1. **Mantén títulos cortos**: Apunta a 6-10 palabras máximo
+2. **Un CTA principal**: Haz que la acción más importante destaque
+3. **Prueba las animaciones**: Asegúrate de que no distraigan del mensaje
+4. **Optimiza imágenes**: Usa formatos modernos como WebP
+5. **Mobile first**: Asegúrate de que el hero se vea bien en móvil

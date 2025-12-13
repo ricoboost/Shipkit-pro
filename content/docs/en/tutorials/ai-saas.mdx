@@ -1,0 +1,631 @@
+---
+title: Build an AI-Powered SaaS with Credits
+description: Create an AI application with OpenRouter integration, credit-based billing, and usage tracking.
+---
+
+# Build an AI-Powered SaaS with Credits
+
+In this tutorial, you'll build an AI-powered SaaS application that:
+
+- Integrates with multiple AI models via OpenRouter
+- Uses a credit-based billing system
+- Tracks usage per user
+- Implements streaming responses
+- Shows real-time token counting
+
+## Prerequisites
+
+- Completed the [Quickstart Tutorial](/docs/tutorials/quickstart)
+- [OpenRouter API key](https://openrouter.ai/keys) (free tier available)
+
+## Step 1: Configure OpenRouter
+
+Add your OpenRouter API key to `.env`:
+
+```bash
+# AI Provider
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=sk-or-v1-xxx
+```
+
+## Step 2: Understand the Credits System
+
+ShipKit includes a built-in credits system. Here's how it works:
+
+### Credit Configuration
+
+Edit `src/lib/payments/credits.ts`:
+
+```typescript
+export const creditConfig = {
+  // Credits per plan
+  plans: {
+    free: {
+      monthlyCredits: 100,
+      rollover: false,
+    },
+    pro: {
+      monthlyCredits: 10000,
+      rollover: true,
+      maxRollover: 50000,
+    },
+  },
+
+  // Credit costs per action
+  costs: {
+    'gpt-4-turbo': 10,      // 10 credits per request
+    'gpt-3.5-turbo': 1,     // 1 credit per request
+    'claude-3-opus': 15,    // 15 credits per request
+    'claude-3-sonnet': 5,   // 5 credits per request
+  },
+
+  // Bonus credits
+  signup: 100,           // New user bonus
+  referral: 500,         // Referral reward
+};
+```
+
+### Credit Operations
+
+```typescript
+// src/lib/payments/credits.ts
+
+// Get user's credit balance
+export async function getCreditBalance(userId: string) {
+  const balance = await prisma.creditBalance.findUnique({
+    where: { userId },
+  });
+  return balance?.credits ?? 0;
+}
+
+// Deduct credits
+export async function useCredits(userId: string, amount: number, reason: string) {
+  return prisma.$transaction(async (tx) => {
+    // Check balance
+    const balance = await tx.creditBalance.findUnique({
+      where: { userId },
+    });
+
+    if (!balance || balance.credits < amount) {
+      throw new Error('Insufficient credits');
+    }
+
+    // Deduct credits
+    await tx.creditBalance.update({
+      where: { userId },
+      data: { credits: { decrement: amount } },
+    });
+
+    // Log transaction
+    await tx.creditLedger.create({
+      data: {
+        userId,
+        amount: -amount,
+        type: 'BURN',
+        reason,
+        balanceAfter: balance.credits - amount,
+      },
+    });
+
+    return balance.credits - amount;
+  });
+}
+
+// Add credits (purchase, grant, etc.)
+export async function addCredits(
+  userId: string,
+  amount: number,
+  type: 'PURCHASE' | 'GRANT' | 'REFUND',
+  reason: string
+) {
+  return prisma.$transaction(async (tx) => {
+    const balance = await tx.creditBalance.upsert({
+      where: { userId },
+      create: { userId, credits: amount },
+      update: { credits: { increment: amount } },
+    });
+
+    await tx.creditLedger.create({
+      data: {
+        userId,
+        amount,
+        type,
+        reason,
+        balanceAfter: balance.credits,
+      },
+    });
+
+    return balance.credits;
+  });
+}
+```
+
+## Step 3: Create the AI Chat API
+
+Create an API route for AI chat with credit tracking:
+
+### API Route
+
+```typescript
+// src/app/api/ai/chat/route.ts
+import { auth } from '@/lib/auth';
+import { openrouter } from '@/lib/ai/openrouter';
+import { getCreditBalance, useCredits } from '@/lib/payments/credits';
+import { creditConfig } from '@/lib/payments/credits';
+
+export async function POST(request: Request) {
+  // Authenticate user
+  const session = await auth();
+  if (!session?.user) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const { messages, model = 'gpt-3.5-turbo' } = await request.json();
+
+  // Check credit cost
+  const creditCost = creditConfig.costs[model] || 1;
+  const balance = await getCreditBalance(session.user.id);
+
+  if (balance < creditCost) {
+    return new Response(
+      JSON.stringify({
+        error: 'Insufficient credits',
+        required: creditCost,
+        balance,
+      }),
+      { status: 402, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  try {
+    // Call AI model
+    const response = await openrouter.chat({
+      model,
+      messages,
+      stream: true,
+    });
+
+    // Deduct credits
+    await useCredits(
+      session.user.id,
+      creditCost,
+      `AI chat: ${model}`
+    );
+
+    // Track usage
+    await prisma.aiUsage.create({
+      data: {
+        userId: session.user.id,
+        model,
+        promptTokens: response.usage?.prompt_tokens || 0,
+        completionTokens: response.usage?.completion_tokens || 0,
+        creditsUsed: creditCost,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    console.error('AI chat error:', error);
+    return new Response('AI service error', { status: 500 });
+  }
+}
+```
+
+### Streaming Support
+
+For streaming responses:
+
+```typescript
+// src/app/api/ai/chat/route.ts
+import { StreamingTextResponse } from 'ai';
+
+export async function POST(request: Request) {
+  // ... authentication and credit check ...
+
+  const stream = await openrouter.chat({
+    model,
+    messages,
+    stream: true,
+  });
+
+  // Deduct credits before streaming (estimated)
+  await useCredits(session.user.id, creditCost, `AI chat: ${model}`);
+
+  return new StreamingTextResponse(stream);
+}
+```
+
+## Step 4: Build the AI Playground UI
+
+Create a chat interface in the dashboard:
+
+### Chat Component
+
+```tsx
+// src/components/ai/ai-playground.tsx
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { useChat } from 'ai/react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
+import { Card } from '@/components/ui/card';
+
+const models = [
+  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', credits: 1 },
+  { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', credits: 10 },
+  { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', credits: 5 },
+  { id: 'claude-3-opus', name: 'Claude 3 Opus', credits: 15 },
+];
+
+export function AIPlayground() {
+  const [model, setModel] = useState('gpt-3.5-turbo');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    error,
+  } = useChat({
+    api: '/api/ai/chat',
+    body: { model },
+  });
+
+  // Auto-scroll to latest message
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const selectedModel = models.find((m) => m.id === model);
+
+  return (
+    <div className="flex flex-col h-[600px]">
+      {/* Model Selector */}
+      <div className="flex items-center gap-4 mb-4">
+        <Select value={model} onValueChange={setModel}>
+          {models.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.name} ({m.credits} credits)
+            </option>
+          ))}
+        </Select>
+        <span className="text-sm text-muted-foreground">
+          Cost: {selectedModel?.credits} credits per message
+        </span>
+      </div>
+
+      {/* Messages */}
+      <Card className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${
+              message.role === 'user' ? 'justify-end' : 'justify-start'
+            }`}
+          >
+            <div
+              className={`max-w-[80%] rounded-lg p-3 ${
+                message.role === 'user'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted'
+              }`}
+            >
+              <p className="whitespace-pre-wrap">{message.content}</p>
+            </div>
+          </div>
+        ))}
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="bg-muted rounded-lg p-3">
+              <span className="animate-pulse">Thinking...</span>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </Card>
+
+      {/* Error Display */}
+      {error && (
+        <div className="text-destructive text-sm mt-2">
+          {error.message || 'An error occurred'}
+        </div>
+      )}
+
+      {/* Input Form */}
+      <form onSubmit={handleSubmit} className="mt-4 flex gap-2">
+        <Textarea
+          value={input}
+          onChange={handleInputChange}
+          placeholder="Type your message..."
+          className="flex-1"
+          rows={2}
+        />
+        <Button type="submit" disabled={isLoading || !input.trim()}>
+          Send
+        </Button>
+      </form>
+    </div>
+  );
+}
+```
+
+### Dashboard Page
+
+```tsx
+// src/app/[locale]/(dashboard)/ai-playground/page.tsx
+import { getTranslations } from 'next-intl/server';
+import { auth } from '@/lib/auth';
+import { getCreditBalance } from '@/lib/payments/credits';
+import { AIPlayground } from '@/components/ai/ai-playground';
+import { CreditBalance } from '@/components/credits/credit-balance';
+
+export default async function AIPlaygroundPage() {
+  const t = await getTranslations('dashboard');
+  const session = await auth();
+  const balance = await getCreditBalance(session!.user.id);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">AI Playground</h1>
+        <CreditBalance balance={balance} />
+      </div>
+
+      <AIPlayground />
+    </div>
+  );
+}
+```
+
+## Step 5: Create Credit Purchase Flow
+
+### Credit Packages
+
+```typescript
+// src/lib/payments/credit-packages.ts
+export const creditPackages = [
+  {
+    id: 'starter',
+    credits: 500,
+    price: 5,
+    priceId: process.env.STRIPE_CREDITS_500_PRICE_ID,
+    popular: false,
+  },
+  {
+    id: 'popular',
+    credits: 2000,
+    price: 15,
+    priceId: process.env.STRIPE_CREDITS_2000_PRICE_ID,
+    popular: true,
+    savings: '25%',
+  },
+  {
+    id: 'power',
+    credits: 10000,
+    price: 50,
+    priceId: process.env.STRIPE_CREDITS_10000_PRICE_ID,
+    popular: false,
+    savings: '50%',
+  },
+];
+```
+
+### Purchase API
+
+```typescript
+// src/app/api/credits/purchase/route.ts
+import { auth } from '@/lib/auth';
+import { stripe } from '@/lib/payments/stripe';
+import { creditPackages } from '@/lib/payments/credit-packages';
+
+export async function POST(request: Request) {
+  const session = await auth();
+  if (!session?.user) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const { packageId } = await request.json();
+  const package_ = creditPackages.find((p) => p.id === packageId);
+
+  if (!package_) {
+    return new Response('Invalid package', { status: 400 });
+  }
+
+  const checkout = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    customer_email: session.user.email!,
+    line_items: [
+      {
+        price: package_.priceId,
+        quantity: 1,
+      },
+    ],
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/credits?success=true`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/credits`,
+    metadata: {
+      userId: session.user.id,
+      packageId: package_.id,
+      credits: package_.credits.toString(),
+    },
+  });
+
+  return Response.json({ url: checkout.url });
+}
+```
+
+### Webhook Handler
+
+Add to your existing webhook handler:
+
+```typescript
+// src/app/api/payments/webhook/route.ts
+case 'checkout.session.completed': {
+  const session = event.data.object;
+
+  // Check if it's a credit purchase
+  if (session.metadata?.credits) {
+    await addCredits(
+      session.metadata.userId,
+      parseInt(session.metadata.credits),
+      'PURCHASE',
+      `Credit package: ${session.metadata.packageId}`
+    );
+  }
+  break;
+}
+```
+
+## Step 6: Add Usage Analytics
+
+### Usage Dashboard Component
+
+```tsx
+// src/components/credits/usage-stats.tsx
+'use client';
+
+import { Card } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+interface UsageStatsProps {
+  balance: number;
+  monthlyLimit: number;
+  usedThisMonth: number;
+  recentUsage: {
+    model: string;
+    credits: number;
+    timestamp: Date;
+  }[];
+}
+
+export function UsageStats({
+  balance,
+  monthlyLimit,
+  usedThisMonth,
+  recentUsage,
+}: UsageStatsProps) {
+  const usagePercent = (usedThisMonth / monthlyLimit) * 100;
+
+  return (
+    <div className="grid gap-4 md:grid-cols-3">
+      <Card className="p-4">
+        <h3 className="text-sm font-medium text-muted-foreground">
+          Current Balance
+        </h3>
+        <p className="text-3xl font-bold">{balance.toLocaleString()}</p>
+        <p className="text-sm text-muted-foreground">credits</p>
+      </Card>
+
+      <Card className="p-4">
+        <h3 className="text-sm font-medium text-muted-foreground">
+          Monthly Usage
+        </h3>
+        <p className="text-3xl font-bold">
+          {usedThisMonth.toLocaleString()}
+        </p>
+        <Progress value={usagePercent} className="mt-2" />
+        <p className="text-sm text-muted-foreground mt-1">
+          of {monthlyLimit.toLocaleString()} limit
+        </p>
+      </Card>
+
+      <Card className="p-4">
+        <h3 className="text-sm font-medium text-muted-foreground">
+          Recent Activity
+        </h3>
+        <ul className="mt-2 space-y-1 text-sm">
+          {recentUsage.slice(0, 5).map((usage, i) => (
+            <li key={i} className="flex justify-between">
+              <span>{usage.model}</span>
+              <span className="text-muted-foreground">
+                -{usage.credits} credits
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Card>
+    </div>
+  );
+}
+```
+
+## Step 7: Rate Limiting for AI Requests
+
+Add rate limiting to protect your API:
+
+```typescript
+// src/lib/security/rate-limit.ts
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '1 m'), // 10 requests per minute
+  analytics: true,
+});
+
+// In your API route
+export async function POST(request: Request) {
+  const session = await auth();
+  const identifier = session?.user?.id || 'anonymous';
+
+  const { success, limit, remaining } = await ratelimit.limit(identifier);
+
+  if (!success) {
+    return new Response('Rate limit exceeded', {
+      status: 429,
+      headers: {
+        'X-RateLimit-Limit': limit.toString(),
+        'X-RateLimit-Remaining': remaining.toString(),
+      },
+    });
+  }
+
+  // ... rest of handler
+}
+```
+
+## Testing Your AI SaaS
+
+1. **Test Credit Deduction**
+   - Send messages and verify credits decrease
+   - Try with insufficient credits (should show error)
+
+2. **Test Different Models**
+   - Switch between GPT and Claude models
+   - Verify correct credit costs
+
+3. **Test Credit Purchase**
+   - Buy a credit package with test card
+   - Verify credits are added to balance
+
+4. **Test Rate Limiting**
+   - Send rapid requests
+   - Verify rate limit kicks in
+
+## Next Steps
+
+<Cards>
+  <Card title="Add Image Generation" href="/docs/ai/image-generation">
+    Extend your AI SaaS with DALL-E or Stable Diffusion.
+  </Card>
+  <Card title="Implement RAG" href="/docs/ai/rag">
+    Add retrieval-augmented generation for document Q&A.
+  </Card>
+  <Card title="Deploy to Production" href="/docs/tutorials/deploy-production">
+    Launch your AI SaaS with proper scaling.
+  </Card>
+</Cards>
+
+## Complete Code Reference
+
+Key files for this tutorial:
+
+- `src/lib/ai/openrouter.ts` - OpenRouter integration
+- `src/lib/payments/credits.ts` - Credit system
+- `src/app/api/ai/chat/route.ts` - Chat API
+- `src/components/ai/ai-playground.tsx` - Chat UI
+- `src/app/[locale]/(dashboard)/ai-playground/page.tsx` - Dashboard page

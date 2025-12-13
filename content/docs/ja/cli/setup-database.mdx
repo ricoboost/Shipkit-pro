@@ -1,0 +1,205 @@
+---
+title: データベースセットアップ
+description: PostgreSQL、MySQL、SQLite、クラウドプロバイダーをサポートしてデータベース接続を設定します。
+---
+
+# データベースセットアップ
+
+データベースセットアップコマンドは、データベース接続の設定とスキーマの初期化を支援します。
+
+## クイックスタート
+
+```bash
+npm run setup:db
+```
+
+## サポートされているデータベース
+
+### PostgreSQL
+
+標準のPostgreSQLデータベース、ローカルまたはクラウドホスト。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider postgresql
+```
+
+接続文字列のフォーマット：
+```
+postgresql://ユーザー:パスワード@ホスト:5432/データベース
+```
+
+### MySQL
+
+MySQLデータベース、ローカルまたはクラウドホスト。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider mysql
+```
+
+接続文字列のフォーマット：
+```
+mysql://ユーザー:パスワード@ホスト:3306/データベース
+```
+
+### SQLite
+
+ファイルベースのデータベース、ローカル開発に最適。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider sqlite
+```
+
+接続文字列のフォーマット：
+```
+file:./dev.db
+```
+
+<Callout type="warning">
+SQLiteは開発には優れていますが、本番環境には推奨されません。
+</Callout>
+
+### Supabase
+
+Supabaseの追加機能付きPostgreSQL。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider supabase
+```
+
+接続文字列のフォーマット：
+```
+postgresql://postgres:[パスワード]@db.[プロジェクト].supabase.co:5432/postgres
+```
+
+接続文字列はSupabaseダッシュボードの**設定 > データベース**から取得できます。
+
+### Neon
+
+ブランチングをサポートするサーバーレスPostgreSQL。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider neon
+```
+
+接続文字列のフォーマット：
+```
+postgresql://[ユーザー]:[パスワード]@[ホスト].neon.tech/[データベース]?sslmode=require
+```
+
+### PlanetScale
+
+ブランチングをサポートするサーバーレスMySQL。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider planetscale
+```
+
+接続文字列のフォーマット：
+```
+mysql://[ユーザー]:[パスワード]@[ホスト]/[データベース]?ssl={"rejectUnauthorized":true}
+```
+
+<Callout type="info">
+PlanetScaleはPrismaスキーマで`relationMode = "prisma"`が必要です。
+</Callout>
+
+## セットアップの動作
+
+1. **プロバイダーを選択** - データベースタイプを選択
+2. **接続を設定** - `.env`の`DATABASE_URL`を更新
+3. **Prismaスキーマを更新** - 必要に応じてプロバイダーを変更
+4. **接続をテスト** - データベースにアクセスできることを確認
+5. **マイグレーションを実行** - `prisma generate`と`prisma db push`を実行
+
+## コマンドオプション
+
+マイグレーションステップをスキップ：
+```bash
+npx tsx scripts/setup/setup-db.ts --skip-migrate
+```
+
+プロバイダーを直接選択：
+```bash
+npx tsx scripts/setup/setup-db.ts --provider postgresql
+```
+
+## 手動セットアップ
+
+手動設定を好む場合：
+
+### 1. `.env`を更新
+
+```bash
+DATABASE_URL="postgresql://ユーザー:パスワード@localhost:5432/shipkit"
+```
+
+### 2. Prismaクライアントを生成
+
+```bash
+npm run db:generate
+```
+
+### 3. スキーマをデータベースにプッシュ
+
+```bash
+npm run db:push
+```
+
+### 4. Prisma Studioで確認
+
+```bash
+npm run db:studio
+```
+
+## データベースコマンドリファレンス
+
+| コマンド | 説明 |
+|----------|------|
+| `npm run db:generate` | Prismaクライアントを生成 |
+| `npm run db:push` | スキーマをデータベースにプッシュ（マイグレーションなし） |
+| `npm run db:migrate` | 開発環境でマイグレーションを実行 |
+| `npm run db:studio` | Prisma Studioを開く |
+
+## トラブルシューティング
+
+### 接続拒否
+
+データベースが実行中であることを確認してください：
+
+```bash
+# PostgreSQL
+pg_isready -h localhost -p 5432
+
+# MySQL
+mysqladmin ping -h localhost
+```
+
+### 権限拒否
+
+データベースユーザーに必要な権限があることを確認してください：
+
+```sql
+-- PostgreSQL
+GRANT ALL PRIVILEGES ON DATABASE shipkit TO あなたのユーザー;
+
+-- MySQL
+GRANT ALL PRIVILEGES ON shipkit.* TO 'あなたのユーザー'@'localhost';
+```
+
+### SSL必須
+
+クラウドデータベースの場合、SSLが有効であることを確認してください：
+
+```bash
+# 接続文字列に追加
+?sslmode=require
+```
+
+### スキーマの同期ずれ
+
+スキーマがデータベースと同期していない場合：
+
+```bash
+# リセットしてプッシュ（警告：データが破壊されます）
+npx prisma db push --force-reset
+```

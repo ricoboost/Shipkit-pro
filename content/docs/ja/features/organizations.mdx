@@ -1,0 +1,98 @@
+---
+title: 組織
+description: ShipKitのマルチテナントチーム管理。
+---
+
+# 組織
+
+ShipKitには完全な組織/チーム管理システムが含まれています。
+
+## 機能
+
+- 組織の作成と管理
+- チームメンバーの招待
+- ロールベースのアクセス制御
+- 組織レベルの請求
+
+## データモデル
+
+```prisma
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  members   OrganizationMember[]
+  invitations OrganizationInvitation[]
+  createdAt DateTime @default(now())
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  organizationId String
+  userId         String
+  role           MemberRole   @default(MEMBER)
+  organization   Organization @relation(...)
+  user           User         @relation(...)
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+```
+
+## APIルート
+
+### 組織の作成
+
+```typescript
+POST /api/organizations
+{ "name": "My Team", "slug": "my-team" }
+```
+
+### メンバーの一覧表示
+
+```typescript
+GET /api/organizations/:id/members
+```
+
+### メンバーの招待
+
+```typescript
+POST /api/organizations/:id/invitations
+{ "email": "user@example.com", "role": "MEMBER" }
+```
+
+### 招待の承認
+
+```typescript
+POST /api/invitations/:token
+```
+
+## 使用方法
+
+```typescript
+import { organizations } from '@/lib/organizations';
+
+// Create organization
+const org = await organizations.create({
+  name: 'My Team',
+  slug: 'my-team',
+  ownerId: user.id,
+});
+
+// Add member
+await organizations.addMember(org.id, userId, 'MEMBER');
+
+// Check permission
+const canEdit = await organizations.hasPermission(org.id, userId, 'edit');
+```
+
+## Reactコンポーネント
+
+```tsx
+import { OrganizationSwitcher } from '@/components/organizations';
+
+<OrganizationSwitcher />
+```

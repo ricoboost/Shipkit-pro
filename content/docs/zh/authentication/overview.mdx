@@ -1,0 +1,151 @@
+---
+title: 身份验证概述
+description: ShipKit通过统一接口支持多个身份验证提供程序。
+---
+
+# 身份验证
+
+ShipKit提供了一个统一的身份验证层，支持多个提供程序。只需一个环境变量即可在它们之间切换。
+
+## 支持的提供程序
+
+<Cards>
+  <Card title="NextAuth.js" href="/docs/authentication/nextauth">
+    灵活的自托管身份验证，支持OAuth、凭据和魔法链接。
+  </Card>
+  <Card title="Supabase Auth" href="/docs/authentication/supabase">
+    与Supabase数据库集成，支持OAuth、电子邮件和手机验证。
+  </Card>
+  <Card title="Better Auth" href="/docs/authentication/better-auth">
+    具有出色TypeScript支持的现代身份验证库。
+  </Card>
+</Cards>
+
+## 切换提供程序
+
+更改 `AUTH_PROVIDER` 环境变量：
+
+```bash
+# .env
+AUTH_PROVIDER="nextauth"  # 或 "supabase" 或 "betterauth"
+```
+
+就这样！统一接口处理其余部分。
+
+## 统一接口
+
+所有提供程序都实现相同的接口：
+
+```typescript
+// src/lib/auth/types.ts
+export interface AuthProvider {
+  signIn(credentials: SignInCredentials): Promise<AuthResult>;
+  signUp(credentials: SignUpCredentials): Promise<AuthResult>;
+  signOut(): Promise<void>;
+  getSession(): Promise<Session | null>;
+  getUser(): Promise<User | null>;
+}
+```
+
+## 在组件中使用
+
+```tsx
+'use client';
+
+import { useAuth } from '@/hooks/use-auth';
+
+export function ProfileButton() {
+  const { user, signOut, isLoading } = useAuth();
+
+  if (isLoading) return <Skeleton />;
+  if (!user) return <LoginButton />;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Avatar src={user.image} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => signOut()}>
+          退出登录
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+```
+
+## 在服务器组件中使用
+
+```tsx
+import { auth } from '@/lib/auth';
+
+export default async function DashboardPage() {
+  const session = await auth.getSession();
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  return <Dashboard user={session.user} />;
+}
+```
+
+## API路由
+
+```typescript
+// src/app/api/protected/route.ts
+import { auth } from '@/lib/auth';
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  const session = await auth.getSession();
+
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  return NextResponse.json({ data: 'Protected data' });
+}
+```
+
+## 中间件保护
+
+```typescript
+// src/middleware.ts
+import { auth } from '@/lib/auth';
+
+export async function middleware(request: NextRequest) {
+  const session = await auth.getSession();
+
+  if (!session && request.nextUrl.pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+}
+```
+
+## OAuth提供程序
+
+在您的 `.env` 中配置OAuth提供程序：
+
+```bash
+# Google
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+
+# GitHub
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+
+# Discord
+DISCORD_CLIENT_ID=""
+DISCORD_CLIENT_SECRET=""
+```
+
+## 下一步
+
+选择您首选的身份验证提供程序：
+
+- [NextAuth.js设置](/docs/authentication/nextauth)
+- [Supabase Auth设置](/docs/authentication/supabase)
+- [Better Auth设置](/docs/authentication/better-auth)

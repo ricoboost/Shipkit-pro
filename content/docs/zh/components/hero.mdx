@@ -1,0 +1,268 @@
+---
+title: Hero 组件
+description: 5 种不同变体的落地页头部区域,适用于各种使用场景
+---
+
+# Hero 组件
+
+Hero 区域是访问者在您的落地页上看到的第一件事。ShipKit 包含 5 种 hero 变体,每种都针对不同的用例进行了优化。
+
+## 可用变体
+
+| 变体 | 最适合 | 关键特性 |
+|---------|----------|-------------|
+| `HeroCentered` | 通用目的 | 干净的居中布局 |
+| `HeroSplit` | 产品展示 | 与图片并排 |
+| `HeroVideo` | 演示和教程 | 背景视频支持 |
+| `HeroGradient` | 视觉冲击力 | 动画渐变背景 |
+| `HeroMinimal` | 简单消息传递 | 无干扰设计 |
+
+## 通用属性
+
+所有 hero 组件通过 `HeroProps` 接口共享这些属性:
+
+```typescript
+interface HeroProps {
+  title: string;                    // 主标题
+  subtitle?: string;                // 标题上方的可选副标题
+  description?: string;             // 标题下方的支持文本
+  primaryCTA?: CTAButton;           // 主要操作按钮
+  secondaryCTA?: CTAButton;         // 次要操作按钮
+  badge?: string;                   // 内容上方的可选徽章/标签
+  animated?: boolean;               // 启用/禁用动画(默认: true)
+  colorScheme?: ColorScheme;        // 色彩主题
+  className?: string;               // 附加 CSS 类
+}
+
+interface CTAButton {
+  label: string;
+  href: string;
+  variant?: 'default' | 'outline' | 'ghost';
+}
+```
+
+---
+
+## HeroCentered
+
+最通用的 hero 变体,内容居中对齐。
+
+### 使用方法
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+
+export function LandingHero() {
+  return (
+    <HeroCentered
+      title="几天而非几个月发布您的 SaaS"
+      subtitle="现代样板"
+      description="启动生产就绪的 SaaS 应用程序所需的一切,包括身份验证、支付和 AI 集成。"
+      badge="新版本: v3.0 已发布"
+      primaryCTA={{
+        label: '开始构建',
+        href: '/register',
+      }}
+      secondaryCTA={{
+        label: '查看演示',
+        href: '/demo',
+      }}
+      colorScheme="primary"
+    />
+  );
+}
+```
+
+### 属性
+
+扩展 `HeroProps`,包含特定于变体的样式选项。
+
+---
+
+## HeroSplit
+
+并排布局,内容和图片分别位于两侧。
+
+### 使用方法
+
+```tsx
+import { HeroSplit } from '@/components/marketing/hero/hero-split';
+
+export function ProductHero() {
+  return (
+    <HeroSplit
+      title="包含精美的仪表板"
+      description="功能齐全的管理仪表板,包含分析、用户管理等功能。"
+      primaryCTA={{ label: '开始使用', href: '/register' }}
+      image={{
+        src: '/images/dashboard-preview.png',
+        alt: '仪表板预览',
+        width: 800,
+        height: 600,
+      }}
+      imagePosition="right"
+    />
+  );
+}
+```
+
+### 附加属性
+
+```typescript
+interface HeroSplitProps extends HeroProps {
+  image?: {
+    src: string;
+    alt: string;
+    width?: number;
+    height?: number;
+  };
+  imagePosition?: 'left' | 'right';  // 默认: 'right'
+}
+```
+
+---
+
+## HeroVideo
+
+具有背景视频的 hero 区域,以获得最大的视觉冲击力。
+
+### 使用方法
+
+```tsx
+import { HeroVideo } from '@/components/marketing/hero/hero-video';
+
+export function VideoHero() {
+  return (
+    <HeroVideo
+      title="查看实际操作"
+      description="观看使用 ShipKit 构建有多么简单"
+      primaryCTA={{ label: '免费试用', href: '/register' }}
+      video={{
+        src: '/videos/demo.mp4',
+        poster: '/images/video-poster.jpg',
+      }}
+      overlay={true}
+      overlayOpacity={0.6}
+    />
+  );
+}
+```
+
+### 附加属性
+
+```typescript
+interface HeroVideoProps extends HeroProps {
+  video?: {
+    src: string;
+    poster?: string;
+  };
+  overlay?: boolean;           // 视频上方的深色叠加层
+  overlayOpacity?: number;     // 叠加层不透明度 (0-1)
+  autoPlay?: boolean;          // 自动播放视频(默认: true)
+  loop?: boolean;              // 循环播放视频(默认: true)
+  muted?: boolean;             // 静音视频(默认: true)
+}
+```
+
+---
+
+## HeroGradient
+
+动画渐变背景,打造现代、动态的外观。
+
+### 使用方法
+
+```tsx
+import { HeroGradient } from '@/components/marketing/hero/hero-gradient';
+
+export function GradientHero() {
+  return (
+    <HeroGradient
+      title="SaaS 开发的未来"
+      description="原生 AI,完全可自定义,随时可发布"
+      primaryCTA={{ label: '开始使用', href: '/register' }}
+      gradientColors={['#8B5CF6', '#EC4899', '#3B82F6']}
+      animationDuration={8}
+    />
+  );
+}
+```
+
+### 附加属性
+
+```typescript
+interface HeroGradientProps extends HeroProps {
+  gradientColors?: string[];      // 渐变颜色数组
+  gradientDirection?: string;     // CSS 渐变方向
+  animationDuration?: number;     // 动画循环持续时间(秒)
+}
+```
+
+---
+
+## HeroMinimal
+
+干净、无干扰的 hero,专注于消息传递。
+
+### 使用方法
+
+```tsx
+import { HeroMinimal } from '@/components/marketing/hero/hero-minimal';
+
+export function MinimalHero() {
+  return (
+    <HeroMinimal
+      title="简单。快速。强大。"
+      description="仅包含必需品,不多不少。"
+      primaryCTA={{ label: '了解更多', href: '/features' }}
+    />
+  );
+}
+```
+
+---
+
+## 色彩方案
+
+所有 hero 变体都支持 5 种色彩方案:
+
+```tsx
+// Primary(默认) - 使用您的主要品牌颜色
+<HeroCentered colorScheme="primary" {...props} />
+
+// Secondary - 柔和的次要背景
+<HeroCentered colorScheme="secondary" {...props} />
+
+// Accent - 引人注目的强调色
+<HeroCentered colorScheme="accent" {...props} />
+
+// Muted - 柔和的中性色调
+<HeroCentered colorScheme="muted" {...props} />
+
+// Destructive - 警告/提醒样式(极少使用)
+<HeroCentered colorScheme="destructive" {...props} />
+```
+
+## 禁用动画
+
+所有组件默认启用动画。禁用它们以获得更好的可访问性或性能:
+
+```tsx
+<HeroCentered animated={false} {...props} />
+```
+
+## 响应式行为
+
+所有 hero 组件都是完全响应式的:
+
+- **移动端**: 单列堆叠布局
+- **平板**: 调整内边距和字体大小
+- **桌面端**: 完整布局,间距最佳
+
+```tsx
+// 通过 className 进行自定义响应式调整
+<HeroCentered
+  className="min-h-[50vh] md:min-h-[70vh] lg:min-h-[80vh]"
+  {...props}
+/>
+```

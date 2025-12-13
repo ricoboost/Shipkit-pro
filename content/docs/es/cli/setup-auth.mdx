@@ -1,0 +1,169 @@
+---
+title: Configuración de Autenticación
+description: Configura la autenticación con NextAuth.js, Supabase Auth o Better Auth.
+---
+
+# Configuración de Autenticación
+
+El comando de configuración de autenticación te ayuda a configurar tu proveedor de autenticación y credenciales OAuth.
+
+## Inicio Rápido
+
+```bash
+npm run setup:auth
+```
+
+## Proveedores Soportados
+
+### NextAuth.js
+
+Autenticación completa con múltiples proveedores, sesiones y soporte JWT.
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider next-auth
+```
+
+**Variables de entorno requeridas:**
+- `AUTH_SECRET` - Clave de cifrado de sesión (auto-generada)
+- `AUTH_GOOGLE_ID` - ID de cliente OAuth de Google
+- `AUTH_GOOGLE_SECRET` - Secreto de cliente OAuth de Google
+- `AUTH_GITHUB_ID` - ID de cliente OAuth de GitHub
+- `AUTH_GITHUB_SECRET` - Secreto de cliente OAuth de GitHub
+
+### Supabase Auth
+
+Autenticación impulsada por Supabase con Row Level Security.
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider supabase
+```
+
+**Variables de entorno requeridas:**
+- `NEXT_PUBLIC_SUPABASE_URL` - URL del proyecto Supabase
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Clave anónima de Supabase
+- `SUPABASE_SERVICE_ROLE_KEY` - Clave de rol de servicio de Supabase
+
+### Better Auth
+
+Biblioteca de autenticación moderna y type-safe.
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider better-auth
+```
+
+**Variables de entorno requeridas:**
+- `AUTH_SECRET` - Clave de cifrado de sesión
+- Credenciales OAuth para tus proveedores elegidos
+
+## Configuración de Proveedores OAuth
+
+### Google OAuth
+
+1. Ve a [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. Crea un nuevo proyecto o selecciona uno existente
+3. Navega a **Credenciales > Crear credenciales > ID de cliente OAuth 2.0**
+4. Selecciona **Aplicación web**
+5. Agrega URI de redirección autorizado:
+   ```
+   http://localhost:3000/api/auth/callback/google
+   ```
+6. Copia **ID de cliente** y **Secreto de cliente** a tu `.env`
+
+### GitHub OAuth
+
+1. Ve a [Configuración de Desarrollador de GitHub](https://github.com/settings/applications/new)
+2. Completa los detalles de la aplicación:
+   - **Nombre de la aplicación**: El nombre de tu app
+   - **URL de la página principal**: `http://localhost:3000`
+   - **URL de callback de autorización**: `http://localhost:3000/api/auth/callback/github`
+3. Copia **ID de cliente** y genera **Secreto de cliente**
+4. Agrégalos a tu `.env`
+
+### Discord OAuth
+
+1. Ve al [Portal de Desarrolladores de Discord](https://discord.com/developers/applications)
+2. Crea una nueva aplicación
+3. Navega a **OAuth2 > General**
+4. Agrega URL de redirección:
+   ```
+   http://localhost:3000/api/auth/callback/discord
+   ```
+5. Copia **ID de cliente** y **Secreto de cliente**
+
+## Qué Hace la Configuración
+
+1. **Solicita el proveedor** - Selecciona NextAuth, Supabase o Better Auth
+2. **Actualiza `.env`** - Establece la variable `AUTH_PROVIDER`
+3. **Verifica credenciales** - Identifica variables de entorno faltantes
+4. **Guía la configuración** - Proporciona instrucciones de configuración
+5. **Valida el formato** - Verifica los formatos de clave API donde sea posible
+
+## Cambiar de Proveedor
+
+Para cambiar entre proveedores de autenticación:
+
+1. Ejecuta el comando de configuración:
+   ```bash
+   npm run setup:auth
+   ```
+
+2. Selecciona tu nuevo proveedor
+
+3. La variable de entorno `AUTH_PROVIDER` controla qué proveedor está activo:
+   ```bash
+   AUTH_PROVIDER="next-auth"  # o "supabase" o "better-auth"
+   ```
+
+4. Reinicia tu servidor de desarrollo
+
+## Consideraciones de Producción
+
+### Actualizar URLs de Callback
+
+Antes de desplegar, actualiza todas las URLs de callback OAuth a tu dominio de producción:
+
+```
+https://tudominio.com/api/auth/callback/google
+https://tudominio.com/api/auth/callback/github
+```
+
+### Generar Nuevos Secretos
+
+Genera un nuevo `AUTH_SECRET` para producción:
+
+```bash
+openssl rand -base64 32
+```
+
+### Asegurar Variables de Entorno
+
+Nunca hagas commit de secretos a git. Usa la gestión de variables de entorno de tu proveedor de hosting:
+
+- Vercel: Configuración del Proyecto > Variables de Entorno
+- Railway: Pestaña de Variables
+- Fly.io: `fly secrets set`
+
+## Solución de Problemas
+
+### "URI de redirección inválida"
+
+Asegúrate de que tu URL de callback coincida exactamente con lo configurado en el proveedor OAuth.
+
+### "Sesión no persiste"
+
+Verifica que `AUTH_SECRET` esté configurado y sea consistente en todos los despliegues.
+
+### "Errores CORS"
+
+Asegúrate de que `NEXT_PUBLIC_APP_URL` esté configurado correctamente:
+
+```bash
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+### "Autenticación de Supabase no funciona"
+
+Verifica que las tres variables de Supabase estén configuradas:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`

@@ -1,0 +1,226 @@
+---
+title: コードジェネレーター
+description: ベストプラクティスを組み込んだページ、APIルート、コンポーネントを生成します。
+---
+
+# コードジェネレーター
+
+ShipKitには、プロジェクトの規約に従ってコードを作成するジェネレーターが含まれています。各ジェネレーターは、TypeScript、適切なインポート、i18nサポートを備えたファイルを作成します。
+
+## ページジェネレーター
+
+自動i18n翻訳ファイル付きの新しいページを作成：
+
+```bash
+npm run generate:page
+```
+
+### インタラクティブモード
+
+ジェネレーターが確認する内容：
+
+1. **ページ名** - 例：`analytics`、`team-settings`
+2. **ルートグループ** - `(dashboard)`、`(admin)`、`(marketing)`、またはなし
+3. **ページタイプ** - クライアントコンポーネントまたはサーバーコンポーネント
+
+### コマンドラインモード
+
+```bash
+npx tsx scripts/generators/generate-page.ts \
+  --name analytics \
+  --group dashboard \
+  --type server
+```
+
+### 作成されるもの
+
+dashboardグループの`analytics`という名前のページの場合：
+
+```
+src/app/[locale]/(dashboard)/analytics/
+├── page.tsx              # ページコンポーネント
+└── loading.tsx           # ローディング状態
+
+src/i18n/messages/
+├── en.json               # 英語翻訳（更新）
+├── es.json               # スペイン語翻訳（更新）
+├── fr.json               # フランス語翻訳（更新）
+├── de.json               # ドイツ語翻訳（更新）
+├── pt.json               # ポルトガル語翻訳（更新）
+├── ja.json               # 日本語翻訳（更新）
+└── zh.json               # 中国語翻訳（更新）
+```
+
+### 生成されるページの例
+
+```tsx
+import { getTranslations } from 'next-intl/server';
+
+export default async function AnalyticsPage() {
+  const t = await getTranslations('analytics');
+
+  return (
+    <div className="container py-6">
+      <h1 className="text-3xl font-bold">{t('title')}</h1>
+      <p className="text-muted-foreground">{t('description')}</p>
+    </div>
+  );
+}
+```
+
+## APIジェネレーター
+
+バリデーションとエラーハンドリング付きのAPIルートを作成：
+
+```bash
+npm run generate:api
+```
+
+### インタラクティブモード
+
+ジェネレーターが確認する内容：
+
+1. **ルート名** - 例：`analytics`、`team/members`
+2. **HTTPメソッド** - GET、POST、PUT、DELETE、PATCH
+
+### コマンドラインモード
+
+```bash
+npx tsx scripts/generators/generate-api.ts \
+  --name analytics \
+  --methods GET,POST
+```
+
+### 作成されるもの
+
+`analytics`という名前のAPIルートの場合：
+
+```
+src/app/api/analytics/
+└── route.ts              # APIルートハンドラー
+```
+
+### 生成されるAPIの例
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+const analyticsSchema = z.object({
+  // ここでスキーマを定義
+});
+
+export async function GET(request: NextRequest) {
+  try {
+    // GETロジックをここに
+    return NextResponse.json({ data: [] });
+  } catch (error) {
+    console.error('[API] GET /api/analytics error:', error);
+    return NextResponse.json(
+      { error: '内部サーバーエラー' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const validated = analyticsSchema.parse(body);
+
+    // POSTロジックをここに
+    return NextResponse.json({ success: true }, { status: 201 });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'バリデーション失敗', details: error.errors },
+        { status: 400 }
+      );
+    }
+    console.error('[API] POST /api/analytics error:', error);
+    return NextResponse.json(
+      { error: '内部サーバーエラー' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## コンポーネントジェネレーター
+
+TypeScript props付きの再利用可能なコンポーネントを作成：
+
+```bash
+npm run generate:component
+```
+
+### インタラクティブモード
+
+ジェネレーターが確認する内容：
+
+1. **コンポーネント名** - 例：`DataCard`、`UserAvatar`
+2. **コンポーネントタイプ** - クライアントまたはサーバー
+3. **ディレクトリ** - `ui`、`layout`、`features`、またはカスタム
+
+### コマンドラインモード
+
+```bash
+npx tsx scripts/generators/generate-component.ts \
+  --name DataCard \
+  --type client \
+  --dir features
+```
+
+### 作成されるもの
+
+`DataCard`という名前のコンポーネントの場合：
+
+```
+src/components/features/
+└── data-card.tsx         # コンポーネントファイル
+```
+
+### 生成されるコンポーネントの例
+
+```tsx
+'use client';
+
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+
+interface DataCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  // ここにpropsを追加
+}
+
+export function DataCard({ className, ...props }: DataCardProps) {
+  return (
+    <div
+      className={cn(
+        'rounded-lg border bg-card p-4 text-card-foreground shadow-sm',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+```
+
+## Claude Code統合
+
+Claude Codeを使用している場合、代わりにスラッシュコマンドを使用できます：
+
+```
+/scaffold-page analytics --group dashboard
+/scaffold-api analytics --methods GET,POST
+/scaffold-component DataCard --type client
+```
+
+これらのコマンドはインタラクティブなガイダンスを提供し、ファイルを直接生成できます。
+
+## ベストプラクティス
+
+1. **意味のある名前を使用** - 名前は機能や目的を説明するべき
+2. **規約に従う** - ファイルにはkebab-case、コンポーネントにはPascalCaseを使用
+3. **翻訳をすぐに追加** - ページジェネレーターはこれを自動的に処理
+4. **ローディング状態を含める** - 生成されるページには`loading.tsx`が含まれる
+5. **バリデーションを追加** - APIルートにはデフォルトでZodバリデーションが含まれる

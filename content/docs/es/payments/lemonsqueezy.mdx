@@ -1,0 +1,66 @@
+---
+title: LemonSqueezy
+description: Configurar LemonSqueezy como su Comerciante Registrado.
+---
+
+# Configuración de LemonSqueezy
+
+LemonSqueezy actúa como Comerciante Registrado, gestionando impuestos y cumplimiento normativo por ti.
+
+## Configuración
+
+```bash
+PAYMENT_PROVIDER="lemonsqueezy"
+LEMONSQUEEZY_API_KEY="your-api-key"
+LEMONSQUEEZY_STORE_ID="your-store-id"
+LEMONSQUEEZY_WEBHOOK_SECRET="your-webhook-secret"
+```
+
+## Obtener Credenciales
+
+1. Crear cuenta en [lemonsqueezy.com](https://lemonsqueezy.com)
+2. Ir a Settings > API
+3. Crear clave API
+4. Obtener ID de tienda desde Settings > Stores
+5. Configurar webhook en Settings > Webhooks
+
+## Crear Productos
+
+1. Ir a Products
+2. Crear producto para cada plan
+3. Configurar variantes para mensual/anual
+4. Copiar IDs de variante a `src/config/plans.ts`
+
+## Implementación
+
+```typescript
+// src/lib/payments/lemonsqueezy.ts
+import { lemonSqueezySetup, createCheckout } from '@lemonsqueezy/lemonsqueezy.js';
+
+lemonSqueezySetup({ apiKey: process.env.LEMONSQUEEZY_API_KEY! });
+
+export const lemonProvider: PaymentProvider = {
+  async createCheckout({ priceId, userId, successUrl }) {
+    const checkout = await createCheckout(
+      process.env.LEMONSQUEEZY_STORE_ID!,
+      priceId,
+      {
+        checkoutData: {
+          custom: { user_id: userId },
+        },
+        productOptions: {
+          redirectUrl: successUrl,
+        },
+      }
+    );
+    return { url: checkout.data.attributes.url };
+  },
+};
+```
+
+## Beneficios
+
+- Gestiona impuestos de ventas globalmente
+- Cumplimiento de IVA de la UE incluido
+- No se necesita Stripe Atlas
+- Sistema de afiliados integrado

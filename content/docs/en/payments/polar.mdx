@@ -1,0 +1,50 @@
+---
+title: Polar
+description: Configure Polar for open source focused payments.
+---
+
+# Polar Setup
+
+Polar is designed for open source projects and developer tools.
+
+## Configuration
+
+```bash
+PAYMENT_PROVIDER="polar"
+POLAR_ACCESS_TOKEN="your-access-token"
+POLAR_ORGANIZATION_ID="your-org-id"
+```
+
+## Getting Credentials
+
+1. Create account at [polar.sh](https://polar.sh)
+2. Go to Settings > Developers
+3. Create access token
+4. Get organization ID from your dashboard
+
+## Features
+
+- GitHub integration
+- Sponsorship tiers
+- Benefits management
+- Discord integration
+
+## Implementation
+
+```typescript
+// src/lib/payments/polar.ts
+import { Polar } from '@polar-sh/sdk';
+
+const polar = new Polar({ accessToken: process.env.POLAR_ACCESS_TOKEN! });
+
+export const polarProvider: PaymentProvider = {
+  async createCheckout({ priceId, userId, successUrl }) {
+    const checkout = await polar.checkouts.create({
+      productPriceId: priceId,
+      successUrl,
+      metadata: { userId },
+    });
+    return { url: checkout.url };
+  },
+};
+```

@@ -1,0 +1,74 @@
+---
+title: 管理ダッシュボード
+description: SaaS管理用の組み込み管理パネル。
+---
+
+# 管理ダッシュボード
+
+ShipKitには`/admin`に包括的な管理ダッシュボードが含まれています。
+
+## 機能
+
+- ユーザー管理
+- サブスクリプション分析
+- 収益追跡
+- システム設定
+
+## アクセス制御
+
+`role: ADMIN`を持つユーザーのみが管理ダッシュボードにアクセスできます。
+
+## ページ
+
+### 概要 (`/admin`)
+
+- 総ユーザー数
+- アクティブなサブスクリプション
+- 月間収益
+- 最近のサインアップ
+
+### ユーザー (`/admin/users`)
+
+- 全ユーザーの一覧表示
+- 検索とフィルター
+- ユーザー詳細の編集
+- ロールの管理
+
+### 分析 (`/admin/analytics`)
+
+- ユーザー成長グラフ
+- 収益トレンド
+- コンバージョン率
+- 解約分析
+
+### サブスクリプション (`/admin/subscriptions`)
+
+- アクティブなサブスクリプション
+- プラン分布
+- MRR追跡
+- キャンセル
+
+## 使用方法
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// Get dashboard stats
+const stats = await admin.getStats();
+
+// List users with pagination
+const users = await admin.getUsers({ page: 1, limit: 20 });
+
+// Update user
+await admin.updateUser(userId, { role: 'ADMIN' });
+```
+
+## コンポーネント
+
+```tsx
+import { AdminStats } from '@/components/admin/stats';
+import { UsersTable } from '@/components/admin/users-table';
+
+<AdminStats />
+<UsersTable users={users} />
+```

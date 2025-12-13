@@ -1,0 +1,93 @@
+---
+title: Installation
+description: Bringen Sie ShipKit in wenigen Minuten zum Laufen mit dieser Schritt-für-Schritt-Installationsanleitung.
+---
+
+# Installation
+
+Diese Anleitung hilft Ihnen, ShipKit auf Ihrem lokalen Rechner einzurichten.
+
+## Voraussetzungen
+
+Bevor Sie beginnen, stellen Sie sicher, dass Sie Folgendes installiert haben:
+
+- **Node.js 20+** - [Node.js herunterladen](https://nodejs.org/)
+- **npm** oder **pnpm** - Paketmanager
+- **Git** - Versionskontrolle
+
+## Schnellstart
+
+### 1. Repository klonen
+
+```bash
+git clone https://github.com/your-org/shipkit.git my-saas-app
+cd my-saas-app
+```
+
+### 2. Abhängigkeiten installieren
+
+```bash
+npm install
+```
+
+### 3. Umgebungsvariablen einrichten
+
+Kopieren Sie die Beispiel-Umgebungsdatei:
+
+```bash
+cp .env.example .env
+```
+
+Bearbeiten Sie dann `.env` mit Ihrer Konfiguration. Siehe [Konfiguration](/docs/getting-started/configuration) für Details.
+
+### 4. Datenbank einrichten
+
+Initialisieren Sie Prisma und erstellen Sie Ihre Datenbank:
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### 5. Entwicklungsserver starten
+
+```bash
+npm run dev
+```
+
+Ihre App läuft jetzt unter [http://localhost:3000](http://localhost:3000)!
+
+## Was kommt als Nächstes?
+
+<Cards>
+  <Card title="Konfiguration" href="/docs/getting-started/configuration">
+    Konfigurieren Sie Ihre Provider und Umgebungsvariablen.
+  </Card>
+  <Card title="Projektstruktur" href="/docs/getting-started/project-structure">
+    Erfahren Sie mehr über die Organisation der Codebasis.
+  </Card>
+</Cards>
+
+## Fehlerbehebung
+
+### npm install schlägt fehl
+
+Stellen Sie sicher, dass Sie Node.js 20 oder höher verwenden:
+
+```bash
+node --version
+```
+
+Wenn Sie aktualisieren müssen, verwenden Sie [nvm](https://github.com/nvm-sh/nvm) oder laden Sie von nodejs.org herunter.
+
+### Datenbankverbindungsfehler
+
+Stellen Sie sicher, dass Ihre `DATABASE_URL` in `.env` korrekt ist und der Datenbankserver läuft.
+
+### Port 3000 bereits in Verwendung
+
+Stoppen Sie entweder den anderen Prozess oder verwenden Sie einen anderen Port:
+
+```bash
+npm run dev -- -p 3001
+```

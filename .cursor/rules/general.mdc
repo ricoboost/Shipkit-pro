@@ -1,0 +1,49 @@
+---
+description: General coding rules for ShipKit
+globs: ["**/*.ts", "**/*.tsx"]
+---
+
+# ShipKit Coding Standards
+
+## TypeScript
+- Use strict mode always
+- Prefer `interface` over `type` for object shapes
+- Use explicit return types on functions
+- Never use `any` - use `unknown` and narrow with type guards
+
+## React Components
+- Use function components only
+- Prefer server components by default
+- Add 'use client' only when absolutely necessary
+- Use named exports, not default exports
+- Props interface should be named `{ComponentName}Props`
+
+## File Structure
+- Components: `PascalCase.tsx`
+- Hooks: `use-kebab-case.ts`
+- Utilities: `kebab-case.ts`
+- One component per file
+
+## Imports
+Order:
+1. React/Next.js
+2. Third-party packages
+3. Internal `@/` imports
+4. Relative imports
+5. Type imports (last)
+
+## Error Handling
+- Always wrap async operations in try/catch
+- Use Zod for runtime validation
+- Return proper error responses from API routes
+
+## Styling
+- Use Tailwind CSS classes only
+- No inline styles
+- Use `cn()` for conditional classes
+- Follow mobile-first approach
+
+## Comments
+- Don't add obvious comments
+- JSDoc for public APIs
+- TODO comments must include ticket/issue reference

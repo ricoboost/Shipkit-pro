@@ -1,0 +1,555 @@
+---
+title: Storage Integration
+description: File uploads with AWS S3, Cloudflare R2, and presigned URLs.
+---
+
+# Storage Integration
+
+Handle file uploads and storage with AWS S3, Cloudflare R2, or other S3-compatible services.
+
+---
+
+## Storage Options
+
+| Provider | Cost | Best For |
+|----------|------|----------|
+| [AWS S3](#aws-s3) | Pay per use | Full AWS ecosystem |
+| [Cloudflare R2](#cloudflare-r2) | Free egress | Cost-effective |
+| [Vercel Blob](#vercel-blob) | Simple pricing | Vercel deployments |
+
+---
+
+## AWS S3
+
+### Setup
+
+1. Create an S3 bucket in AWS Console
+2. Create IAM credentials with S3 access
+3. Configure bucket policy and CORS
+
+---
+
+### Environment Variables
+
+```bash
+AWS_ACCESS_KEY_ID=AKIA...
+AWS_SECRET_ACCESS_KEY=xxx
+AWS_REGION=us-east-1
+AWS_BUCKET_NAME=your-bucket
+```
+
+---
+
+### Install SDK
+
+```bash
+npm install @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
+```
+
+---
+
+### S3 Client
+
+```typescript
+// src/lib/s3.ts
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
+export const s3Client = new S3Client({
+  region: process.env.AWS_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
+
+const BUCKET = process.env.AWS_BUCKET_NAME!;
+
+// Generate presigned upload URL
+export async function getUploadUrl(key: string, contentType: string): Promise<string> {
+  const command = new PutObjectCommand({
+    Bucket: BUCKET,
+    Key: key,
+    ContentType: contentType,
+  });
+
+  return getSignedUrl(s3Client, command, { expiresIn: 3600 }); // 1 hour
+}
+
+// Generate presigned download URL
+export async function getDownloadUrl(key: string): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: BUCKET,
+    Key: key,
+  });
+
+  return getSignedUrl(s3Client, command, { expiresIn: 3600 });
+}
+
+// Delete file
+export async function deleteFile(key: string): Promise<void> {
+  const command = new DeleteObjectCommand({
+    Bucket: BUCKET,
+    Key: key,
+  });
+
+  await s3Client.send(command);
+}
+
+// Get public URL (for public buckets)
+export function getPublicUrl(key: string): string {
+  return `https://${BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+}
+```
+
+---
+
+### Upload API Route
+
+```typescript
+// src/app/api/upload/route.ts
+import { auth } from '@/lib/auth';
+import { getUploadUrl } from '@/lib/s3';
+import { randomUUID } from 'crypto';
+
+export async function POST(req: Request) {
+  const session = await auth();
+  if (!session) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { filename, contentType } = await req.json();
+
+  // Validate content type
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+  if (!allowedTypes.includes(contentType)) {
+    return Response.json({ error: 'Invalid file type' }, { status: 400 });
+  }
+
+  // Generate unique key
+  const extension = filename.split('.').pop();
+  const key = `uploads/${session.user.id}/${randomUUID()}.${extension}`;
+
+  const uploadUrl = await getUploadUrl(key, contentType);
+
+  return Response.json({ uploadUrl, key });
+}
+```
+
+---
+
+### Client-Side Upload
+
+```typescript
+// src/lib/upload.ts
+export async function uploadFile(file: File): Promise<string> {
+  // Get presigned URL from your API
+  const response = await fetch('/api/upload', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      filename: file.name,
+      contentType: file.type,
+    }),
+  });
+
+  const { uploadUrl, key } = await response.json();
+
+  // Upload directly to S3
+  await fetch(uploadUrl, {
+    method: 'PUT',
+    body: file,
+    headers: {
+      'Content-Type': file.type,
+    },
+  });
+
+  return key;
+}
+```
+
+---
+
+### React Upload Component
+
+```tsx
+// src/components/file-upload.tsx
+'use client';
+
+import { useState } from 'react';
+import { uploadFile } from '@/lib/upload';
+
+export function FileUpload({ onUpload }: { onUpload: (key: string) => void }) {
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const key = await uploadFile(file);
+      onUpload(key);
+    } catch (error) {
+      console.error('Upload failed:', error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div>
+      <input
+        type="file"
+        onChange={handleChange}
+        disabled={uploading}
+        accept="image/*,.pdf"
+      />
+      {uploading && <p>Uploading...</p>}
+    </div>
+  );
+}
+```
+
+---
+
+## Cloudflare R2
+
+### Setup
+
+1. Create R2 bucket in Cloudflare Dashboard
+2. Generate API token with R2 permissions
+
+---
+
+### Environment Variables
+
+```bash
+R2_ACCESS_KEY_ID=xxx
+R2_SECRET_ACCESS_KEY=xxx
+R2_BUCKET_NAME=your-bucket
+R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
+R2_PUBLIC_URL=https://pub-xxx.r2.dev  # If using public bucket
+```
+
+---
+
+### R2 Client (S3-Compatible)
+
+```typescript
+// src/lib/r2.ts
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
+export const r2Client = new S3Client({
+  region: 'auto',
+  endpoint: process.env.R2_ENDPOINT!,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+});
+
+const BUCKET = process.env.R2_BUCKET_NAME!;
+
+export async function getUploadUrl(key: string, contentType: string): Promise<string> {
+  const command = new PutObjectCommand({
+    Bucket: BUCKET,
+    Key: key,
+    ContentType: contentType,
+  });
+
+  return getSignedUrl(r2Client, command, { expiresIn: 3600 });
+}
+
+export async function getDownloadUrl(key: string): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: BUCKET,
+    Key: key,
+  });
+
+  return getSignedUrl(r2Client, command, { expiresIn: 3600 });
+}
+
+// Public URL (if bucket is public)
+export function getPublicUrl(key: string): string {
+  return `${process.env.R2_PUBLIC_URL}/${key}`;
+}
+```
+
+---
+
+## Vercel Blob
+
+### Setup
+
+```bash
+npm install @vercel/blob
+```
+
+---
+
+### Environment Variables
+
+```bash
+BLOB_READ_WRITE_TOKEN=vercel_blob_xxx
+```
+
+---
+
+### Vercel Blob Usage
+
+```typescript
+// src/lib/blob.ts
+import { put, del, list } from '@vercel/blob';
+
+export async function uploadBlob(
+  file: File,
+  path: string
+): Promise<{ url: string }> {
+  const blob = await put(path, file, {
+    access: 'public',
+    addRandomSuffix: true,
+  });
+
+  return { url: blob.url };
+}
+
+export async function deleteBlob(url: string): Promise<void> {
+  await del(url);
+}
+
+export async function listBlobs(prefix?: string) {
+  const { blobs } = await list({ prefix });
+  return blobs;
+}
+```
+
+---
+
+### API Route with Vercel Blob
+
+```typescript
+// src/app/api/upload/route.ts
+import { put } from '@vercel/blob';
+import { auth } from '@/lib/auth';
+
+export async function POST(request: Request) {
+  const session = await auth();
+  if (!session) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const formData = await request.formData();
+  const file = formData.get('file') as File;
+
+  if (!file) {
+    return Response.json({ error: 'No file provided' }, { status: 400 });
+  }
+
+  const blob = await put(`uploads/${session.user.id}/${file.name}`, file, {
+    access: 'public',
+  });
+
+  return Response.json({ url: blob.url });
+}
+```
+
+---
+
+## Image Optimization
+
+### With Next.js Image
+
+```tsx
+import Image from 'next/image';
+
+// For S3/R2 images, configure next.config.ts
+export default function Avatar({ src }: { src: string }) {
+  return (
+    <Image
+      src={src}
+      alt="Avatar"
+      width={100}
+      height={100}
+      className="rounded-full"
+    />
+  );
+}
+```
+
+```typescript
+// next.config.ts
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.s3.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.r2.dev',
+      },
+    ],
+  },
+};
+```
+
+---
+
+## File Validation
+
+### Server-Side Validation
+
+```typescript
+// src/lib/validation/files.ts
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+const ALLOWED_TYPES = {
+  image: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  document: ['application/pdf', 'application/msword'],
+  video: ['video/mp4', 'video/webm'],
+};
+
+export function validateFile(
+  file: { size: number; type: string },
+  allowedCategories: (keyof typeof ALLOWED_TYPES)[]
+): { valid: boolean; error?: string } {
+  // Check size
+  if (file.size > MAX_FILE_SIZE) {
+    return { valid: false, error: 'File too large (max 10MB)' };
+  }
+
+  // Check type
+  const allowedTypes = allowedCategories.flatMap(cat => ALLOWED_TYPES[cat]);
+  if (!allowedTypes.includes(file.type)) {
+    return { valid: false, error: 'Invalid file type' };
+  }
+
+  return { valid: true };
+}
+```
+
+---
+
+## Storage Abstraction Layer
+
+### Unified Storage Interface
+
+```typescript
+// src/lib/storage/index.ts
+interface StorageProvider {
+  upload(key: string, file: Buffer, contentType: string): Promise<string>;
+  getUrl(key: string): Promise<string>;
+  delete(key: string): Promise<void>;
+}
+
+// Factory function
+export function getStorageProvider(): StorageProvider {
+  const provider = process.env.STORAGE_PROVIDER || 's3';
+
+  switch (provider) {
+    case 'r2':
+      return new R2Provider();
+    case 'vercel':
+      return new VercelBlobProvider();
+    case 's3':
+    default:
+      return new S3Provider();
+  }
+}
+
+// Usage
+const storage = getStorageProvider();
+const url = await storage.upload('path/to/file.jpg', buffer, 'image/jpeg');
+```
+
+---
+
+## Best Practices
+
+### 1. Use Presigned URLs
+
+Never expose your credentials to the client:
+
+```typescript
+// ✅ Good - Get presigned URL from server
+const { uploadUrl } = await fetch('/api/upload').then(r => r.json());
+await fetch(uploadUrl, { method: 'PUT', body: file });
+
+// ❌ Bad - Using credentials in client
+const s3 = new S3Client({ credentials: { ... } }); // Exposed!
+```
+
+---
+
+### 2. Validate on Both Sides
+
+```typescript
+// Client-side (UX)
+if (file.size > 10 * 1024 * 1024) {
+  alert('File too large');
+  return;
+}
+
+// Server-side (security)
+const validation = validateFile(file, ['image']);
+if (!validation.valid) {
+  return Response.json({ error: validation.error }, { status: 400 });
+}
+```
+
+---
+
+### 3. Organize Files by User
+
+```typescript
+// Good organization
+const key = `uploads/${userId}/${year}/${month}/${filename}`;
+// Example: uploads/user_123/2024/01/avatar.jpg
+```
+
+---
+
+### 4. Clean Up Unused Files
+
+```typescript
+// When deleting user or resource
+async function deleteUserFiles(userId: string) {
+  const prefix = `uploads/${userId}/`;
+  // List and delete all files with this prefix
+}
+```
+
+---
+
+## CORS Configuration
+
+### S3 CORS Policy
+
+```json
+{
+  "CORSRules": [
+    {
+      "AllowedOrigins": ["https://your-domain.com"],
+      "AllowedMethods": ["GET", "PUT"],
+      "AllowedHeaders": ["*"],
+      "MaxAgeSeconds": 3600
+    }
+  ]
+}
+```
+
+### R2 CORS Policy
+
+Configure in Cloudflare Dashboard → R2 → Your Bucket → Settings → CORS
+
+---
+
+## Resources
+
+- [AWS S3 Documentation](https://docs.aws.amazon.com/s3/)
+- [Cloudflare R2 Documentation](https://developers.cloudflare.com/r2/)
+- [Vercel Blob Documentation](https://vercel.com/docs/storage/vercel-blob)

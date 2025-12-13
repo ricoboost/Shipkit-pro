@@ -1,0 +1,132 @@
+---
+title: Vercel AI SDK
+description: Edge-ready AI with streaming support.
+---
+
+# Vercel AI SDK Setup
+
+The Vercel AI SDK provides edge-ready streaming with multiple providers.
+
+## Configuration
+
+```bash
+AI_PROVIDER="vercel"
+
+# Choose your provider(s)
+OPENAI_API_KEY="sk-xxx"
+ANTHROPIC_API_KEY="sk-ant-xxx"
+GOOGLE_AI_API_KEY="xxx"
+```
+
+## Implementation
+
+```typescript
+// src/lib/ai/vercel.ts
+import { openai } from '@ai-sdk/openai';
+import { anthropic } from '@ai-sdk/anthropic';
+import { google } from '@ai-sdk/google';
+import { generateText, streamText } from 'ai';
+
+const models = {
+  'gpt-4-turbo': openai('gpt-4-turbo'),
+  'claude-3-opus': anthropic('claude-3-opus-20240229'),
+  'gemini-pro': google('gemini-pro'),
+};
+
+export const vercelProvider: AIProvider = {
+  async chat(messages, options = {}) {
+    const model = models[options.model || 'gpt-4-turbo'];
+
+    const { text, usage } = await generateText({
+      model,
+      messages,
+      temperature: options.temperature,
+      maxTokens: options.maxTokens,
+    });
+
+    return { content: text, usage };
+  },
+
+  async *stream(messages, options = {}) {
+    const model = models[options.model || 'gpt-4-turbo'];
+
+    const { textStream } = await streamText({
+      model,
+      messages,
+      temperature: options.temperature,
+    });
+
+    for await (const chunk of textStream) {
+      yield chunk;
+    }
+  },
+};
+```
+
+## React Hooks
+
+Use the built-in hooks:
+
+```tsx
+import { useChat, useCompletion } from 'ai/react';
+
+function ChatComponent() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: '/api/ai/chat',
+  });
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {messages.map(m => (
+        <div key={m.id}>{m.content}</div>
+      ))}
+      <input value={input} onChange={handleInputChange} />
+    </form>
+  );
+}
+```
+
+## Edge Runtime
+
+Deploy on edge for lowest latency:
+
+```typescript
+// src/app/api/ai/chat/route.ts
+export const runtime = 'edge';
+
+import { streamText } from 'ai';
+import { openai } from '@ai-sdk/openai';
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+
+  const result = await streamText({
+    model: openai('gpt-4-turbo'),
+    messages,
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+## Tool Calling
+
+Add function calling:
+
+```typescript
+const result = await generateText({
+  model: openai('gpt-4-turbo'),
+  messages,
+  tools: {
+    weather: {
+      description: 'Get weather for a location',
+      parameters: z.object({
+        location: z.string(),
+      }),
+      execute: async ({ location }) => {
+        return fetchWeather(location);
+      },
+    },
+  },
+});
+```

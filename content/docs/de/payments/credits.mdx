@@ -1,0 +1,86 @@
+---
+title: Credits-System
+description: Nutzungsabhängige Abrechnung mit dem ShipKit Credits-System.
+---
+
+# Credits-System
+
+ShipKit enthält ein flexibles Credits-System für nutzungsabhängige Abrechnung.
+
+## Übersicht
+
+Credits ermöglichen:
+- Abrechnung für KI-Generierungen
+- Begrenzung von API-Aufrufen
+- Pay-as-you-go-Preisgestaltung
+- Bündelung mit Abonnements
+
+## Verwendung
+
+```typescript
+import { credits } from '@/lib/payments/credits';
+
+// Guthaben prüfen
+const balance = await credits.getBalance(userId);
+
+// Credits abziehen
+const success = await credits.deduct(userId, 10, 'KI-Chat-Nachricht');
+
+if (!success) {
+  throw new Error('Unzureichende Credits');
+}
+
+// Credits hinzufügen
+await credits.add(userId, 100, 'Monatliche Abonnement-Aufladung');
+
+// Verlauf abrufen
+const history = await credits.getHistory(userId);
+```
+
+## API-Routen
+
+```typescript
+// GET /api/credits/balance
+const balance = await fetch('/api/credits/balance');
+
+// GET /api/credits/history
+const history = await fetch('/api/credits/history');
+```
+
+## Datenbankschema
+
+```prisma
+model CreditTransaction {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int      // positiv = hinzufügen, negativ = abziehen
+  reason    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+```
+
+## Abonnement-Integration
+
+Automatische Aufladung von Credits bei Abonnementverlängerung:
+
+```typescript
+// Im Webhook-Handler
+case 'invoice.paid':
+  const plan = getPlanFromSubscription(event.data);
+  await credits.add(userId, plan.monthlyCredits, 'Monatliche Aufladung');
+  break;
+```
+
+## Credit-Kosten
+
+Kosten in Ihrer App konfigurieren:
+
+```typescript
+export const creditCosts = {
+  'ai-chat': 1,
+  'ai-image': 10,
+  'api-call': 1,
+  'export': 5,
+};
+```

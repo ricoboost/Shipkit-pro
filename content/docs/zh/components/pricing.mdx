@@ -1,0 +1,393 @@
+---
+title: Pricing Components
+description: Display pricing plans with cards, comparison tables, and billing toggles
+---
+
+# Pricing Components
+
+Showcase your pricing plans with professional, conversion-optimized components. ShipKit includes 4 pricing components with built-in billing toggle support.
+
+## Available Components
+
+| Component | Description |
+|-----------|-------------|
+| `PricingCards` | 3-column pricing cards with highlighted tier |
+| `PricingTable` | Feature comparison table with plans |
+| `PricingSingle` | Single product/plan focused display |
+| `PricingToggle` | Monthly/Yearly billing switch |
+
+---
+
+## PricingCards
+
+The most common pricing layout with side-by-side plan cards.
+
+### Preview
+
+<ComponentPreview title="Pricing Cards" background="muted">
+  <PricingCardsPreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { PricingCards } from '@/components/marketing/pricing/pricing-cards';
+
+const tiers = [
+  {
+    name: 'Starter',
+    description: 'Perfect for side projects',
+    price: { monthly: 0, yearly: 0 },
+    features: [
+      '1 project',
+      '1,000 API calls/month',
+      'Community support',
+      'Basic analytics',
+    ],
+    ctaLabel: 'Start Free',
+    ctaHref: '/register',
+  },
+  {
+    name: 'Pro',
+    description: 'For growing businesses',
+    price: { monthly: 29, yearly: 290 },
+    features: [
+      'Unlimited projects',
+      '100,000 API calls/month',
+      'Priority support',
+      'Advanced analytics',
+      'Custom domain',
+      'Team collaboration',
+    ],
+    highlighted: true,
+    ctaLabel: 'Start Free Trial',
+    ctaHref: '/register?plan=pro',
+  },
+  {
+    name: 'Enterprise',
+    description: 'For large organizations',
+    price: { monthly: 99, yearly: 990 },
+    features: [
+      'Everything in Pro',
+      'Unlimited API calls',
+      '24/7 dedicated support',
+      'SSO & SAML',
+      'SLA guarantee',
+      'Custom integrations',
+    ],
+    ctaLabel: 'Contact Sales',
+    ctaHref: '/contact',
+  },
+];
+
+<PricingCards
+  title="Simple, Transparent Pricing"
+  subtitle="Pricing"
+  description="Choose the plan that fits your needs. All plans include a 14-day free trial."
+  tiers={tiers}
+  showToggle={true}
+  defaultBillingPeriod="monthly"
+  highlightedBadge="Most Popular"
+/>
+```
+
+### Props
+
+```typescript
+interface PricingCardsProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  tiers: PricingTier[];
+  showToggle?: boolean;              // Show billing period toggle
+  defaultBillingPeriod?: 'monthly' | 'yearly';
+  highlightedBadge?: string;         // Badge text for highlighted tier
+  animated?: boolean;
+  colorScheme?: ColorScheme;
+  className?: string;
+}
+
+interface PricingTier {
+  name: string;
+  description?: string;
+  price: {
+    monthly: number;
+    yearly: number;
+  };
+  features: string[];
+  highlighted?: boolean;             // Shows "Most Popular" badge
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+```
+
+---
+
+## PricingTable
+
+Detailed feature comparison table for complex pricing structures.
+
+### Preview
+
+<ComponentPreview title="Pricing Table" background="muted">
+  <PricingTablePreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { PricingTable } from '@/components/marketing/pricing/pricing-table';
+
+const plans = [
+  {
+    name: 'Free',
+    price: { monthly: 0, yearly: 0 },
+    ctaLabel: 'Get Started',
+  },
+  {
+    name: 'Pro',
+    price: { monthly: 29, yearly: 290 },
+    highlighted: true,
+    ctaLabel: 'Start Trial',
+  },
+  {
+    name: 'Enterprise',
+    price: { monthly: 99, yearly: 990 },
+    ctaLabel: 'Contact Sales',
+  },
+];
+
+const features = [
+  // Category: Core Features
+  { name: 'Projects', category: 'Core Features', values: ['3', 'Unlimited', 'Unlimited'] },
+  { name: 'API Calls', category: 'Core Features', values: ['1,000/mo', '100,000/mo', 'Unlimited'] },
+  { name: 'Storage', category: 'Core Features', values: ['1 GB', '100 GB', 'Unlimited'] },
+
+  // Category: Support
+  { name: 'Email Support', category: 'Support', values: [true, true, true] },
+  { name: 'Priority Support', category: 'Support', values: [false, true, true] },
+  { name: '24/7 Phone', category: 'Support', values: [false, false, true] },
+
+  // Category: Security
+  { name: 'SSL Certificate', category: 'Security', values: [true, true, true] },
+  { name: 'SSO', category: 'Security', values: [false, false, true] },
+  { name: 'Audit Logs', category: 'Security', values: [false, true, true] },
+];
+
+<PricingTable
+  title="Compare Plans"
+  plans={plans}
+  features={features}
+/>
+```
+
+### Props
+
+```typescript
+interface PricingTableProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  plans: PricingPlan[];
+  features: PricingFeature[];
+  showToggle?: boolean;
+  defaultBillingPeriod?: 'monthly' | 'yearly';
+  highlightedBadge?: string;
+  animated?: boolean;
+  colorScheme?: ColorScheme;
+}
+
+interface PricingPlan {
+  name: string;
+  description?: string;
+  price: { monthly: number; yearly: number };
+  highlighted?: boolean;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+interface PricingFeature {
+  name: string;
+  category?: string;                  // Groups features under headers
+  values: (boolean | string | null)[]; // One per plan
+  tooltip?: string;
+}
+```
+
+### Feature Values
+
+| Value | Renders As |
+|-------|------------|
+| `true` | Green checkmark |
+| `false` | Gray X |
+| `null` | Gray dash (not applicable) |
+| `string` | Text value |
+
+---
+
+## PricingSingle
+
+Focused single-product pricing for one-time purchases or simple pricing.
+
+### Preview
+
+<ComponentPreview title="Single Pricing" background="muted">
+  <PricingSinglePreview />
+</ComponentPreview>
+
+### Usage
+
+```tsx
+import { PricingSingle } from '@/components/marketing/pricing/pricing-single';
+
+<PricingSingle
+  title="Get Lifetime Access"
+  productName="ShipKit Pro"
+  productDescription="Everything you need to build and ship your SaaS"
+  price={{ monthly: 199, yearly: 149 }}
+  originalPrice={{ monthly: 399, yearly: 299 }}
+  features={[
+    'Full source code access',
+    'All current components',
+    'Lifetime updates',
+    'Priority support for 1 year',
+    'Private Discord access',
+  ]}
+  bonuses={[
+    'Bonus: Marketing templates',
+    'Bonus: SEO checklist',
+    'Bonus: Launch guide',
+  ]}
+  badge="Limited Time Offer"
+  ctaLabel="Get Instant Access"
+  ctaHref="/checkout"
+  guarantee="30-day money-back guarantee"
+  showToggle={false}
+/>
+```
+
+### Props
+
+```typescript
+interface PricingSingleProps {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  productName: string;
+  productDescription?: string;
+  price: { monthly: number; yearly: number };
+  originalPrice?: { monthly: number; yearly: number }; // Shows strikethrough
+  features: string[];
+  bonuses?: string[];                 // Shown with sparkle icon
+  badge?: string;                     // Top badge
+  ctaLabel?: string;
+  ctaHref?: string;
+  guarantee?: string;                 // Below CTA
+  showToggle?: boolean;
+  defaultBillingPeriod?: 'monthly' | 'yearly';
+  animated?: boolean;
+  colorScheme?: ColorScheme;
+}
+```
+
+---
+
+## PricingToggle
+
+Standalone billing period toggle, used internally by pricing components.
+
+### Usage
+
+```tsx
+import { PricingToggle } from '@/components/marketing/pricing/pricing-toggle';
+import { useState } from 'react';
+
+function MyPricing() {
+  const [period, setPeriod] = useState<'monthly' | 'yearly'>('monthly');
+
+  return (
+    <PricingToggle
+      value={period}
+      onChange={setPeriod}
+      monthlyLabel="Monthly"
+      yearlyLabel="Yearly"
+      savingsLabel="Save"
+      savingsPercentage={20}
+      colorScheme="primary"
+    />
+  );
+}
+```
+
+### Props
+
+```typescript
+interface PricingToggleProps {
+  value: 'monthly' | 'yearly';
+  onChange: (value: 'monthly' | 'yearly') => void;
+  monthlyLabel?: string;
+  yearlyLabel?: string;
+  savingsLabel?: string;
+  savingsPercentage?: number;         // Shows "Save X%" badge
+  colorScheme?: ColorScheme;
+  className?: string;
+}
+```
+
+---
+
+## Color Schemes
+
+All pricing components support 5 color schemes:
+
+```tsx
+<PricingCards colorScheme="primary" {...props} />   // Default
+<PricingCards colorScheme="secondary" {...props} />
+<PricingCards colorScheme="accent" {...props} />
+<PricingCards colorScheme="muted" {...props} />
+<PricingCards colorScheme="destructive" {...props} />
+```
+
+---
+
+## Best Practices
+
+### Highlight Your Best Plan
+
+```tsx
+const tiers = [
+  { name: 'Basic', /* ... */ },
+  { name: 'Pro', highlighted: true, /* ... */ },  // This will stand out
+  { name: 'Enterprise', /* ... */ },
+];
+```
+
+### Show Savings for Annual Billing
+
+```tsx
+// Price yearly at 10 months (saves ~17%)
+const tier = {
+  price: {
+    monthly: 29,
+    yearly: 290,  // $290/year vs $348 ($29 × 12)
+  },
+};
+```
+
+### Use Clear Feature Descriptions
+
+```tsx
+// Good: Specific and quantifiable
+features: ['100,000 API calls/month', '24/7 priority support']
+
+// Avoid: Vague
+features: ['More API calls', 'Better support']
+```
+
+---
+
+## Accessibility
+
+- Toggle uses proper button elements with keyboard support
+- Price changes are announced to screen readers
+- Feature checkmarks have appropriate ARIA labels

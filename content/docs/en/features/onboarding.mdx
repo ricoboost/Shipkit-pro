@@ -1,0 +1,222 @@
+---
+title: Onboarding & Setup Wizard
+description: Automatic setup wizard for new installations and guided user onboarding.
+---
+
+# Onboarding & Setup Wizard
+
+ShipKit includes two types of onboarding: an **automatic setup wizard** for new installations and a **user onboarding flow** for guiding new users through your application.
+
+## Setup Wizard (First-Time Installation)
+
+When you first run `npm run dev` after cloning ShipKit, the application automatically detects if it's a fresh installation and guides you through the setup process.
+
+### Automatic Detection
+
+The setup wizard appears automatically when:
+
+- No admin user exists in the database
+- The database is not configured
+- It's the first time running the application
+
+```typescript
+// src/app/[locale]/page.tsx
+const isSetupComplete = await checkSetupComplete();
+if (!isSetupComplete) {
+  redirect(`/${locale}/onboarding`);
+}
+```
+
+### Setup Steps
+
+The wizard guides you through:
+
+1. **Database Configuration** - Connect to PostgreSQL, MySQL, SQLite, or cloud databases
+2. **Authentication Setup** - Configure NextAuth, Supabase Auth, or Better Auth
+3. **Admin Account Creation** - Create your first admin user with strong password requirements
+4. **Optional Integrations** - Set up payments, AI providers, and more
+
+### Admin Password Requirements
+
+For security, admin passwords must meet these requirements:
+
+- Minimum 12 characters
+- At least one uppercase letter
+- At least one lowercase letter
+- At least one number
+- At least one special character
+
+### CLI Setup Alternative
+
+You can also run the setup via CLI:
+
+```bash
+# Interactive setup wizard
+npm run setup
+
+# Quick setup with defaults
+npm run setup:quick
+
+# Individual setup steps
+npm run setup:db
+npm run setup:auth
+npm run setup:admin
+```
+
+### After Setup
+
+Once the setup wizard is complete:
+
+- The onboarding page redirects to the home page
+- Your admin account can access the dashboard
+- The setup wizard won't appear again (admin exists)
+
+## User Onboarding (Application Users)
+
+After the initial setup, you can create custom onboarding flows for your application's users.
+
+### Features
+
+- Multi-step wizard with progress tracking
+- Customizable steps
+- Completion tracking per user
+- Conditional rendering based on onboarding status
+
+### Defining Onboarding Steps
+
+Create your onboarding configuration:
+
+```typescript
+// src/config/onboarding.ts
+export const onboardingSteps = [
+  {
+    id: 'profile',
+    title: 'Complete Profile',
+    description: 'Add your name and avatar',
+    component: ProfileStep,
+  },
+  {
+    id: 'organization',
+    title: 'Create Organization',
+    description: 'Set up your team workspace',
+    component: OrganizationStep,
+  },
+  {
+    id: 'invite',
+    title: 'Invite Team',
+    description: 'Bring your team members',
+    component: InviteStep,
+  },
+];
+```
+
+### Onboarding Library
+
+```typescript
+import { onboarding } from '@/lib/onboarding';
+
+// Get user's onboarding progress
+const progress = await onboarding.getProgress(userId);
+// Returns: { completedSteps: ['profile'], currentStep: 'organization' }
+
+// Mark a step as complete
+await onboarding.completeStep(userId, 'profile');
+
+// Check if onboarding is fully complete
+const isDone = await onboarding.isComplete(userId);
+
+// Reset onboarding (for testing)
+await onboarding.reset(userId);
+```
+
+### Onboarding Wizard Component
+
+```tsx
+import { OnboardingWizard } from '@/components/onboarding/onboarding-wizard';
+
+export default function OnboardingPage() {
+  return (
+    <OnboardingWizard
+      steps={onboardingSteps}
+      onComplete={() => router.push('/dashboard')}
+      onSkip={() => router.push('/dashboard')}
+      allowSkip={true}
+    />
+  );
+}
+```
+
+### Component Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `steps` | `OnboardingStep[]` | Array of step configurations |
+| `onComplete` | `() => void` | Called when all steps complete |
+| `onSkip` | `() => void` | Called when user skips onboarding |
+| `allowSkip` | `boolean` | Whether to show skip button |
+| `initialStep` | `number` | Starting step index |
+
+### Conditional Rendering
+
+Show onboarding only to new users:
+
+```tsx
+// src/app/[locale]/(dashboard)/layout.tsx
+export default async function DashboardLayout({ children }) {
+  const user = await getCurrentUser();
+  const isOnboarded = await onboarding.isComplete(user.id);
+
+  if (!isOnboarded) {
+    return <OnboardingWizard steps={onboardingSteps} />;
+  }
+
+  return children;
+}
+```
+
+### Progress Persistence
+
+Onboarding progress is stored in the database:
+
+```prisma
+model OnboardingProgress {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  completedSteps String[] @default([])
+  completedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id])
+}
+```
+
+## Demo Mode
+
+ShipKit includes a demo mode that bypasses the setup wizard for quick exploration:
+
+```tsx
+// Enable demo mode in localStorage
+localStorage.setItem('shipkit-demo-mode', 'true');
+
+// Or via the landing page "Try Demo" button
+```
+
+In demo mode:
+- Dashboard is accessible without authentication
+- Data is stored locally in the browser
+- No database connection required
+- A banner indicates demo mode is active
+
+## Best Practices
+
+1. **Keep setup steps minimal** - Only ask for essential information
+2. **Provide progress indicators** - Show users how far they've come
+3. **Allow skipping** - Let users explore before completing onboarding
+4. **Save progress** - Don't make users start over if they leave
+5. **Test the flow** - Walk through onboarding as a new user
+
+## Related Documentation
+
+- [Setup Wizard CLI](/docs/cli/setup-wizard) - CLI setup commands
+- [Authentication](/docs/authentication/overview) - Auth provider configuration
+- [Admin Panel](/docs/features/admin) - Admin dashboard features

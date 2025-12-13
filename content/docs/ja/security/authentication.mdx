@@ -1,0 +1,381 @@
+---
+title: Authentication Security
+description: Best practices for session management, password hashing, and OAuth security.
+---
+
+# Authentication Security
+
+Secure authentication is critical for protecting user accounts. This guide covers best practices for session management, password handling, and OAuth integration.
+
+---
+
+## Session Security
+
+### Secure Cookie Configuration
+
+```typescript
+// src/lib/auth/config.ts
+export const sessionConfig = {
+  strategy: 'jwt',
+  maxAge: 30 * 24 * 60 * 60, // 30 days
+  updateAge: 24 * 60 * 60, // Refresh every 24 hours
+};
+
+export const cookieConfig = {
+  sessionToken: {
+    name: process.env.NODE_ENV === 'production'
+      ? '__Secure-authjs.session-token'
+      : 'authjs.session-token',
+    options: {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+    },
+  },
+};
+```
+
+### Session Invalidation
+
+Invalidate sessions on critical actions:
+
+```typescript
+// Invalidate all user sessions
+async function invalidateAllSessions(userId: string) {
+  await prisma.session.deleteMany({
+    where: { userId },
+  });
+}
+
+// Use after password change
+async function changePassword(userId: string, newPassword: string) {
+  const hashedPassword = await hash(newPassword, 12);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: hashedPassword },
+  });
+
+  // Invalidate all existing sessions
+  await invalidateAllSessions(userId);
+}
+```
+
+---
+
+## Password Security
+
+### Hashing Configuration
+
+ShipKit uses bcrypt with a cost factor of 12:
+
+```typescript
+import { hash, compare } from 'bcryptjs';
+
+const BCRYPT_ROUNDS = 12;
+
+// Hash password
+async function hashPassword(password: string): Promise<string> {
+  return hash(password, BCRYPT_ROUNDS);
+}
+
+// Verify password
+async function verifyPassword(
+  password: string,
+  hashedPassword: string
+): Promise<boolean> {
+  return compare(password, hashedPassword);
+}
+```
+
+### Password Requirements
+
+Enforce strong passwords with Zod validation:
+
+```typescript
+import { z } from 'zod';
+
+export const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .max(100, 'Password must be less than 100 characters')
+  .regex(/[A-Z]/, 'Password must contain an uppercase letter')
+  .regex(/[a-z]/, 'Password must contain a lowercase letter')
+  .regex(/[0-9]/, 'Password must contain a number')
+  .regex(/[^A-Za-z0-9]/, 'Password must contain a special character');
+
+// Usage
+const signUpSchema = z.object({
+  email: z.string().email(),
+  password: passwordSchema,
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+});
+```
+
+### Breach Detection
+
+Check passwords against known breaches using HaveIBeenPwned:
+
+```typescript
+import { createHash } from 'crypto';
+
+async function checkPasswordBreach(password: string): Promise<boolean> {
+  const sha1 = createHash('sha1').update(password).digest('hex').toUpperCase();
+  const prefix = sha1.slice(0, 5);
+  const suffix = sha1.slice(5);
+
+  const response = await fetch(
+    `https://api.pwnedpasswords.com/range/${prefix}`
+  );
+  const text = await response.text();
+
+  return text.includes(suffix);
+}
+
+// In signup/password change
+const isBreached = await checkPasswordBreach(password);
+if (isBreached) {
+  throw new Error('This password has been found in a data breach');
+}
+```
+
+---
+
+## OAuth Security
+
+### State Parameter
+
+Always use the state parameter to prevent CSRF:
+
+```typescript
+// NextAuth handles this automatically, but for custom implementations:
+import { randomBytes } from 'crypto';
+
+function generateState(): string {
+  return randomBytes(32).toString('hex');
+}
+
+// Store state in session before redirect
+req.session.oauthState = generateState();
+
+// Verify state on callback
+if (req.query.state !== req.session.oauthState) {
+  throw new Error('Invalid OAuth state');
+}
+```
+
+### Token Storage
+
+Never expose OAuth tokens to the client:
+
+```typescript
+// ✅ Good - Store tokens server-side only
+export const authOptions: NextAuthOptions = {
+  callbacks: {
+    jwt({ token, account }) {
+      if (account) {
+        // Store tokens in JWT (encrypted)
+        token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      // Don't expose tokens to client
+      // session.accessToken = token.accessToken; // ❌ Don't do this
+      return session;
+    },
+  },
+};
+```
+
+### Provider Configuration
+
+Secure OAuth provider setup:
+
+```typescript
+import Google from 'next-auth/providers/google';
+import GitHub from 'next-auth/providers/github';
+
+export const providers = [
+  Google({
+    clientId: process.env.GOOGLE_CLIENT_ID!,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    authorization: {
+      params: {
+        prompt: 'consent',
+        access_type: 'offline',
+        response_type: 'code',
+      },
+    },
+  }),
+  GitHub({
+    clientId: process.env.GITHUB_CLIENT_ID!,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    authorization: {
+      params: {
+        scope: 'read:user user:email', // Minimum required scopes
+      },
+    },
+  }),
+];
+```
+
+---
+
+## Rate Limiting
+
+### Authentication Endpoints
+
+Apply strict rate limits to auth endpoints:
+
+```typescript
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(5, '1 m'),
+  analytics: true,
+});
+
+// In auth API route
+export async function POST(req: Request) {
+  const ip = req.headers.get('x-forwarded-for') ?? 'anonymous';
+
+  const { success, limit, remaining, reset } = await ratelimit.limit(ip);
+
+  if (!success) {
+    return new Response('Too many attempts. Please try again later.', {
+      status: 429,
+      headers: {
+        'X-RateLimit-Limit': limit.toString(),
+        'X-RateLimit-Remaining': remaining.toString(),
+        'X-RateLimit-Reset': reset.toString(),
+      },
+    });
+  }
+
+  // Continue with authentication...
+}
+```
+
+### Account Lockout
+
+Lock accounts after failed attempts:
+
+```typescript
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+
+async function handleFailedLogin(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true, failedAttempts: true, lockedUntil: true },
+  });
+
+  if (!user) return;
+
+  const failedAttempts = (user.failedAttempts || 0) + 1;
+
+  if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        failedAttempts,
+        lockedUntil: new Date(Date.now() + LOCKOUT_DURATION),
+      },
+    });
+  } else {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { failedAttempts },
+    });
+  }
+}
+
+async function checkAccountLocked(email: string): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { lockedUntil: true },
+  });
+
+  if (!user?.lockedUntil) return false;
+  return user.lockedUntil > new Date();
+}
+```
+
+---
+
+## Two-Factor Authentication
+
+See [Two-Factor Authentication](/docs/authentication/two-factor) for full implementation guide.
+
+### TOTP Implementation
+
+```typescript
+import { authenticator } from 'otplib';
+
+// Generate secret
+const secret = authenticator.generateSecret();
+
+// Generate TOTP URI for QR code
+const otpUri = authenticator.keyuri(
+  user.email,
+  'YourApp',
+  secret
+);
+
+// Verify TOTP
+const isValid = authenticator.verify({
+  token: userInput,
+  secret: user.totpSecret,
+});
+```
+
+---
+
+## Security Audit Logging
+
+Log security-relevant events:
+
+```typescript
+async function logSecurityEvent(event: {
+  type: string;
+  userId?: string;
+  ip: string;
+  userAgent: string;
+  metadata?: Record<string, unknown>;
+}) {
+  await prisma.securityLog.create({
+    data: {
+      type: event.type,
+      userId: event.userId,
+      ip: event.ip,
+      userAgent: event.userAgent,
+      metadata: event.metadata,
+      timestamp: new Date(),
+    },
+  });
+}
+
+// Usage
+await logSecurityEvent({
+  type: 'LOGIN_SUCCESS',
+  userId: user.id,
+  ip: req.ip,
+  userAgent: req.headers['user-agent'],
+});
+```
+
+**Events to log:**
+- Login success/failure
+- Password changes
+- 2FA enable/disable
+- OAuth connections
+- Session invalidation
+- Password reset requests

@@ -1,0 +1,91 @@
+---
+title: Stripe
+description: ShipKitでStripe決済を設定します。
+---
+
+# Stripeのセットアップ
+
+Stripeはグローバルな決済を完全にコントロールできます。
+
+## 設定
+
+```bash
+PAYMENT_PROVIDER="stripe"
+STRIPE_SECRET_KEY="sk_test_xxx"
+STRIPE_PUBLISHABLE_KEY="pk_test_xxx"
+STRIPE_WEBHOOK_SECRET="whsec_xxx"
+```
+
+## 認証情報の取得
+
+1. [stripe.com](https://stripe.com)でアカウントを作成
+2. Developers > API Keysに移動
+3. 公開鍵とシークレット鍵をコピー
+4. `https://yourdomain.com/api/payments/webhook`用のwebhookエンドポイントを作成
+
+## 製品を作成
+
+Stripeダッシュボードで:
+
+1. Productsに移動
+2. 各プラン用の製品を作成
+3. 定期価格を追加（月次/年次）
+4. 価格IDを`src/config/plans.ts`にコピー
+
+## 実装
+
+```typescript
+// src/lib/payments/stripe.ts
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+export const stripeProvider: PaymentProvider = {
+  async createCheckout({ priceId, userId, successUrl, cancelUrl }) {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      client_reference_id: userId,
+    });
+
+    return { url: session.url!, sessionId: session.id };
+  },
+
+  async createPortalSession(customerId) {
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings/billing`,
+    });
+    return session.url;
+  },
+
+  async handleWebhook(payload, signature) {
+    const event = stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+    return normalizeEvent(event);
+  },
+};
+```
+
+## テスト
+
+Stripeテストカードを使用:
+
+- 成功: `4242 4242 4242 4242`
+- 拒否: `4000 0000 0000 0002`
+- 3D Secure: `4000 0025 0000 3155`
+
+## Webhookイベント
+
+これらのイベントを処理:
+
+- `checkout.session.completed` - 新規サブスクリプション
+- `customer.subscription.updated` - プラン変更
+- `customer.subscription.deleted` - キャンセル
+- `invoice.payment_failed` - 支払い失敗

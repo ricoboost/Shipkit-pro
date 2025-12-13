@@ -1,0 +1,69 @@
+---
+title: ビジュアルテーマ
+description: テーマビルダーでアプリの外観をカスタマイズします。
+---
+
+# ビジュアルテーマ
+
+ShipKitには、アプリの外観をカスタマイズするためのビジュアルテーマビルダーが含まれています。
+
+## テーマビルダー
+
+ダッシュボードの`/settings/theme`でテーマビルダーにアクセスします。
+
+## カスタマイズ可能なオプション
+
+- **カラー**: プライマリ、セカンダリ、アクセントカラー
+- **ボーダー半径**: シャープからピルまでのプリセット
+- **タイポグラフィ**: フォントファミリーとサイズ
+- **スペーシング**: 一貫したスペーシングスケール
+
+## 使用方法
+
+```typescript
+import { theme } from '@/lib/theme';
+
+// Get current theme
+const currentTheme = theme.get();
+
+// Update theme
+await theme.update({
+  primaryColor: '#3b82f6',
+  borderRadius: 'md',
+});
+```
+
+## CSS変数
+
+テーマ値はCSS変数として適用されます：
+
+```css
+:root {
+  --primary: 221.2 83.2% 53.3%;
+  --radius: 0.5rem;
+}
+```
+
+## テーマプロバイダー
+
+```tsx
+import { ThemeProvider } from '@/components/theme/provider';
+
+<ThemeProvider>
+  <App />
+</ThemeProvider>
+```
+
+## ダークモード
+
+組み込みのダークモードサポート：
+
+```tsx
+import { useTheme } from 'next-themes';
+
+const { theme, setTheme } = useTheme();
+
+<button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+  Toggle theme
+</button>
+```

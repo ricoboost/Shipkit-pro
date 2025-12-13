@@ -1,0 +1,71 @@
+---
+title: 安全
+description: 保护您的ShipKit应用程序的安全最佳实践和指南。
+---
+
+# 安全
+
+使用这些最佳实践和安全指南保护您的ShipKit应用程序。
+
+---
+
+## 安全指南
+
+<Cards>
+  <Card title="身份验证安全" href="/docs/security/authentication">
+    会话管理、密码哈希和OAuth安全。
+  </Card>
+  <Card title="API安全" href="/docs/security/api-security">
+    速率限制、API密钥和输入验证。
+  </Card>
+  <Card title="安全标头" href="/docs/security/headers">
+    CSP、HSTS和其他HTTP安全标头。
+  </Card>
+  <Card title="数据保护" href="/docs/security/data-protection">
+    加密、PII处理和GDPR合规。
+  </Card>
+</Cards>
+
+---
+
+## 安全概述
+
+### 身份验证
+- ✅ 成本因子12的bcrypt哈希
+- ✅ 安全会话Cookie（HttpOnly、SameSite）
+- ✅ OAuth状态参数
+- ✅ 双因素身份验证支持
+
+### API安全
+- ✅ 所有端点的速率限制
+- ✅ 使用Zod进行输入验证
+- ✅ API密钥身份验证
+- ✅ Webhook签名验证
+
+### 数据保护
+- ✅ 静态加密（AES-256）
+- ✅ 强制HTTPS（HSTS）
+- ✅ GDPR合规
+- ✅ 数据保留策略
+
+---
+
+## 安全检查清单
+
+### 启动前
+
+- [ ] 配置安全环境变量
+- [ ] 启用带HSTS的HTTPS
+- [ ] 配置安全标头
+- [ ] 启用速率限制
+- [ ] 所有API路由的输入验证
+- [ ] 轮换身份验证密钥
+- [ ] 审查数据库权限
+- [ ] 启用错误监控（Sentry）
+
+### 持续
+
+- [ ] 定期安全审计
+- [ ] 依赖项更新
+- [ ] 访问日志审查
+- [ ] 记录事件响应计划

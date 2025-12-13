@@ -1,0 +1,74 @@
+---
+title: 管理仪表板
+description: 用于管理SaaS的内置管理面板。
+---
+
+# 管理仪表板
+
+ShipKit在`/admin`包含一个全面的管理仪表板。
+
+## 功能
+
+- 用户管理
+- 订阅分析
+- 收入跟踪
+- 系统设置
+
+## 访问控制
+
+只有具有`role: ADMIN`的用户才能访问管理仪表板。
+
+## 页面
+
+### 概览 (`/admin`)
+
+- 总用户数
+- 活跃订阅
+- 月收入
+- 最近注册
+
+### 用户 (`/admin/users`)
+
+- 列出所有用户
+- 搜索和筛选
+- 编辑用户详情
+- 管理角色
+
+### 分析 (`/admin/analytics`)
+
+- 用户增长图表
+- 收入趋势
+- 转化率
+- 流失分析
+
+### 订阅 (`/admin/subscriptions`)
+
+- 活跃订阅
+- 计划分布
+- MRR跟踪
+- 取消订阅
+
+## 使用方法
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// Get dashboard stats
+const stats = await admin.getStats();
+
+// List users with pagination
+const users = await admin.getUsers({ page: 1, limit: 20 });
+
+// Update user
+await admin.updateUser(userId, { role: 'ADMIN' });
+```
+
+## 组件
+
+```tsx
+import { AdminStats } from '@/components/admin/stats';
+import { UsersTable } from '@/components/admin/users-table';
+
+<AdminStats />
+<UsersTable users={users} />
+```

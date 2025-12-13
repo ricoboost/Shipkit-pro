@@ -1,0 +1,93 @@
+---
+title: Instalação
+description: Coloque o ShipKit em funcionamento em minutos com este guia de instalação passo a passo.
+---
+
+# Instalação
+
+Este guia irá ajudá-lo a configurar o ShipKit em sua máquina local.
+
+## Pré-requisitos
+
+Antes de começar, certifique-se de ter o seguinte instalado:
+
+- **Node.js 20+** - [Baixar Node.js](https://nodejs.org/)
+- **npm** ou **pnpm** - Gerenciador de pacotes
+- **Git** - Controle de versão
+
+## Início Rápido
+
+### 1. Clonar o Repositório
+
+```bash
+git clone https://github.com/your-org/shipkit.git my-saas-app
+cd my-saas-app
+```
+
+### 2. Instalar Dependências
+
+```bash
+npm install
+```
+
+### 3. Configurar Variáveis de Ambiente
+
+Copie o arquivo de exemplo de variáveis de ambiente:
+
+```bash
+cp .env.example .env
+```
+
+Em seguida, edite `.env` com sua configuração. Consulte [Configuração](/docs/getting-started/configuration) para detalhes.
+
+### 4. Configurar o Banco de Dados
+
+Inicialize o Prisma e crie seu banco de dados:
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### 5. Iniciar o Servidor de Desenvolvimento
+
+```bash
+npm run dev
+```
+
+Seu aplicativo está agora em execução em [http://localhost:3000](http://localhost:3000)!
+
+## O Que Vem a Seguir?
+
+<Cards>
+  <Card title="Configuração" href="/docs/getting-started/configuration">
+    Configure seus provedores e variáveis de ambiente.
+  </Card>
+  <Card title="Estrutura do Projeto" href="/docs/getting-started/project-structure">
+    Aprenda sobre a organização da base de código.
+  </Card>
+</Cards>
+
+## Solução de Problemas
+
+### npm install falha
+
+Certifique-se de estar usando Node.js 20 ou superior:
+
+```bash
+node --version
+```
+
+Se precisar atualizar, use [nvm](https://github.com/nvm-sh/nvm) ou baixe do nodejs.org.
+
+### Erros de conexão com o banco de dados
+
+Certifique-se de que seu `DATABASE_URL` em `.env` está correto e que o servidor de banco de dados está em execução.
+
+### Porta 3000 já em uso
+
+Pare o outro processo ou use uma porta diferente:
+
+```bash
+npm run dev -- -p 3001
+```

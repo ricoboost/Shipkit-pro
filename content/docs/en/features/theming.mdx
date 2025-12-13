@@ -1,0 +1,69 @@
+---
+title: Visual Theming
+description: Customize your app's look with the theme builder.
+---
+
+# Visual Theming
+
+ShipKit includes a visual theme builder for customizing your app's appearance.
+
+## Theme Builder
+
+Access the theme builder at `/settings/theme` in your dashboard.
+
+## Customizable Options
+
+- **Colors**: Primary, secondary, accent colors
+- **Border Radius**: Sharp to pill presets
+- **Typography**: Font families and sizes
+- **Spacing**: Consistent spacing scale
+
+## Usage
+
+```typescript
+import { theme } from '@/lib/theme';
+
+// Get current theme
+const currentTheme = theme.get();
+
+// Update theme
+await theme.update({
+  primaryColor: '#3b82f6',
+  borderRadius: 'md',
+});
+```
+
+## CSS Variables
+
+Theme values are applied as CSS variables:
+
+```css
+:root {
+  --primary: 221.2 83.2% 53.3%;
+  --radius: 0.5rem;
+}
+```
+
+## Theme Provider
+
+```tsx
+import { ThemeProvider } from '@/components/theme/provider';
+
+<ThemeProvider>
+  <App />
+</ThemeProvider>
+```
+
+## Dark Mode
+
+Built-in dark mode support:
+
+```tsx
+import { useTheme } from 'next-themes';
+
+const { theme, setTheme } = useTheme();
+
+<button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+  Toggle theme
+</button>
+```

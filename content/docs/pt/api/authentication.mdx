@@ -1,0 +1,97 @@
+---
+title: API de Autenticação
+description: Referência da API para endpoints de autenticação.
+---
+
+# API de Autenticação
+
+## Endpoints
+
+### Cadastro
+
+Criar uma nova conta de usuário.
+
+```http
+POST /api/auth/signup
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword",
+  "name": "John Doe"
+}
+```
+
+**Resposta:**
+
+```json
+{
+  "user": {
+    "id": "cuid",
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+### Login
+
+Autenticar um usuário.
+
+```http
+POST /api/auth/signin
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+**Resposta:**
+
+```json
+{
+  "user": { ... },
+  "session": { ... }
+}
+```
+
+### Logout
+
+Encerrar a sessão atual.
+
+```http
+POST /api/auth/signout
+```
+
+### Obter Sessão
+
+Obter a sessão autenticada atual.
+
+```http
+GET /api/auth/session
+```
+
+**Resposta:**
+
+```json
+{
+  "user": {
+    "id": "cuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "image": "https://..."
+  },
+  "expires": "2024-02-15T00:00:00.000Z"
+}
+```
+
+## Códigos de Erro
+
+| Código | Descrição |
+|--------|-----------|
+| 400 | Corpo da requisição inválido |
+| 401 | Credenciais inválidas |
+| 409 | Email já existe |
+| 429 | Muitas requisições |

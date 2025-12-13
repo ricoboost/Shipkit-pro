@@ -1,0 +1,268 @@
+---
+title: Error Monitoring
+description: Application monitoring with Sentry for error tracking and performance.
+---
+
+# Error Monitoring
+
+ShipKit integrates with Sentry for comprehensive error tracking, performance monitoring, and session replay.
+
+## Features
+
+- Automatic error capture
+- Performance monitoring
+- Session replay
+- Source map uploads
+- Environment separation
+- User context tracking
+
+## Setup
+
+### 1. Install Dependencies
+
+```bash
+npm install @sentry/nextjs
+```
+
+### 2. Run Sentry Wizard
+
+```bash
+npx @sentry/wizard@latest -i nextjs
+```
+
+This creates the configuration files automatically.
+
+### 3. Environment Variables
+
+Add to your `.env`:
+
+```bash
+SENTRY_DSN=your-sentry-dsn
+SENTRY_AUTH_TOKEN=your-auth-token
+SENTRY_ORG=your-org
+SENTRY_PROJECT=your-project
+```
+
+## Configuration Files
+
+### sentry.client.config.ts
+
+```typescript
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+
+  // Performance monitoring
+  tracesSampleRate: 1.0,
+
+  // Session replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+
+  integrations: [
+    Sentry.replayIntegration({
+      maskAllText: true,
+      blockAllMedia: true,
+    }),
+  ],
+});
+```
+
+### sentry.server.config.ts
+
+```typescript
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
+```
+
+### sentry.edge.config.ts
+
+```typescript
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
+```
+
+## Global Error Handler
+
+ShipKit includes a global error page that reports to Sentry:
+
+```tsx
+// src/app/global-error.tsx
+'use client';
+
+import * as Sentry from '@sentry/nextjs';
+import { useEffect } from 'react';
+
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
+  return (
+    <html>
+      <body>
+        <h1>Something went wrong!</h1>
+        <button onClick={() => reset()}>Try again</button>
+      </body>
+    </html>
+  );
+}
+```
+
+## Usage
+
+### Manual Error Capture
+
+```typescript
+import * as Sentry from '@sentry/nextjs';
+
+try {
+  // risky operation
+} catch (error) {
+  Sentry.captureException(error);
+}
+```
+
+### Add Context
+
+```typescript
+Sentry.setUser({
+  id: user.id,
+  email: user.email,
+});
+
+Sentry.setTag('feature', 'checkout');
+
+Sentry.setContext('order', {
+  orderId: '12345',
+  amount: 99.99,
+});
+```
+
+### Custom Breadcrumbs
+
+```typescript
+Sentry.addBreadcrumb({
+  category: 'auth',
+  message: 'User logged in',
+  level: 'info',
+});
+```
+
+### Performance Transactions
+
+```typescript
+const transaction = Sentry.startTransaction({
+  name: 'Process Payment',
+  op: 'payment',
+});
+
+try {
+  await processPayment();
+  transaction.setStatus('ok');
+} catch (error) {
+  transaction.setStatus('error');
+  throw error;
+} finally {
+  transaction.finish();
+}
+```
+
+## Next.js Configuration
+
+Update `next.config.ts` to include Sentry:
+
+```typescript
+import { withSentryConfig } from '@sentry/nextjs';
+
+const nextConfig = {
+  // your config
+};
+
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  silent: true,
+  widenClientFileUpload: true,
+  hideSourceMaps: true,
+  disableLogger: true,
+});
+```
+
+## Instrumentation
+
+Create `instrumentation.ts` in your project root:
+
+```typescript
+export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    await import('./sentry.server.config');
+  }
+
+  if (process.env.NEXT_RUNTIME === 'edge') {
+    await import('./sentry.edge.config');
+  }
+}
+```
+
+## Environment Separation
+
+Configure different DSNs for environments:
+
+```typescript
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+  enabled: process.env.NODE_ENV === 'production',
+});
+```
+
+## Session Replay
+
+Session replay helps debug issues by recording user interactions:
+
+```typescript
+Sentry.init({
+  replaysSessionSampleRate: 0.1, // 10% of sessions
+  replaysOnErrorSampleRate: 1.0, // 100% of error sessions
+
+  integrations: [
+    Sentry.replayIntegration({
+      maskAllText: true,      // Privacy
+      blockAllMedia: true,    // Don't record media
+    }),
+  ],
+});
+```
+
+## Alerts
+
+Configure alerts in Sentry dashboard:
+
+1. Go to Alerts > Create Alert
+2. Choose alert type (Issue, Metric, etc.)
+3. Set conditions (error count, users affected)
+4. Configure notifications (email, Slack, etc.)
+
+## Best Practices
+
+1. **Sample rates**: Start with 100% and reduce in production
+2. **Privacy**: Mask sensitive data in replays
+3. **Source maps**: Upload for readable stack traces
+4. **User context**: Add user info for easier debugging
+5. **Environments**: Separate dev/staging/production

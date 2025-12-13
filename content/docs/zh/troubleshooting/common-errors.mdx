@@ -1,0 +1,301 @@
+---
+title: Build & Type Errors
+description: Solutions for TypeScript errors, build failures, and module resolution issues.
+---
+
+# Build & Type Errors
+
+Common TypeScript and build errors with their solutions.
+
+---
+
+## TypeScript Errors
+
+### Module Not Found
+
+```
+Cannot find module '@/lib/auth' or its corresponding type declarations.
+```
+
+**Solutions:**
+
+1. Check path alias configuration:
+
+```typescript
+// tsconfig.json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+2. Restart TypeScript server in your IDE (VSCode: Cmd+Shift+P → "TypeScript: Restart TS Server")
+
+3. Clear TypeScript cache:
+
+```bash
+rm -rf node_modules/.cache
+npm run typecheck
+```
+
+---
+
+### Type Mismatch Errors
+
+```
+Type 'string | null' is not assignable to type 'string'.
+```
+
+**Solution:** Handle null/undefined cases:
+
+```typescript
+// ❌ Error
+const name: string = user.name; // name could be null
+
+// ✅ Fixed
+const name: string = user.name ?? 'Unknown';
+// or
+const name: string = user.name || '';
+// or with type guard
+if (user.name) {
+  const name: string = user.name;
+}
+```
+
+---
+
+### Missing Type Declarations
+
+```
+Could not find a declaration file for module 'some-package'.
+```
+
+**Solutions:**
+
+1. Install types package:
+
+```bash
+npm install --save-dev @types/some-package
+```
+
+2. Or declare module in `src/types/global.d.ts`:
+
+```typescript
+declare module 'some-package' {
+  const content: any;
+  export default content;
+}
+```
+
+---
+
+### Prisma Type Errors
+
+```
+Property 'user' does not exist on type 'PrismaClient'.
+```
+
+**Solution:** Regenerate Prisma client:
+
+```bash
+npx prisma generate
+```
+
+If the error persists:
+
+```bash
+rm -rf node_modules/.prisma
+npm install
+npx prisma generate
+```
+
+---
+
+## Build Failures
+
+### Next.js Build Errors
+
+```
+Error: Build optimization failed
+```
+
+**Diagnosis steps:**
+
+```bash
+# 1. Clear build cache
+rm -rf .next
+
+# 2. Check for TypeScript errors
+npm run typecheck
+
+# 3. Try building again with verbose output
+npm run build -- --debug
+```
+
+---
+
+### Memory Issues
+
+```
+FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory
+```
+
+**Solution:** Increase Node.js memory:
+
+```bash
+# In package.json
+{
+  "scripts": {
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build"
+  }
+}
+```
+
+Or set environment variable:
+
+```bash
+export NODE_OPTIONS='--max-old-space-size=4096'
+npm run build
+```
+
+---
+
+### ESLint Errors During Build
+
+```
+Failed to compile
+./src/components/Example.tsx
+1:1  Error: 'React' must be in scope when using JSX
+```
+
+**Solution:** Update ESLint config or add React import:
+
+```typescript
+// Option 1: Add import
+import React from 'react';
+
+// Option 2: Update next.config.ts
+const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: false, // Set to true to skip ESLint
+  },
+};
+```
+
+---
+
+## Module Resolution
+
+### Circular Dependencies
+
+```
+Warning: Circular dependency detected
+```
+
+**Solution:** Refactor to break the cycle:
+
+```typescript
+// ❌ Circular: a.ts imports b.ts, b.ts imports a.ts
+
+// ✅ Fixed: Create shared module c.ts
+// c.ts - shared types/utilities
+export interface SharedType { ... }
+
+// a.ts
+import { SharedType } from './c';
+
+// b.ts
+import { SharedType } from './c';
+```
+
+---
+
+### Path Alias Issues
+
+```
+Module path '@/lib/utils' could not be resolved
+```
+
+**Verify both files:**
+
+```typescript
+// tsconfig.json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+```javascript
+// next.config.ts
+// Next.js automatically handles tsconfig paths
+// No additional config needed for @/* alias
+```
+
+---
+
+## Dependency Issues
+
+### Version Conflicts
+
+```
+npm WARN peer dependency conflict
+```
+
+**Solution:** Check and resolve conflicts:
+
+```bash
+# Check peer dependency issues
+npm ls
+
+# Force install (use cautiously)
+npm install --legacy-peer-deps
+
+# Or resolve by updating packages
+npm update
+```
+
+---
+
+### Lock File Issues
+
+```
+npm ERR! code ERESOLVE
+```
+
+**Solution:** Reset node_modules:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+---
+
+## Common Error Quick Reference
+
+| Error | Quick Fix |
+|-------|-----------|
+| Module not found | Check tsconfig paths, restart TS server |
+| Type mismatch | Handle null/undefined cases |
+| Missing declarations | Install @types package or declare module |
+| Prisma types | Run `npx prisma generate` |
+| Build OOM | Increase Node.js memory |
+| Circular dependency | Refactor shared code to separate module |
+| Peer dependency | Use `--legacy-peer-deps` or update packages |
+
+---
+
+## Still Having Issues?
+
+1. **Search errors**: Copy the exact error message and search GitHub issues
+2. **Check versions**: Ensure you're using compatible package versions
+3. **Clean install**: `rm -rf node_modules .next && npm install`
+4. **Ask for help**: Include full error output and reproduction steps

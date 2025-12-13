@@ -1,0 +1,170 @@
+---
+title: Onboarding y Asistente de Configuración
+description: Asistente de configuración automático para nuevas instalaciones e incorporación guiada de usuarios.
+---
+
+# Onboarding y Asistente de Configuración
+
+ShipKit incluye dos tipos de onboarding: un **asistente de configuración automático** para nuevas instalaciones y un **flujo de incorporación de usuarios** para guiar a los nuevos usuarios a través de tu aplicación.
+
+## Asistente de Configuración (Primera Instalación)
+
+Cuando ejecutas `npm run dev` por primera vez después de clonar ShipKit, la aplicación detecta automáticamente si es una instalación nueva y te guía a través del proceso de configuración.
+
+### Detección Automática
+
+El asistente de configuración aparece automáticamente cuando:
+
+- No existe ningún usuario administrador en la base de datos
+- La base de datos no está configurada
+- Es la primera vez que se ejecuta la aplicación
+
+```typescript
+// src/app/[locale]/page.tsx
+const isSetupComplete = await checkSetupComplete();
+if (!isSetupComplete) {
+  redirect(`/${locale}/onboarding`);
+}
+```
+
+### Pasos de Configuración
+
+El asistente te guía a través de:
+
+1. **Configuración de Base de Datos** - Conectar a PostgreSQL, MySQL, SQLite o bases de datos en la nube
+2. **Configuración de Autenticación** - Configurar NextAuth, Supabase Auth o Better Auth
+3. **Creación de Cuenta de Admin** - Crear tu primer usuario administrador con requisitos de contraseña fuerte
+4. **Integraciones Opcionales** - Configurar pagos, proveedores de IA y más
+
+### Requisitos de Contraseña de Admin
+
+Por seguridad, las contraseñas de admin deben cumplir estos requisitos:
+
+- Mínimo 12 caracteres
+- Al menos una letra mayúscula
+- Al menos una letra minúscula
+- Al menos un número
+- Al menos un carácter especial
+
+### Alternativa CLI
+
+También puedes ejecutar la configuración vía CLI:
+
+```bash
+# Asistente de configuración interactivo
+npm run setup
+
+# Configuración rápida con valores por defecto
+npm run setup:quick
+
+# Pasos de configuración individuales
+npm run setup:db
+npm run setup:auth
+npm run setup:admin
+```
+
+### Después de la Configuración
+
+Una vez completado el asistente:
+
+- La página de onboarding redirige a la página principal
+- Tu cuenta de admin puede acceder al dashboard
+- El asistente no aparecerá de nuevo (el admin existe)
+
+## Onboarding de Usuarios (Usuarios de la Aplicación)
+
+Después de la configuración inicial, puedes crear flujos de onboarding personalizados para los usuarios de tu aplicación.
+
+### Características
+
+- Asistente de múltiples pasos con seguimiento de progreso
+- Pasos personalizables
+- Seguimiento de finalización por usuario
+- Renderizado condicional basado en estado de onboarding
+
+### Definición de Pasos de Onboarding
+
+```typescript
+// src/config/onboarding.ts
+export const onboardingSteps = [
+  {
+    id: 'profile',
+    title: 'Completar Perfil',
+    description: 'Añade tu nombre y avatar',
+    component: ProfileStep,
+  },
+  {
+    id: 'organization',
+    title: 'Crear Organización',
+    description: 'Configura tu espacio de trabajo',
+    component: OrganizationStep,
+  },
+  {
+    id: 'invite',
+    title: 'Invitar Equipo',
+    description: 'Trae a tus compañeros de equipo',
+    component: InviteStep,
+  },
+];
+```
+
+### Librería de Onboarding
+
+```typescript
+import { onboarding } from '@/lib/onboarding';
+
+// Obtener progreso de onboarding del usuario
+const progress = await onboarding.getProgress(userId);
+
+// Marcar un paso como completado
+await onboarding.completeStep(userId, 'profile');
+
+// Verificar si el onboarding está completo
+const isDone = await onboarding.isComplete(userId);
+```
+
+### Componente del Asistente
+
+```tsx
+import { OnboardingWizard } from '@/components/onboarding/onboarding-wizard';
+
+<OnboardingWizard
+  steps={onboardingSteps}
+  onComplete={() => router.push('/dashboard')}
+  allowSkip={true}
+/>
+```
+
+### Renderizado Condicional
+
+Mostrar onboarding solo a nuevos usuarios:
+
+```tsx
+export default async function DashboardLayout({ children }) {
+  const user = await getCurrentUser();
+  const isOnboarded = await onboarding.isComplete(user.id);
+
+  if (!isOnboarded) {
+    return <OnboardingWizard steps={onboardingSteps} />;
+  }
+
+  return children;
+}
+```
+
+## Modo Demo
+
+ShipKit incluye un modo demo que omite el asistente de configuración:
+
+- El dashboard es accesible sin autenticación
+- Los datos se almacenan localmente en el navegador
+- No se requiere conexión a base de datos
+- Un banner indica que el modo demo está activo
+
+## Mejores Prácticas
+
+1. **Mantén los pasos mínimos** - Solo pide información esencial
+2. **Proporciona indicadores de progreso** - Muestra a los usuarios cuánto han avanzado
+3. **Permite omitir** - Deja que los usuarios exploren antes de completar
+4. **Guarda el progreso** - No hagas que los usuarios empiecen de nuevo
+5. **Prueba el flujo** - Recorre el onboarding como un nuevo usuario

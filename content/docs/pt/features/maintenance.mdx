@@ -1,0 +1,142 @@
+---
+title: Modo de Manutenção
+description: Bloqueie temporariamente o acesso público durante atualizações ou manutenção.
+---
+
+# Modo de Manutenção
+
+ShipKit inclui um recurso de modo de manutenção que permite bloquear temporariamente o acesso à sua aplicação durante atualizações, deploys ou tarefas de manutenção críticas.
+
+## Visão Geral
+
+Quando o modo de manutenção está ativado:
+
+- Todos os usuários não-admin são redirecionados para uma página de manutenção
+- Administradores podem acessar toda a aplicação
+- Rotas API permanecem acessíveis para operações internas
+- Um bypass de emergência está disponível via variável de ambiente
+
+## Ativando o Modo de Manutenção
+
+### Via Painel Admin
+
+1. Vá para **Admin** > **Configurações** > **Feature Flags**
+2. Ative **Modo de Manutenção**
+3. Todos os visitantes não-admin verão imediatamente a página de manutenção
+
+### Via API
+
+```typescript
+// Ativar modo de manutenção
+const response = await fetch('/api/admin/settings/flags', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ maintenanceMode: true }),
+});
+```
+
+### Via Banco de Dados
+
+```typescript
+import { db } from '@/lib/db';
+
+await db.appConfig.upsert({
+  where: { id: 'default' },
+  update: { maintenanceMode: true },
+  create: { id: 'default', maintenanceMode: true },
+});
+```
+
+## Como Funciona
+
+### Aplicação do Middleware
+
+O middleware verifica o modo de manutenção em cada requisição:
+
+```typescript
+// src/middleware.ts
+if (flags.maintenanceMode && !isAdmin) {
+  if (!shouldBypassMaintenance(pathname)) {
+    return NextResponse.redirect(new URL('/maintenance', request.url));
+  }
+}
+```
+
+### Caminhos de Bypass
+
+Estes caminhos estão sempre acessíveis durante a manutenção:
+
+- `/maintenance` - A própria página de manutenção
+- `/login` - Página de autenticação (para admins fazerem login)
+- `/api/auth/*` - Rotas API de autenticação
+- `/onboarding` - Configuração inicial (se nenhum admin existir)
+
+### Detecção de Admin
+
+O status de admin é determinado via cookie (`shipkit-is-admin`) definido quando usuários fazem login.
+
+## Recuperação de Emergência
+
+Se você acidentalmente ativar o modo de manutenção e não conseguir acessar o painel admin:
+
+### Opção 1: Bypass via Variável de Ambiente
+
+Adicione ao seu arquivo `.env`:
+
+```bash
+BYPASS_MAINTENANCE=true
+```
+
+### Opção 2: Atualização Direta do Banco de Dados
+
+```bash
+npx prisma db execute --stdin <<< "UPDATE app_config SET \"maintenanceMode\" = false WHERE id = 'default';"
+```
+
+### Opção 3: Prisma Studio
+
+```bash
+npx prisma studio
+```
+
+Navegue até `AppConfig` e defina `maintenanceMode` como `false`.
+
+## Personalizando a Página de Manutenção
+
+### Localização da Página
+
+```
+src/app/[locale]/maintenance/page.tsx
+```
+
+### Traduções
+
+O texto da página de manutenção é traduzido via namespace `maintenance`:
+
+```json
+{
+  "maintenance": {
+    "title": "Em Manutenção",
+    "description": "Estamos realizando manutenção programada.",
+    "checkBack": "Por favor, volte em breve.",
+    "backToHome": "Voltar ao Início"
+  }
+}
+```
+
+## Melhores Práticas
+
+1. **Notifique usuários com antecedência** - Anuncie manutenções programadas
+2. **Mantenha a manutenção breve** - Minimize a interrupção dos usuários
+3. **Teste o acesso admin primeiro** - Verifique se você pode fazer login como admin
+4. **Tenha um plano de recuperação** - Saiba usar `BYPASS_MAINTENANCE`
+5. **Use staging primeiro** - Teste o modo de manutenção em staging
+
+## Comparação: Manutenção vs Modo Waitlist
+
+| Recurso | Modo Manutenção | Modo Waitlist |
+|---------|-----------------|---------------|
+| Bloqueia usuários existentes | Sim | Não |
+| Bloqueia novos cadastros | Sim | Sim |
+| Bypass de admin | Sim | Sim |
+| Caso de uso | Atualizações, emergências | Pré-lançamento, acesso controlado |

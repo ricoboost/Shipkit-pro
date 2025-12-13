@@ -1,0 +1,87 @@
+---
+title: はじめに
+description: ShipKitへようこそ - ビジュアルテーマ、マルチプロバイダーサポート、組み込みAI機能を備えたAIネイティブSaaSボイラープレート。
+---
+
+# ShipKitへようこそ
+
+ShipKitは、Next.js 16で構築された包括的なSaaSスターターキットで、完全な柔軟性を持ってSaaS製品をより速くローンチできるよう設計されています。
+
+## 主な機能
+
+<Cards>
+  <Card title="マルチ認証プロバイダー" href="/docs/authentication/overview">
+    単一の環境変数でNextAuth.js、Supabase Auth、Better Authを切り替え可能。
+  </Card>
+  <Card title="マルチ決済プロバイダー" href="/docs/payments/overview">
+    Stripe、LemonSqueezy、Polarをサポート - ビジネスに最適なものを選択。
+  </Card>
+  <Card title="AI統合" href="/docs/ai/overview">
+    OpenRouterとVercel AI SDKをサポートする組み込みAI機能。
+  </Card>
+  <Card title="ビジュアルテーマ" href="/docs/features/theming">
+    ビジュアルテーマビルダーでアプリの外観をカスタマイズ。
+  </Card>
+</Cards>
+
+## なぜShipKit？
+
+### 既存ボイラープレートの問題点
+
+- 単一の認証プロバイダーに縛られる
+- 単一の決済プロバイダーに縛られる
+- AI統合の準備がない
+- ドキュメントが静的で古い
+- カスタマイズなしで同じ見た目
+
+### ShipKitソリューション
+
+完全な柔軟性を持つSaaSスターター：
+
+- **プロバイダー非依存:** 環境変数1つでauth、決済、AIを切り替え
+- **AIネイティブ:** Claude Code / Cursorがコードベースを即座に理解
+- **自己文書化:** 機能が変更されるとドキュメントが自動更新
+- **視覚的にカスタマイズ可能:** UIでデザインシステムを設定
+- **デモ準備完了:** すぐに紹介できる動作するAIコンポーネント
+
+## クイックスタート
+
+```bash
+# リポジトリをクローン
+git clone https://github.com/your-org/shipkit.git
+
+# 依存関係をインストール
+npm install
+
+# 環境変数をコピー
+cp .env.example .env
+
+# 開発サーバーを起動
+npm run dev
+```
+
+その後 [http://localhost:3000](http://localhost:3000) を開いてアプリを確認してください。
+
+## 技術スタック
+
+| 技術 | 目的 |
+|------|------|
+| Next.js 16 | Turbopack搭載のReactフレームワーク |
+| TypeScript | 型安全性 |
+| Tailwind CSS 4 | スタイリング |
+| Prisma | データベースORM |
+| shadcn/ui | UIコンポーネント |
+
+## 次のステップ
+
+<Cards>
+  <Card title="インストール" href="/docs/getting-started/installation">
+    数分でShipKitを稼働させましょう。
+  </Card>
+  <Card title="設定" href="/docs/getting-started/configuration">
+    環境変数とプロバイダーを設定します。
+  </Card>
+  <Card title="プロジェクト構造" href="/docs/getting-started/project-structure">
+    コードベースのレイアウトを理解します。
+  </Card>
+</Cards>

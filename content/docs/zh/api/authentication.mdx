@@ -1,0 +1,97 @@
+---
+title: 身份验证API
+description: 身份验证端点的API参考。
+---
+
+# 身份验证API
+
+## 端点
+
+### 注册
+
+创建新用户账户。
+
+```http
+POST /api/auth/signup
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword",
+  "name": "John Doe"
+}
+```
+
+**响应:**
+
+```json
+{
+  "user": {
+    "id": "cuid",
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+### 登录
+
+验证用户身份。
+
+```http
+POST /api/auth/signin
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+**响应:**
+
+```json
+{
+  "user": { ... },
+  "session": { ... }
+}
+```
+
+### 登出
+
+结束当前会话。
+
+```http
+POST /api/auth/signout
+```
+
+### 获取会话
+
+获取当前已验证的会话。
+
+```http
+GET /api/auth/session
+```
+
+**响应:**
+
+```json
+{
+  "user": {
+    "id": "cuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "image": "https://..."
+  },
+  "expires": "2024-02-15T00:00:00.000Z"
+}
+```
+
+## 错误代码
+
+| 代码 | 描述 |
+|------|------|
+| 400 | 无效的请求体 |
+| 401 | 无效的凭据 |
+| 409 | 邮箱已存在 |
+| 429 | 请求过多 |

@@ -1,0 +1,167 @@
+---
+title: AI 集成概述
+description: ShipKit 提供与多个提供商的统一 AI 集成。
+---
+
+# AI 集成
+
+ShipKit 包含生产就绪的 AI 集成，支持流式传输和多个提供商。
+
+## 支持的提供商
+
+<Cards>
+  <Card title="OpenRouter" href="/docs/ai/openrouter">
+    访问 100 多个模型，包括 GPT-4、Claude、Llama 和 Mistral。
+  </Card>
+  <Card title="Vercel AI SDK" href="/docs/ai/vercel-ai-sdk">
+    支持 Edge 的流式传输，适用于 OpenAI、Anthropic、Google 等。
+  </Card>
+</Cards>
+
+## 配置
+
+```bash
+AI_PROVIDER="openrouter"  # 或 "vercel"
+
+# OpenRouter
+OPENROUTER_API_KEY="sk-or-xxx"
+
+# Vercel AI SDK / 直接 API
+OPENAI_API_KEY="sk-xxx"
+ANTHROPIC_API_KEY="sk-ant-xxx"
+GOOGLE_AI_API_KEY="xxx"
+```
+
+## 统一接口
+
+```typescript
+// src/lib/ai/types.ts
+export interface AIProvider {
+  chat(messages: Message[], options?: ChatOptions): Promise<ChatResponse>;
+  stream(messages: Message[], options?: ChatOptions): AsyncIterable<string>;
+}
+```
+
+## 基本用法
+
+```typescript
+import { ai } from '@/lib/ai';
+
+// 简单聊天
+const response = await ai.chat([
+  { role: 'user', content: 'Hello!' }
+]);
+
+console.log(response.content);
+```
+
+## 流式传输
+
+```typescript
+import { ai } from '@/lib/ai';
+
+// 流式响应
+for await (const chunk of ai.stream([
+  { role: 'system', content: 'You are a helpful assistant.' },
+  { role: 'user', content: 'Tell me a story.' }
+])) {
+  process.stdout.write(chunk);
+}
+```
+
+## API 路由
+
+```typescript
+// src/app/api/ai/chat/route.ts
+import { ai } from '@/lib/ai';
+import { auth } from '@/lib/auth';
+import { credits } from '@/lib/payments/credits';
+
+export async function POST(req: Request) {
+  const session = await auth.getSession();
+  if (!session) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  // 检查积分
+  const hasCredits = await credits.deduct(session.user.id, 1, 'AI chat');
+  if (!hasCredits) {
+    return new Response('Insufficient credits', { status: 402 });
+  }
+
+  const { messages } = await req.json();
+
+  // 返回流式响应
+  const stream = ai.stream(messages);
+
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        for await (const chunk of stream) {
+          controller.enqueue(new TextEncoder().encode(chunk));
+        }
+        controller.close();
+      },
+    }),
+    {
+      headers: { 'Content-Type': 'text/event-stream' },
+    }
+  );
+}
+```
+
+## 客户端组件
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { useChat } from '@/hooks/use-chat';
+
+export function ChatInterface() {
+  const { messages, input, handleSubmit, isLoading } = useChat();
+
+  return (
+    <div>
+      <div className="messages">
+        {messages.map((m) => (
+          <div key={m.id} className={m.role}>
+            {m.content}
+          </div>
+        ))}
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Say something..."
+        />
+        <button disabled={isLoading}>Send</button>
+      </form>
+    </div>
+  );
+}
+```
+
+## 模型选择
+
+轻松切换模型：
+
+```typescript
+const response = await ai.chat(messages, {
+  model: 'gpt-4-turbo',  // 或 'claude-3-opus', 'llama-3-70b', 等
+  temperature: 0.7,
+  maxTokens: 1000,
+});
+```
+
+## 演示组件
+
+ShipKit 包含即用型 AI 演示组件：
+
+- 带流式传输的聊天界面
+- 用于测试的 AI 游乐场
+- 模型比较工具
+
+在您的仪表板中访问 `/ai-playground`。

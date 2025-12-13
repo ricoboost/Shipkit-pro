@@ -1,0 +1,71 @@
+---
+title: Seguridad
+description: Mejores prácticas de seguridad y guías para proteger tu aplicación ShipKit.
+---
+
+# Seguridad
+
+Protege tu aplicación ShipKit con estas mejores prácticas y guías de seguridad.
+
+---
+
+## Guías de Seguridad
+
+<Cards>
+  <Card title="Seguridad de Autenticación" href="/docs/security/authentication">
+    Gestión de sesiones, hash de contraseñas y seguridad OAuth.
+  </Card>
+  <Card title="Seguridad de API" href="/docs/security/api-security">
+    Limitación de velocidad, claves API y validación de entrada.
+  </Card>
+  <Card title="Cabeceras de Seguridad" href="/docs/security/headers">
+    CSP, HSTS y otras cabeceras HTTP de seguridad.
+  </Card>
+  <Card title="Protección de Datos" href="/docs/security/data-protection">
+    Cifrado, manejo de PII y cumplimiento de GDPR.
+  </Card>
+</Cards>
+
+---
+
+## Resumen de Seguridad
+
+### Autenticación
+- ✅ Hash bcrypt con factor de costo 12
+- ✅ Cookies de sesión seguras (HttpOnly, SameSite)
+- ✅ Parámetro de estado OAuth
+- ✅ Soporte de autenticación de dos factores
+
+### Seguridad de API
+- ✅ Limitación de velocidad en todos los endpoints
+- ✅ Validación de entrada con Zod
+- ✅ Autenticación basada en claves API
+- ✅ Verificación de firma de webhooks
+
+### Protección de Datos
+- ✅ Cifrado en reposo (AES-256)
+- ✅ HTTPS forzado (HSTS)
+- ✅ Cumplimiento de GDPR
+- ✅ Políticas de retención de datos
+
+---
+
+## Lista de Verificación de Seguridad
+
+### Antes del Lanzamiento
+
+- [ ] Variables de entorno seguras configuradas
+- [ ] HTTPS habilitado con HSTS
+- [ ] Cabeceras de seguridad configuradas
+- [ ] Limitación de velocidad habilitada
+- [ ] Validación de entrada en todas las rutas API
+- [ ] Secretos de autenticación rotados desde valores de desarrollo
+- [ ] Permisos de base de datos revisados
+- [ ] Monitoreo de errores habilitado (Sentry)
+
+### Continuo
+
+- [ ] Auditorías de seguridad regulares
+- [ ] Actualizaciones de dependencias
+- [ ] Revisiones de registros de acceso
+- [ ] Plan de respuesta a incidentes documentado

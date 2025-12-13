@@ -1,0 +1,285 @@
+---
+title: Lista de Espera y Constructor de Páginas
+description: Crea y personaliza páginas de lista de espera con un editor visual de arrastrar y soltar.
+---
+
+# Lista de Espera y Constructor de Páginas
+
+ShipKit incluye un sistema completo de gestión de lista de espera con un constructor de páginas visual para crear páginas de aterrizaje personalizadas.
+
+## Descripción General
+
+La función de lista de espera te permite:
+
+- Recopilar suscripciones de correo antes del lanzamiento
+- Crear hermosas páginas de aterrizaje sin código
+- Gestionar suscriptores con etiquetas y segmentación
+- Exportar datos de suscriptores como CSV
+- Habilitar modo lista de espera para redirigir nuevos registros
+
+## Habilitar Modo Lista de Espera
+
+### Mediante Panel de Administración
+
+1. Ve a **Admin** > **Configuración** > **Flags de Funciones**
+2. Activa **Modo Lista de Espera**
+3. Los nuevos usuarios serán redirigidos a la página de lista de espera en lugar del registro
+
+### Mediante Código
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// Habilitar modo lista de espera
+await admin.toggleFeatureFlag('waitlistMode', true);
+
+// Deshabilitar modo lista de espera
+await admin.toggleFeatureFlag('waitlistMode', false);
+```
+
+## Constructor de Páginas
+
+El constructor de páginas visual te permite crear páginas de lista de espera personalizadas.
+
+### Acceder al Editor
+
+Navega a **Admin** > **Lista de Espera** > **Editar Página** o ve directamente a `/admin/waitlist/editor`.
+
+### Secciones Disponibles
+
+#### Sección Hero
+
+La sección principal del encabezado con:
+- Texto de insignia (ej. "Próximamente")
+- Título y subtítulo
+- Formulario de suscripción o botón CTA
+- Imagen hero opcional
+
+#### Cuadrícula de Características (Bento)
+
+Muestra las características de tu producto:
+- Diseños de 2, 3 o 4 columnas
+- Tarjetas de características con íconos
+- Fondos personalizables
+
+#### Cómo Funciona
+
+Explicación del proceso paso a paso:
+- Pasos numerados con íconos
+- Diseño horizontal o vertical
+- Títulos y descripciones personalizados
+
+#### Pie de Página
+
+Pie de página con:
+- Texto de copyright
+- Enlaces de navegación
+- Íconos de redes sociales
+
+### Personalizar Secciones
+
+Haz clic en cualquier sección para seleccionarla, luego usa la barra lateral derecha para:
+
+- **Fondo**: Establecer color sólido, degradado o imagen
+- **Espaciado**: Ajustar padding y márgenes
+- **Visibilidad**: Ocultar/mostrar secciones
+- **CSS Personalizado**: Agregar estilos personalizados
+
+### Editar Contenido
+
+- Haz clic en el texto para editar en línea
+- Modifica la tipografía (tamaño, peso, color, alineación)
+- Actualiza el texto y estilos de botones
+- Personaliza el placeholder del formulario y mensaje de éxito
+
+### Publicar
+
+1. Haz clic en **Guardar** para persistir tus cambios
+2. Haz clic en **Publicar** para hacer la página pública
+3. Previsualiza tu página en `/waitlist`
+
+### Atajos de Teclado
+
+| Atajo | Acción |
+|-------|--------|
+| `Cmd/Ctrl + S` | Guardar cambios |
+| `Cmd/Ctrl + Z` | Deshacer |
+| `Cmd/Ctrl + Shift + Z` | Rehacer |
+
+## Gestión de Suscriptores
+
+### Panel de Administración
+
+Accede al panel de suscriptores en **Admin** > **Lista de Espera**.
+
+#### Estadísticas
+
+- **Total de Suscriptores**: Todos los registros
+- **Confirmados**: Correos verificados
+- **Pendientes**: Esperando confirmación
+- **Desuscritos**: Optaron por salir
+- **Esta Semana**: Registros recientes
+
+#### Filtrado
+
+Filtra suscriptores por:
+- Búsqueda por correo
+- Estado (confirmado, pendiente, desuscrito)
+- Fuente (waitlist, footer, popup)
+- Etiquetas
+
+### Operaciones Masivas
+
+Selecciona múltiples suscriptores para:
+- Agregar etiquetas para segmentación
+- Eliminar de la lista
+- Exportar como CSV
+
+### Exportar Datos
+
+Haz clic en **Exportar CSV** para descargar datos de suscriptores. Opciones:
+- Exportar todos los suscriptores
+- Exportar solo confirmados
+- Filtrar por etiqueta
+
+## Formulario de Suscripción
+
+### Formulario Embebido
+
+Agrega el formulario de suscripción en cualquier lugar:
+
+```tsx
+import { SubscribeFormBlock } from '@/components/waitlist-builder/blocks/subscribe-form-block';
+
+<SubscribeFormBlock
+  block={{
+    id: 'form-1',
+    type: 'subscribe-form',
+    placeholder: 'Ingresa tu correo',
+    buttonText: 'Unirse a la Lista',
+    successMessage: '¡Gracias por registrarte!',
+    source: 'homepage',
+    tags: ['early-access'],
+  }}
+/>
+```
+
+### Opciones de Configuración
+
+| Propiedad | Tipo | Descripción |
+|-----------|------|-------------|
+| `placeholder` | string | Texto placeholder del input |
+| `buttonText` | string | Texto del botón de envío |
+| `successMessage` | string | Mensaje mostrado después del registro |
+| `source` | string | Identificador de fuente de seguimiento |
+| `tags` | string[] | Etiquetas a aplicar al suscriptor |
+| `layout` | 'inline' \| 'stacked' | Diseño del formulario |
+
+## Referencia de API
+
+### Suscribir
+
+```typescript
+POST /api/newsletter/subscribe
+
+// Solicitud
+{
+  "email": "usuario@ejemplo.com",
+  "source": "waitlist",
+  "tags": ["early-access"]
+}
+
+// Respuesta
+{
+  "success": true,
+  "isNew": true,
+  "confirmed": false
+}
+```
+
+### Desuscribir
+
+```typescript
+POST /api/newsletter/unsubscribe
+
+// Solicitud
+{ "email": "usuario@ejemplo.com" }
+
+// Respuesta
+{ "success": true }
+```
+
+### Desuscripción con Un Clic
+
+```typescript
+GET /api/newsletter/unsubscribe?token=xxx
+```
+
+## Funciones de Biblioteca
+
+```typescript
+import { newsletter } from '@/lib/newsletter';
+
+// Suscribir con fuente y etiquetas
+await newsletter.subscribe({
+  email: 'usuario@ejemplo.com',
+  source: 'waitlist',
+  tags: ['early-access', 'beta'],
+});
+
+// Obtener estadísticas de suscriptores
+const stats = await newsletter.getStats();
+// { total, confirmed, pending, unsubscribed, thisWeek }
+
+// Agregar etiquetas a suscriptor
+await newsletter.addTags('usuario@ejemplo.com', ['vip']);
+
+// Exportar a CSV
+const csv = await newsletter.exportCSV({
+  confirmedOnly: true,
+  tag: 'early-access',
+});
+```
+
+## Esquema de Base de Datos
+
+```prisma
+model NewsletterSubscriber {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  confirmed     Boolean   @default(false)
+  confirmToken  String?   @unique
+  source        String?   // "waitlist", "footer", "popup"
+  tags          String[]  @default([])
+  unsubscribedAt DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+model WaitlistPage {
+  id              String   @id @default("default")
+  config          Json     // Configuración de página
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+```
+
+## Variables de Entorno
+
+No se requieren variables de entorno adicionales. La lista de espera utiliza:
+
+- `DATABASE_URL` - Para almacenar suscriptores
+- `NEXT_PUBLIC_APP_URL` - Para enlaces de desuscripción
+- `RESEND_API_KEY` - (Opcional) Para correos de confirmación
+- `EMAIL_FROM` - (Opcional) Dirección del remitente
+
+## Mejores Prácticas
+
+1. **Usa etiquetas significativas** - Segmenta suscriptores por fuente, interés o campaña
+2. **Configura correos de confirmación** - Habilita doble opt-in para listas de calidad
+3. **Personaliza tu página** - Adapta tu marca con el constructor de páginas
+4. **Monitorea estadísticas** - Rastrea tasas de conversión y engagement
+5. **Exporta regularmente** - Haz respaldo de tu lista de suscriptores

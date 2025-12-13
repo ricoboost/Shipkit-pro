@@ -1,0 +1,158 @@
+---
+title: セットアップウィザード
+description: インタラクティブなセットアップウィザードがShipKitアプリケーションの設定をガイドします。
+---
+
+# セットアップウィザード
+
+セットアップウィザードは、ShipKitアプリケーションを設定する最も速い方法です。各設定ステップをインタラクティブにガイドします。
+
+## ウィザードの実行
+
+インタラクティブウィザードを開始します：
+
+```bash
+npm run setup
+```
+
+適切なデフォルト値でクイックセットアップする場合：
+
+```bash
+npm run setup:quick
+```
+
+オプションの設定ステップをスキップする場合：
+
+```bash
+npx tsx scripts/setup/wizard.ts --skip-optional
+```
+
+## ウィザードが設定する内容
+
+ウィザードはこれらのステップを順番にガイドします：
+
+### 0. スタックセレクター（オプション）
+
+使用するAIコーディングツールとデプロイ戦略を選択します。このステップは、未使用の設定ファイルをgitで無視して肥大化を削減します：
+
+- **AIツール**: Claude Code、Cursor、Windsurf（複数選択可能）
+- **デプロイ**: VercelまたはDocker/セルフホスト
+
+[スタックセレクターの詳細を見る](/docs/cli/setup-stack)
+
+### 1. 環境変数（必須）
+
+必要なすべての設定を含む`.env`ファイルを生成します：
+
+- `DATABASE_URL` - データベース接続文字列
+- `AUTH_SECRET` - 自動生成された暗号化キー
+- `NEXT_PUBLIC_APP_URL` - アプリケーションURL
+
+### 2. データベース（必須）
+
+データベース接続を設定します。サポートされているプロバイダー：
+
+- **PostgreSQL** - 標準PostgreSQL
+- **MySQL** - MySQLデータベース
+- **SQLite** - ファイルベース（開発に最適）
+- **Supabase** - Supabase付きPostgreSQL
+- **Neon** - サーバーレスPostgreSQL
+- **PlanetScale** - サーバーレスMySQL
+
+### 3. 認証（必須）
+
+認証プロバイダーをセットアップします：
+
+- **NextAuth.js** - 柔軟でセルフホスト型の認証
+- **Supabase Auth** - Supabaseと統合
+- **Better Auth** - モダンで型安全な認証
+
+### 4. 決済（オプション）
+
+決済処理を設定します：
+
+- **Stripe** - 業界標準の決済
+- **Lemon Squeezy** - 税金処理込みのオールインワン
+- **Polar** - オープンソースフレンドリーな決済
+
+### 5. AIプロバイダー（オプション）
+
+AI/LLM統合をセットアップします：
+
+- **OpenAI** - GPT-4、GPT-3.5
+- **Anthropic** - Claudeモデル
+- **Google AI** - Geminiモデル
+- **OpenRouter** - 100以上のモデルにアクセス
+
+### 6. 管理者ユーザー（オプション）
+
+管理パネルにアクセスするための最初の管理者アカウントを作成します。
+
+## 個別セットアップコマンド
+
+各セットアップステップを個別に実行することもできます：
+
+```bash
+# スタックセレクター（肥大化を削減）
+npm run setup:stack
+
+# 環境変数
+npm run setup:env
+
+# データベース
+npm run setup:db
+
+# 認証
+npm run setup:auth
+
+# 決済
+npm run setup:payments
+
+# AIプロバイダー
+npm run setup:ai
+
+# 管理者ユーザー
+npm run setup:admin
+```
+
+## セットアップ後
+
+ウィザードが完了したら：
+
+1. `.env`ファイルを確認します
+2. 開発サーバーを起動します：
+
+```bash
+npm run dev
+```
+
+3. [http://localhost:3000](http://localhost:3000)を開きます
+4. サインインしてダッシュボードを探索します
+
+## トラブルシューティング
+
+### データベース接続に失敗
+
+データベースが実行中で、接続文字列が正しいことを確認してください：
+
+```bash
+# Prismaでテスト
+npx prisma db pull
+```
+
+### 環境変数が不足
+
+環境設定を再実行します：
+
+```bash
+npm run setup:env --interactive
+```
+
+### Prismaクライアントが生成されていない
+
+Prismaクライアントを手動で生成します：
+
+```bash
+npm run db:generate
+npm run db:push
+```

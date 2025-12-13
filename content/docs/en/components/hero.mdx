@@ -1,0 +1,268 @@
+---
+title: Hero Components
+description: Landing page hero sections with 5 different variants for various use cases
+---
+
+# Hero Components
+
+Hero sections are the first thing visitors see on your landing page. ShipKit includes 5 hero variants, each optimized for different use cases.
+
+## Available Variants
+
+| Variant | Best For | Key Feature |
+|---------|----------|-------------|
+| `HeroCentered` | General purpose | Clean, centered layout |
+| `HeroSplit` | Product showcases | Side-by-side with image |
+| `HeroVideo` | Demos & tutorials | Background video support |
+| `HeroGradient` | Visual impact | Animated gradient backgrounds |
+| `HeroMinimal` | Simple messaging | Distraction-free design |
+
+## Common Props
+
+All hero components share these props through the `HeroProps` interface:
+
+```typescript
+interface HeroProps {
+  title: string;                    // Main headline
+  subtitle?: string;                // Optional subtitle above title
+  description?: string;             // Supporting text below title
+  primaryCTA?: CTAButton;           // Primary action button
+  secondaryCTA?: CTAButton;         // Secondary action button
+  badge?: string;                   // Optional badge/pill above content
+  animated?: boolean;               // Enable/disable animations (default: true)
+  colorScheme?: ColorScheme;        // Color theme
+  className?: string;               // Additional CSS classes
+}
+
+interface CTAButton {
+  label: string;
+  href: string;
+  variant?: 'default' | 'outline' | 'ghost';
+}
+```
+
+---
+
+## HeroCentered
+
+The most versatile hero variant with center-aligned content.
+
+### Usage
+
+```tsx
+import { HeroCentered } from '@/components/marketing/hero/hero-centered';
+
+export function LandingHero() {
+  return (
+    <HeroCentered
+      title="Ship Your SaaS in Days, Not Months"
+      subtitle="The Modern Boilerplate"
+      description="Everything you need to launch a production-ready SaaS application with authentication, payments, and AI integration."
+      badge="New: v3.0 Released"
+      primaryCTA={{
+        label: 'Start Building',
+        href: '/register',
+      }}
+      secondaryCTA={{
+        label: 'View Demo',
+        href: '/demo',
+      }}
+      colorScheme="primary"
+    />
+  );
+}
+```
+
+### Props
+
+Extends `HeroProps` with variant-specific styling options.
+
+---
+
+## HeroSplit
+
+Side-by-side layout with content on one side and an image on the other.
+
+### Usage
+
+```tsx
+import { HeroSplit } from '@/components/marketing/hero/hero-split';
+
+export function ProductHero() {
+  return (
+    <HeroSplit
+      title="Beautiful Dashboard Included"
+      description="A fully functional admin dashboard with analytics, user management, and more."
+      primaryCTA={{ label: 'Get Started', href: '/register' }}
+      image={{
+        src: '/images/dashboard-preview.png',
+        alt: 'Dashboard Preview',
+        width: 800,
+        height: 600,
+      }}
+      imagePosition="right"
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface HeroSplitProps extends HeroProps {
+  image?: {
+    src: string;
+    alt: string;
+    width?: number;
+    height?: number;
+  };
+  imagePosition?: 'left' | 'right';  // Default: 'right'
+}
+```
+
+---
+
+## HeroVideo
+
+Hero section with background video for maximum visual impact.
+
+### Usage
+
+```tsx
+import { HeroVideo } from '@/components/marketing/hero/hero-video';
+
+export function VideoHero() {
+  return (
+    <HeroVideo
+      title="See It in Action"
+      description="Watch how easy it is to build with ShipKit"
+      primaryCTA={{ label: 'Try Free', href: '/register' }}
+      video={{
+        src: '/videos/demo.mp4',
+        poster: '/images/video-poster.jpg',
+      }}
+      overlay={true}
+      overlayOpacity={0.6}
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface HeroVideoProps extends HeroProps {
+  video?: {
+    src: string;
+    poster?: string;
+  };
+  overlay?: boolean;           // Dark overlay over video
+  overlayOpacity?: number;     // Overlay opacity (0-1)
+  autoPlay?: boolean;          // Auto-play video (default: true)
+  loop?: boolean;              // Loop video (default: true)
+  muted?: boolean;             // Mute video (default: true)
+}
+```
+
+---
+
+## HeroGradient
+
+Animated gradient background for a modern, dynamic look.
+
+### Usage
+
+```tsx
+import { HeroGradient } from '@/components/marketing/hero/hero-gradient';
+
+export function GradientHero() {
+  return (
+    <HeroGradient
+      title="The Future of SaaS Development"
+      description="AI-native, fully customizable, and ready to ship"
+      primaryCTA={{ label: 'Get Started', href: '/register' }}
+      gradientColors={['#8B5CF6', '#EC4899', '#3B82F6']}
+      animationDuration={8}
+    />
+  );
+}
+```
+
+### Additional Props
+
+```typescript
+interface HeroGradientProps extends HeroProps {
+  gradientColors?: string[];      // Array of gradient colors
+  gradientDirection?: string;     // CSS gradient direction
+  animationDuration?: number;     // Animation cycle duration in seconds
+}
+```
+
+---
+
+## HeroMinimal
+
+Clean, distraction-free hero for focused messaging.
+
+### Usage
+
+```tsx
+import { HeroMinimal } from '@/components/marketing/hero/hero-minimal';
+
+export function MinimalHero() {
+  return (
+    <HeroMinimal
+      title="Simple. Fast. Powerful."
+      description="Just the essentials, nothing more."
+      primaryCTA={{ label: 'Learn More', href: '/features' }}
+    />
+  );
+}
+```
+
+---
+
+## Color Schemes
+
+All hero variants support 5 color schemes:
+
+```tsx
+// Primary (default) - Uses your primary brand color
+<HeroCentered colorScheme="primary" {...props} />
+
+// Secondary - Subtle secondary background
+<HeroCentered colorScheme="secondary" {...props} />
+
+// Accent - Eye-catching accent color
+<HeroCentered colorScheme="accent" {...props} />
+
+// Muted - Subdued, neutral tones
+<HeroCentered colorScheme="muted" {...props} />
+
+// Destructive - Warning/alert style (rare use)
+<HeroCentered colorScheme="destructive" {...props} />
+```
+
+## Disabling Animations
+
+All components have animations enabled by default. Disable them for better accessibility or performance:
+
+```tsx
+<HeroCentered animated={false} {...props} />
+```
+
+## Responsive Behavior
+
+All hero components are fully responsive:
+
+- **Mobile**: Single column, stacked layout
+- **Tablet**: Adjusted padding and font sizes
+- **Desktop**: Full layout with optimal spacing
+
+```tsx
+// Custom responsive adjustments via className
+<HeroCentered
+  className="min-h-[50vh] md:min-h-[70vh] lg:min-h-[80vh]"
+  {...props}
+/>
+```

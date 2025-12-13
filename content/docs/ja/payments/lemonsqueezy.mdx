@@ -1,0 +1,66 @@
+---
+title: LemonSqueezy
+description: LemonSqueezyをMerchant of Recordとして設定します。
+---
+
+# LemonSqueezyのセットアップ
+
+LemonSqueezyはMerchant of Recordとして機能し、税金とコンプライアンスを処理します。
+
+## 設定
+
+```bash
+PAYMENT_PROVIDER="lemonsqueezy"
+LEMONSQUEEZY_API_KEY="your-api-key"
+LEMONSQUEEZY_STORE_ID="your-store-id"
+LEMONSQUEEZY_WEBHOOK_SECRET="your-webhook-secret"
+```
+
+## 認証情報の取得
+
+1. [lemonsqueezy.com](https://lemonsqueezy.com)でアカウントを作成
+2. Settings > APIに移動
+3. APIキーを作成
+4. Settings > StoresからStore IDを取得
+5. Settings > WebhooksでWebhookを設定
+
+## 製品を作成
+
+1. Productsに移動
+2. 各プラン用の製品を作成
+3. 月次/年次のバリアントを設定
+4. バリアントIDを`src/config/plans.ts`にコピー
+
+## 実装
+
+```typescript
+// src/lib/payments/lemonsqueezy.ts
+import { lemonSqueezySetup, createCheckout } from '@lemonsqueezy/lemonsqueezy.js';
+
+lemonSqueezySetup({ apiKey: process.env.LEMONSQUEEZY_API_KEY! });
+
+export const lemonProvider: PaymentProvider = {
+  async createCheckout({ priceId, userId, successUrl }) {
+    const checkout = await createCheckout(
+      process.env.LEMONSQUEEZY_STORE_ID!,
+      priceId,
+      {
+        checkoutData: {
+          custom: { user_id: userId },
+        },
+        productOptions: {
+          redirectUrl: successUrl,
+        },
+      }
+    );
+    return { url: checkout.data.attributes.url };
+  },
+};
+```
+
+## メリット
+
+- グローバルに売上税を処理
+- EU VAT コンプライアンスが含まれる
+- Stripe Atlas不要
+- 組み込みアフィリエイトシステム

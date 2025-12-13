@@ -1,0 +1,162 @@
+---
+title: プロジェクト構造
+description: ShipKitのコードベースの構成とファイル構造を理解する。
+---
+
+# プロジェクト構造
+
+ShipKitはNext.js App Routerの規則に基づいた整理された構造に従っています。
+
+## ディレクトリ概要
+
+```
+shipkit/
+├── content/
+│   └── docs/           # ドキュメントMDXファイル
+├── prisma/
+│   └── schema.prisma   # データベーススキーマ
+├── public/             # 静的アセット
+├── src/
+│   ├── app/            # Next.js App Routerページ
+│   ├── components/     # Reactコンポーネント
+│   ├── config/         # 設定ファイル
+│   ├── hooks/          # カスタムReact Hooks
+│   ├── lib/            # コアライブラリとユーティリティ
+│   └── middleware.ts   # Next.jsミドルウェア
+├── .env.example        # 環境変数テンプレート
+├── next.config.ts      # Next.js設定
+└── package.json        # 依存関係
+```
+
+## Appディレクトリ (`src/app/`)
+
+```
+src/app/
+├── (admin)/            # 管理ダッシュボードルート
+│   ├── admin/
+│   │   ├── page.tsx    # 管理者概要
+│   │   ├── users/      # ユーザー管理
+│   │   ├── analytics/  # 分析ダッシュボード
+│   │   └── subscriptions/
+│   └── layout.tsx      # 管理レイアウト
+├── (auth)/             # 認証ルート
+│   ├── login/          # ログインページ
+│   ├── register/       # 登録ページ
+│   └── layout.tsx      # 認証レイアウト
+├── (dashboard)/        # ユーザーダッシュボードルート
+│   ├── dashboard/      # メインダッシュボード
+│   ├── ai-playground/  # AIデモインターフェース
+│   ├── settings/       # ユーザー設定
+│   │   ├── profile/
+│   │   ├── billing/
+│   │   ├── api-keys/
+│   │   └── theme/
+│   └── layout.tsx      # ダッシュボードレイアウト
+├── (marketing)/        # 公開マーケティングページ
+│   ├── page.tsx        # ランディングページ
+│   ├── pricing/        # 価格ページ
+│   ├── blog/           # ブログページ
+│   └── layout.tsx      # マーケティングレイアウト
+├── api/                # APIルート
+│   ├── auth/           # 認証エンドポイント
+│   ├── payments/       # 決済エンドポイント
+│   ├── ai/             # AIエンドポイント
+│   ├── organizations/  # 組織エンドポイント
+│   └── newsletter/     # ニュースレターエンドポイント
+├── docs/               # ドキュメントページ
+└── layout.tsx          # ルートレイアウト
+```
+
+## ライブラリディレクトリ (`src/lib/`)
+
+コア機能はプロバイダー非依存のモジュールに整理されています:
+
+```
+src/lib/
+├── auth/               # 認証抽象化
+│   ├── index.ts        # 統一認証インターフェース
+│   ├── types.ts        # TypeScript型
+│   ├── nextauth.ts     # NextAuth実装
+│   ├── supabase.ts     # Supabase実装
+│   └── betterauth.ts   # Better Auth実装
+├── payments/           # 決済抽象化
+│   ├── index.ts        # 統一決済インターフェース
+│   ├── types.ts        # TypeScript型
+│   ├── stripe.ts       # Stripe実装
+│   ├── lemonsqueezy.ts # LemonSqueezy実装
+│   ├── polar.ts        # Polar実装
+│   └── credits.ts      # クレジットシステム
+├── ai/                 # AI抽象化
+│   ├── index.ts        # 統一AIインターフェース
+│   ├── types.ts        # TypeScript型
+│   ├── openrouter.ts   # OpenRouter実装
+│   └── vercel.ts       # Vercel AI実装
+├── organizations/      # チーム/組織管理
+├── blog/               # ブログユーティリティ
+├── newsletter/         # ニュースレターシステム
+├── theme/              # テーマシステム
+├── admin/              # 管理ユーティリティ
+├── security/           # レート制限、ヘッダー
+├── onboarding/         # ユーザーオンボーディング
+├── referrals/          # 紹介システム
+├── rpc/                # 型安全RPC (oRPC)
+├── db.ts               # データベースクライアント
+└── utils.ts            # ユーティリティ関数
+```
+
+## コンポーネントディレクトリ (`src/components/`)
+
+```
+src/components/
+├── ui/                 # shadcn/ui基本コンポーネント
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── dialog.tsx
+│   └── ...
+├── auth/               # 認証コンポーネント
+│   ├── login-form.tsx
+│   ├── register-form.tsx
+│   └── social-buttons.tsx
+├── layout/             # レイアウトコンポーネント
+│   ├── header.tsx
+│   ├── footer.tsx
+│   ├── sidebar.tsx
+│   └── dashboard-header.tsx
+├── blog/               # ブログコンポーネント
+├── newsletter/         # ニュースレターコンポーネント
+├── theme/              # テーマビルダー
+├── onboarding/         # オンボーディングウィザード
+└── providers.tsx       # React Contextプロバイダー
+```
+
+## 重要な概念
+
+### ルートグループ
+
+ルートグループ `(groupName)` はURLに影響を与えずにルートを整理します:
+
+- `(marketing)` - `/`, `/pricing`, `/blog`の公開ページ
+- `(auth)` - `/login`, `/register`の認証ページ
+- `(dashboard)` - `/dashboard`, `/settings`のユーザーページ
+- `(admin)` - `/admin`の管理ページ
+
+### プロバイダー抽象化
+
+各主要機能は統一されたインターフェースを使用します:
+
+```typescript
+// lib/auth/index.ts が統一インターフェースをエクスポート
+export const auth = getAuthProvider(); // 設定されたプロバイダーを返す
+
+// 使用方法はプロバイダーに関係なく同じ
+const session = await auth.getSession();
+```
+
+### 型安全性
+
+すべてのAPIはZodを検証に、oRPCを型安全なエンドポイントに使用します:
+
+```typescript
+// 完全に型付けされたAPI呼び出し
+const result = await rpc.users.getProfile.query();
+```

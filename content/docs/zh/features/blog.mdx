@@ -1,0 +1,96 @@
+---
+title: 博客系统
+description: 使用ShipKit的MDX驱动博客。
+---
+
+# 博客系统
+
+ShipKit包含一个使用MDX的功能完整的博客系统。
+
+## 结构
+
+```
+content/
+└── blog/
+    ├── getting-started.mdx
+    ├── how-to-use-ai.mdx
+    └── release-notes.mdx
+```
+
+## 创建文章
+
+在`content/blog/`中创建MDX文件：
+
+```mdx
+---
+title: Getting Started with ShipKit
+description: Learn how to build your SaaS with ShipKit
+date: 2024-01-15
+author: Your Name
+image: /blog/getting-started.png
+tags: [tutorial, getting-started]
+---
+
+# Getting Started
+
+Your content here...
+```
+
+## Frontmatter字段
+
+| 字段 | 必需 | 描述 |
+|-------|----------|-------------|
+| title | 是 | 文章标题 |
+| description | 是 | SEO描述 |
+| date | 是 | 发布日期 |
+| author | 否 | 作者姓名 |
+| image | 否 | 特色图片 |
+| tags | 否 | 标签数组 |
+
+## 组件
+
+### 文章卡片
+
+```tsx
+import { PostCard } from '@/components/blog/post-card';
+
+<PostCard
+  title={post.title}
+  description={post.description}
+  date={post.date}
+  slug={post.slug}
+/>
+```
+
+### 博客页面
+
+```tsx
+// src/app/(marketing)/blog/page.tsx
+import { getBlogPosts } from '@/lib/blog';
+
+export default async function BlogPage() {
+  const posts = await getBlogPosts();
+
+  return (
+    <div className="grid gap-6">
+      {posts.map(post => (
+        <PostCard key={post.slug} {...post} />
+      ))}
+    </div>
+  );
+}
+```
+
+## MDX组件
+
+在文章中使用自定义组件：
+
+```mdx
+<Callout type="info">
+  This is an info callout
+</Callout>
+
+<CodeBlock language="typescript">
+const hello = "world";
+</CodeBlock>
+```

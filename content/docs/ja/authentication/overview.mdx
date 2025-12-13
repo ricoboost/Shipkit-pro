@@ -1,0 +1,151 @@
+---
+title: 認証の概要
+description: ShipKitは統一されたインターフェースで複数の認証プロバイダーをサポートしています。
+---
+
+# 認証
+
+ShipKitは、複数のプロバイダーをサポートする統一された認証レイヤーを提供します。単一の環境変数で切り替えることができます。
+
+## サポートされているプロバイダー
+
+<Cards>
+  <Card title="NextAuth.js" href="/docs/authentication/nextauth">
+    OAuth、資格情報、マジックリンクを備えた柔軟なセルフホスト型認証。
+  </Card>
+  <Card title="Supabase Auth" href="/docs/authentication/supabase">
+    Supabaseデータベースと統合され、OAuth、メール、電話認証をサポート。
+  </Card>
+  <Card title="Better Auth" href="/docs/authentication/better-auth">
+    優れたTypeScriptサポートを備えた最新の認証ライブラリ。
+  </Card>
+</Cards>
+
+## プロバイダーの切り替え
+
+`AUTH_PROVIDER` 環境変数を変更します：
+
+```bash
+# .env
+AUTH_PROVIDER="nextauth"  # または "supabase" または "betterauth"
+```
+
+これだけです！統一されたインターフェースが残りを処理します。
+
+## 統一されたインターフェース
+
+すべてのプロバイダーは同じインターフェースを実装しています：
+
+```typescript
+// src/lib/auth/types.ts
+export interface AuthProvider {
+  signIn(credentials: SignInCredentials): Promise<AuthResult>;
+  signUp(credentials: SignUpCredentials): Promise<AuthResult>;
+  signOut(): Promise<void>;
+  getSession(): Promise<Session | null>;
+  getUser(): Promise<User | null>;
+}
+```
+
+## コンポーネントでの使用
+
+```tsx
+'use client';
+
+import { useAuth } from '@/hooks/use-auth';
+
+export function ProfileButton() {
+  const { user, signOut, isLoading } = useAuth();
+
+  if (isLoading) return <Skeleton />;
+  if (!user) return <LoginButton />;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Avatar src={user.image} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => signOut()}>
+          サインアウト
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+```
+
+## サーバーコンポーネントでの使用
+
+```tsx
+import { auth } from '@/lib/auth';
+
+export default async function DashboardPage() {
+  const session = await auth.getSession();
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  return <Dashboard user={session.user} />;
+}
+```
+
+## APIルート
+
+```typescript
+// src/app/api/protected/route.ts
+import { auth } from '@/lib/auth';
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  const session = await auth.getSession();
+
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  return NextResponse.json({ data: 'Protected data' });
+}
+```
+
+## ミドルウェア保護
+
+```typescript
+// src/middleware.ts
+import { auth } from '@/lib/auth';
+
+export async function middleware(request: NextRequest) {
+  const session = await auth.getSession();
+
+  if (!session && request.nextUrl.pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+}
+```
+
+## OAuthプロバイダー
+
+`.env` でOAuthプロバイダーを設定します：
+
+```bash
+# Google
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+
+# GitHub
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+
+# Discord
+DISCORD_CLIENT_ID=""
+DISCORD_CLIENT_SECRET=""
+```
+
+## 次のステップ
+
+お好みの認証プロバイダーを選択してください：
+
+- [NextAuth.jsのセットアップ](/docs/authentication/nextauth)
+- [Supabase Authのセットアップ](/docs/authentication/supabase)
+- [Better Authのセットアップ](/docs/authentication/better-auth)

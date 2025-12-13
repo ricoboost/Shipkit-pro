@@ -1,0 +1,271 @@
+---
+title: 主题构建器
+description: 用于创建和导出自定义色彩方案的可视化主题自定义界面
+---
+
+# 主题构建器
+
+主题构建器组件提供可视化界面来自定义应用程序的主题颜色,具有实时预览和 CSS 导出功能。
+
+## 概述
+
+主要功能:
+- **5 个预构建预设**: 从专业设计的色彩方案开始
+- **HSL 颜色选择器**: 使用色调、饱和度和亮度控件微调任何颜色
+- **亮色/暗色模式**: 独立自定义两种模式的颜色
+- **实时预览**: 通过预览组件立即查看更改
+- **CSS 导出**: 将自定义主题下载为 CSS
+
+## 使用方法
+
+### 基本实现
+
+```tsx
+import { ThemeBuilder } from '@/components/theme/theme-builder';
+
+export default function ThemeSettingsPage() {
+  return (
+    <div className="container py-8">
+      <h1 className="text-3xl font-bold mb-8">自定义主题</h1>
+      <ThemeBuilder />
+    </div>
+  );
+}
+```
+
+主题构建器也可在 `/admin/theme` 的管理仪表板中使用。
+
+---
+
+## 主题预设
+
+包含五个专业设计的预设:
+
+| 预设 | 主要颜色 | 风格 |
+|--------|---------------|-------|
+| Default | 紫色 | 现代、中性 |
+| Ocean | 蓝色 | 专业、平静 |
+| Forest | 绿色 | 自然、有机 |
+| Sunset | 橙色 | 温暖、充满活力 |
+| Midnight | 深蓝色 | 深色、优雅 |
+
+### 选择预设
+
+预设用作起点。点击任何预设卡片以应用它,然后根据需要自定义单个颜色。
+
+```tsx
+// 预设在 src/lib/theme.ts 中定义
+export const themePresets = {
+  default: {
+    name: 'Default',
+    light: { primary: '262 83% 58%', /* ... */ },
+    dark: { primary: '263 70% 50%', /* ... */ },
+    radius: '0.5rem',
+  },
+  ocean: { /* ... */ },
+  forest: { /* ... */ },
+  sunset: { /* ... */ },
+  midnight: { /* ... */ },
+};
+```
+
+---
+
+## 颜色组
+
+颜色分为四组:
+
+### 基础颜色
+- `background` - 页面背景
+- `foreground` - 主要文本颜色
+- `card` - 卡片背景
+- `cardForeground` - 卡片上的文本
+
+### 主要和次要
+- `primary` - 主要品牌颜色
+- `primaryForeground` - 主要背景上的文本
+- `secondary` - 次要品牌颜色
+- `secondaryForeground` - 次要背景上的文本
+
+### UI 元素
+- `muted` - 柔和的背景
+- `mutedForeground` - 柔和的文本
+- `accent` - 强调高亮
+- `accentForeground` - 强调上的文本
+
+### 反馈和边框
+- `destructive` - 错误/危险颜色
+- `destructiveForeground` - 破坏性上的文本
+- `border` - 边框颜色
+- `input` - 输入边框颜色
+- `ring` - 焦点环颜色
+
+---
+
+## HSL 颜色选择器
+
+每种颜色都使用 HSL(色调、饱和度、亮度)滑块控制:
+
+| 滑块 | 范围 | 描述 |
+|--------|-------|-------------|
+| H (色调) | 0-360 | 基础颜色(红色=0,绿色=120,蓝色=240) |
+| S (饱和度) | 0-100% | 颜色强度(0=灰色,100=鲜艳) |
+| L (亮度) | 0-100% | 亮度(0=黑色,50=纯色,100=白色) |
+
+### 为什么使用 HSL?
+
+HSL 使创建一致的调色板变得容易:
+- 保持相同的**色调**以保持颜色一致性
+- 调整**饱和度**以改变强度
+- 调整**亮度**以获得对比度(前景色通常位于相反的两端)
+
+---
+
+## 边框半径
+
+全局控制 UI 元素的圆度:
+
+| 值 | 风格 | 最适合 |
+|-------|-------|----------|
+| 0rem | 尖角 | 简约、现代 |
+| 0.25rem | 微妙的圆角 | 专业 |
+| 0.5rem | 中等圆角 | 平衡(默认) |
+| 0.75rem | 更圆润 | 友好 |
+| 1rem+ | 非常圆润 | 有趣、柔和 |
+
+---
+
+## 实时预览
+
+预览面板显示:
+- **按钮**: 所有变体(主要、次要、轮廓、破坏性)
+- **徽章**: 不同的徽章样式
+- **柔和区域**: 柔和背景上的文本
+- **嵌套卡片**: 卡片上的卡片外观
+
+使用它来验证对比度和视觉和谐,然后再导出。
+
+---
+
+## 导出您的主题
+
+点击**导出 CSS**下载您的自定义主题:
+
+```css
+/* 生成的 theme.css */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --primary: 262 83% 58%;
+  --primary-foreground: 210 40% 98%;
+  /* ... 所有颜色 */
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  /* ... 暗色模式颜色 */
+}
+```
+
+### 应用导出的主题
+
+1. 将导出的 CSS 复制到 `src/app/globals.css`
+2. 替换现有的 `:root` 和 `.dark` 颜色变量
+3. 主题将自动应用
+
+---
+
+## 主题持久化
+
+主题会自动保存到 localStorage:
+
+```typescript
+// 主题选择被持久化
+const saved = getSavedTheme();  // 返回预设名称或 'default'
+
+// 手动保存
+saveTheme('ocean');
+
+// 应用主题
+applyTheme(themeConfig);
+```
+
+---
+
+## 编程使用
+
+您也可以直接使用主题工具:
+
+```tsx
+import {
+  themePresets,
+  applyTheme,
+  saveTheme,
+  getSavedTheme,
+  exportThemeCSS,
+  type ThemeConfig,
+} from '@/lib/theme';
+
+// 应用预设
+applyTheme(themePresets.ocean);
+
+// 保存用户偏好
+saveTheme('ocean');
+
+// 获取自定义实现的 CSS
+const css = exportThemeCSS(customTheme);
+```
+
+---
+
+## 服务器端主题加载
+
+对于 SSR,使用 `ServerThemeLoader` 组件防止未样式化内容的闪烁:
+
+```tsx
+// 在根布局中
+import { ServerThemeLoader } from '@/components/theme/server-theme-loader';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <head>
+        <ServerThemeLoader />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+这会注入一个脚本,在页面渲染之前应用保存的主题。
+
+---
+
+## 最佳实践
+
+### 对比度比率
+确保前景色和背景色之间有足够的对比度:
+- **普通文本**: 最小 4.5:1 对比度比率
+- **大文本**: 最小 3:1 对比度比率
+
+### 暗色模式注意事项
+- 不要只是反转颜色 - 暗色模式需要不同的饱和度级别
+- 对深色背景稍微降低饱和度
+- 确保边框保持可见
+
+### 品牌一致性
+- 对 `primary` 变量使用您品牌的主要颜色
+- 保持 `secondary` 和 `accent` 互补
+- 使用真实内容进行测试,而不仅仅是预览
+
+---
+
+## 相关内容
+
+- [主题功能](/docs/features/theming) - 主题系统概述
+- [UI 原语](/docs/components/ui-primitives) - 自定义基础组件

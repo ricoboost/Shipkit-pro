@@ -1,0 +1,231 @@
+---
+title: AI Provider Setup
+description: Configure AI/LLM integration with OpenAI, Anthropic, Google AI, or OpenRouter.
+---
+
+# AI Provider Setup
+
+The AI setup command helps you configure your AI/LLM provider for ShipKit's AI features.
+
+## Quick Start
+
+```bash
+npm run setup:ai
+```
+
+## Supported Providers
+
+### OpenAI
+
+GPT-4, GPT-3.5, and embedding models.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider openai
+```
+
+**Required:** `OPENAI_API_KEY`
+
+**Available models:**
+- `gpt-4o` - Most capable, multimodal
+- `gpt-4o-mini` - Fast and affordable
+- `gpt-4-turbo` - Previous generation flagship
+- `gpt-3.5-turbo` - Fast, good for simple tasks
+
+**Get API key:** [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+
+### Anthropic
+
+Claude 3.5 Sonnet, Claude 3 Opus, and other Claude models.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider anthropic
+```
+
+**Required:** `ANTHROPIC_API_KEY`
+
+**Available models:**
+- `claude-3-5-sonnet-20241022` - Best balance of speed and capability
+- `claude-3-opus-20240229` - Most capable for complex tasks
+- `claude-3-haiku-20240307` - Fastest, most affordable
+
+**Get API key:** [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+
+### Google AI (Gemini)
+
+Gemini Pro, Gemini Flash, and other Google models.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider google
+```
+
+**Required:** `GOOGLE_GENERATIVE_AI_API_KEY`
+
+**Available models:**
+- `gemini-1.5-pro` - Most capable
+- `gemini-1.5-flash` - Fast and efficient
+- `gemini-pro` - Previous generation
+
+**Get API key:** [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+
+### OpenRouter
+
+Access 100+ models through one API.
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider openrouter
+```
+
+**Required:** `OPENROUTER_API_KEY`
+
+**Available models:**
+- All OpenAI models
+- All Anthropic models
+- Meta Llama models
+- Mistral models
+- And many more
+
+**Get API key:** [openrouter.ai/keys](https://openrouter.ai/keys)
+
+## What the Setup Does
+
+1. **Prompts for provider** - Select your AI provider
+2. **Updates `.env`** - Sets `AI_PROVIDER` variable
+3. **Configures API key** - Helps set the appropriate key
+4. **Validates format** - Checks API key format
+5. **Shows available models** - Lists models you can use
+
+## Using AI in Your Application
+
+After setup, you can use the AI SDK throughout your application:
+
+### Basic Chat Completion
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const response = await ai.chat({
+  model: 'gpt-4o',
+  messages: [
+    { role: 'system', content: 'You are a helpful assistant.' },
+    { role: 'user', content: 'Hello!' }
+  ],
+});
+
+console.log(response.content);
+```
+
+### Streaming Responses
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const stream = await ai.chatStream({
+  model: 'claude-3-5-sonnet-20241022',
+  messages: [
+    { role: 'user', content: 'Write a short story about a robot.' }
+  ],
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk);
+}
+```
+
+### Text Embeddings
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const embedding = await ai.embed({
+  model: 'text-embedding-3-small',
+  input: 'The quick brown fox jumps over the lazy dog.',
+});
+
+console.log(embedding.vector);
+```
+
+## Testing Your Setup
+
+Visit the AI Playground at `/ai-playground` to test your configuration:
+
+1. Select a model from the dropdown
+2. Type a message
+3. See the AI response in real-time
+
+## Environment Variables Reference
+
+```bash
+# AI Provider selection
+AI_PROVIDER="openai"  # or "anthropic", "google", "openrouter"
+
+# OpenAI
+OPENAI_API_KEY="sk-..."
+
+# Anthropic
+ANTHROPIC_API_KEY="sk-ant-..."
+
+# Google AI
+GOOGLE_GENERATIVE_AI_API_KEY="..."
+
+# OpenRouter
+OPENROUTER_API_KEY="sk-or-..."
+```
+
+## Switching Providers
+
+To switch between AI providers:
+
+1. Run the setup command:
+   ```bash
+   npm run setup:ai
+   ```
+
+2. Select your new provider
+
+3. The code automatically uses the configured provider:
+   ```typescript
+   // This works with any provider
+   const response = await ai.chat({
+     model: 'gpt-4o', // or claude, gemini, etc.
+     messages: [...]
+   });
+   ```
+
+## Cost Considerations
+
+| Provider | Pricing Model |
+|----------|---------------|
+| OpenAI | Per token (input/output) |
+| Anthropic | Per token (input/output) |
+| Google AI | Free tier available, then per token |
+| OpenRouter | Pay-per-use, varies by model |
+
+**Tips for cost management:**
+- Use smaller models for simple tasks
+- Implement caching for repeated queries
+- Set `maxTokens` to limit response length
+- Use streaming for better UX without extra cost
+
+## Troubleshooting
+
+### "Invalid API key"
+
+Verify your API key format:
+- OpenAI: Starts with `sk-`
+- Anthropic: Starts with `sk-ant-`
+- OpenRouter: Starts with `sk-or-`
+
+### "Model not found"
+
+Check the model name matches exactly. Model names are case-sensitive.
+
+### "Rate limit exceeded"
+
+You've hit the API rate limit. Solutions:
+- Wait and retry
+- Upgrade your API plan
+- Implement exponential backoff
+
+### "Insufficient quota"
+
+Add billing information or credits to your AI provider account.

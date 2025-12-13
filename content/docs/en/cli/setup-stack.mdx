@@ -1,0 +1,167 @@
+---
+title: Stack Selector
+description: Reduce boilerplate bloat by selecting only the AI coding tools and deployment strategy you need.
+---
+
+# Stack Selector
+
+The Stack Selector is an optional onboarding step that helps reduce boilerplate bloat by gitignoring unused configurations. Instead of keeping all AI tool configs and deployment files, you choose what you actually use.
+
+## Why Use It?
+
+ShipKit includes configuration files for multiple AI coding tools and deployment strategies:
+
+| Category | Files | Size |
+|----------|-------|------|
+| Claude Code | `.claude/`, `CLAUDE.md` | ~265KB |
+| Cursor | `.cursor/` | ~8KB |
+| Windsurf | `.windsurfrules` | ~1KB |
+| Docker | `Dockerfile`, `docker-compose*.yml`, `nginx/` | ~15KB |
+
+If you only use Claude Code and deploy to Vercel, you can gitignore the rest and keep your project clean.
+
+## Running the Stack Selector
+
+### Interactive Mode
+
+```bash
+npm run setup:stack
+```
+
+This opens an interactive prompt:
+
+```
+Stack Selector (Optional)
+
+This step helps reduce boilerplate bloat by gitignoring unused
+configurations. You can skip this to keep all options.
+
+Which AI coding tool(s) will you use? (select multiple with commas)
+   [1] Claude Code
+   [2] Cursor
+   [3] Windsurf
+   [a] All / Keep all (default)
+   [s] Skip this step
+
+Your choice: 1,2
+
+Which deployment strategy will you use?
+   [1] Vercel (recommended for Next.js)
+   [2] Docker / Self-hosted
+   [s] Skip this step
+
+Your choice: 1
+```
+
+### Check Current Configuration
+
+```bash
+npm run setup:stack -- --list
+```
+
+### Restore All Files
+
+If you change your mind, restore all gitignored files:
+
+```bash
+npm run setup:stack -- --restore
+```
+
+## What Gets Gitignored
+
+Based on your selections, the Stack Selector adds entries to your `.gitignore`:
+
+### AI Coding Tools
+
+| Tool | Files Gitignored |
+|------|------------------|
+| Claude Code | `.claude/`, `CLAUDE.md` |
+| Cursor | `.cursor/` |
+| Windsurf | `.windsurfrules` |
+
+**Note:** `AGENTS.md` is kept if any AI tool is selected.
+
+### Deployment Strategy
+
+| Selection | Files Gitignored |
+|-----------|------------------|
+| Vercel | `Dockerfile`, `docker-compose.yml`, `docker-compose.dev.yml`, `.dockerignore`, `nginx/` |
+| Docker | None (all Docker files kept) |
+
+**Note:** `.github/` workflows are always kept for both strategies.
+
+## Configuration File
+
+The Stack Selector creates `.stack-config.json` to track your choices:
+
+```json
+{
+  "selectedAt": "2024-12-13T10:30:00.000Z",
+  "codingTools": ["claude", "cursor"],
+  "deployment": "vercel",
+  "gitignored": [
+    ".windsurfrules",
+    "Dockerfile",
+    "docker-compose.yml",
+    "docker-compose.dev.yml",
+    ".dockerignore",
+    "nginx/"
+  ]
+}
+```
+
+This file enables the `--restore` command to work properly.
+
+## Integration with Setup Wizard
+
+The Stack Selector is the first optional step when running the full setup wizard:
+
+```bash
+npm run setup
+```
+
+The wizard flow is:
+
+1. **Stack Selector** (Optional) - Choose your tools
+2. Environment Variables (Required)
+3. Database (Required)
+4. Authentication (Required)
+5. Payments (Optional)
+6. AI Provider (Optional)
+7. Admin User (Optional)
+
+## Best Practices
+
+### When to Use Stack Selector
+
+- Starting a new project with specific tooling
+- Cleaning up after cloning the boilerplate
+- Reducing noise in your file explorer
+
+### When to Skip
+
+- Evaluating multiple AI coding tools
+- Planning to switch deployment strategies
+- Working in a team with mixed tooling preferences
+
+## Troubleshooting
+
+### Files Still Showing After Selection
+
+The Stack Selector only adds files to `.gitignore` - it doesn't delete them. The files remain in your working directory but won't be committed to git.
+
+### Want to Delete Files Instead
+
+After running the Stack Selector, you can manually delete the gitignored files:
+
+```bash
+# View what's gitignored
+npm run setup:stack -- --list
+
+# Manually delete if desired
+rm -rf .cursor .windsurfrules
+```
+
+### Restore Not Working
+
+Make sure `.stack-config.json` exists. If it was deleted, you'll need to manually remove the Stack Selector section from `.gitignore`.

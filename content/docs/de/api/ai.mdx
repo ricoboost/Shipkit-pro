@@ -1,0 +1,81 @@
+---
+title: KI-API
+description: API-Referenz für KI-Endpunkte.
+---
+
+# KI-API
+
+## Endpunkte
+
+### Chat-Vervollständigung
+
+KI-Chat-Antworten mit Streaming-Unterstützung generieren.
+
+```http
+POST /api/ai/chat
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "messages": [
+    { "role": "system", "content": "You are a helpful assistant." },
+    { "role": "user", "content": "Hello!" }
+  ],
+  "model": "gpt-4-turbo",
+  "stream": true
+}
+```
+
+**Antwort (ohne Streaming):**
+
+```json
+{
+  "content": "Hello! How can I help you today?",
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 10,
+    "total_tokens": 30
+  }
+}
+```
+
+**Antwort (mit Streaming):**
+
+Server-Sent Events Stream:
+
+```
+data: {"content": "Hello"}
+data: {"content": "!"}
+data: {"content": " How"}
+data: {"content": " can"}
+data: [DONE]
+```
+
+## Parameter
+
+| Parameter | Typ | Beschreibung |
+|-----------|-----|--------------|
+| messages | array | Konversationsnachrichten |
+| model | string | Modell-ID (optional) |
+| stream | boolean | Streaming aktivieren |
+| temperature | number | Zufälligkeit (0-2) |
+| maxTokens | number | Maximale Antwortlänge |
+
+## Verfügbare Modelle
+
+| Modell | Anbieter |
+|--------|----------|
+| gpt-4-turbo | OpenAI |
+| gpt-3.5-turbo | OpenAI |
+| claude-3-opus | Anthropic |
+| claude-3-sonnet | Anthropic |
+| gemini-pro | Google |
+
+## Fehlercodes
+
+| Code | Beschreibung |
+|------|--------------|
+| 401 | Nicht autorisiert |
+| 402 | Unzureichende Guthaben |
+| 429 | Ratenlimit überschritten |
+| 500 | KI-Anbieter-Fehler |

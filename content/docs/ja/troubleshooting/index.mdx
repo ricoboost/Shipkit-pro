@@ -1,0 +1,124 @@
+---
+title: トラブルシューティング
+description: ShipKitアプリケーションの一般的な問題と解決策。
+---
+
+# トラブルシューティング
+
+ShipKitでの開発時によくある問題の解決策を見つけましょう。
+
+---
+
+## クイック診断
+
+### 開発サーバーは動作していますか？
+
+```bash
+npm run dev
+```
+
+失敗した場合は以下を試してください：
+
+```bash
+rm -rf node_modules .next
+npm install
+npm run dev
+```
+
+### TypeScriptエラーを確認
+
+```bash
+npm run typecheck
+```
+
+### 環境変数を確認
+
+```bash
+node -e "console.log(Object.keys(process.env).filter(k => k.startsWith('NEXT_')))"
+```
+
+---
+
+## よくある問題
+
+<Cards>
+  <Card title="ビルドと型エラー" href="/docs/troubleshooting/common-errors">
+    TypeScriptエラー、ビルド失敗、モジュールの問題。
+  </Card>
+  <Card title="認証の問題" href="/docs/troubleshooting/auth-issues">
+    OAuthの失敗、セッションの問題、ログインエラー。
+  </Card>
+  <Card title="支払いの問題" href="/docs/troubleshooting/payment-issues">
+    Webhookの失敗、サブスクリプション同期、チェックアウトの問題。
+  </Card>
+  <Card title="デプロイの問題" href="/docs/troubleshooting/deployment-issues">
+    Vercel、Railway、Dockerのデプロイ問題。
+  </Card>
+  <Card title="データベースの問題" href="/docs/troubleshooting/database-issues">
+    接続エラー、マイグレーション、Prismaの問題。
+  </Card>
+</Cards>
+
+---
+
+## 緊急修正
+
+### アプリが起動しない
+
+```bash
+# 核オプション - すべてをリセット
+rm -rf node_modules .next prisma/migrations
+npm install
+npx prisma generate
+npx prisma db push
+npm run dev
+```
+
+### データベースが同期していない
+
+```bash
+# データベースをリセット（データを破棄）
+npx prisma db push --force-reset
+
+# または新しいマイグレーションを作成
+npx prisma migrate dev --name fix_schema
+```
+
+### 環境が読み込まれない
+
+```bash
+# .envが存在し有効であることを確認
+cat .env | head -5
+
+# 開発サーバーを再起動（.env変更後は必須）
+npm run dev
+```
+
+---
+
+## ヘルプを得る
+
+### 1. ログを確認
+
+```bash
+# Next.jsログ
+npm run dev 2>&1 | tee dev.log
+
+# Prismaログ
+DEBUG="prisma:*" npm run dev
+```
+
+### 2. 既存のissueを検索
+
+[GitHub Issues](https://github.com/your-org/shipkit/issues)で類似の問題を確認してください。
+
+### 3. ヘルプを求める
+
+ヘルプを求める際は以下を含めてください：
+
+- [ ] エラーメッセージ（完全なスタックトレース）
+- [ ] 再現手順
+- [ ] Node.jsバージョン（`node -v`）
+- [ ] パッケージバージョン（`npm list`）
+- [ ] オペレーティングシステム
+- [ ] 関連する設定ファイル

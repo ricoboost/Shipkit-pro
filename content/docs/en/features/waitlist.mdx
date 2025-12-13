@@ -1,0 +1,285 @@
+---
+title: Waitlist & Page Builder
+description: Create and customize waitlist landing pages with a visual drag-and-drop editor.
+---
+
+# Waitlist & Page Builder
+
+ShipKit includes a complete waitlist management system with a visual page builder for creating custom landing pages.
+
+## Overview
+
+The waitlist feature allows you to:
+
+- Collect email signups before launch
+- Create beautiful landing pages without code
+- Manage subscribers with tags and segmentation
+- Export subscriber data as CSV
+- Enable waitlist mode to redirect new signups
+
+## Enabling Waitlist Mode
+
+### Via Admin Panel
+
+1. Go to **Admin** > **Settings** > **Feature Flags**
+2. Toggle **Waitlist Mode** to enabled
+3. New users will be redirected to the waitlist page instead of signup
+
+### Via Code
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// Enable waitlist mode
+await admin.toggleFeatureFlag('waitlistMode', true);
+
+// Disable waitlist mode
+await admin.toggleFeatureFlag('waitlistMode', false);
+```
+
+## Page Builder
+
+The visual page builder lets you create custom waitlist landing pages.
+
+### Accessing the Editor
+
+Navigate to **Admin** > **Waitlist** > **Edit Page** or go directly to `/admin/waitlist/editor`.
+
+### Available Sections
+
+#### Hero Section
+
+The main header section with:
+- Badge text (e.g., "Coming Soon")
+- Headline and subheadline
+- Subscribe form or CTA button
+- Optional hero image
+
+#### Features Grid (Bento)
+
+Showcase your product features:
+- 2, 3, or 4 column layouts
+- Feature cards with icons
+- Customizable backgrounds
+
+#### How It Works
+
+Step-by-step process explanation:
+- Numbered steps with icons
+- Horizontal or vertical layout
+- Custom titles and descriptions
+
+#### Footer
+
+Page footer with:
+- Copyright text
+- Navigation links
+- Social media icons
+
+### Customizing Sections
+
+Click any section to select it, then use the right sidebar to:
+
+- **Background**: Set solid color, gradient, or image
+- **Spacing**: Adjust padding and margins
+- **Visibility**: Hide/show sections
+- **Custom CSS**: Add custom styles
+
+### Editing Content
+
+- Click text to edit inline
+- Modify typography (size, weight, color, alignment)
+- Update button text and styles
+- Customize form placeholder and success message
+
+### Publishing
+
+1. Click **Save** to persist your changes
+2. Click **Publish** to make the page public
+3. Preview your page at `/waitlist`
+
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Cmd/Ctrl + S` | Save changes |
+| `Cmd/Ctrl + Z` | Undo |
+| `Cmd/Ctrl + Shift + Z` | Redo |
+
+## Managing Subscribers
+
+### Admin Dashboard
+
+Access the subscriber dashboard at **Admin** > **Waitlist**.
+
+#### Statistics
+
+- **Total Subscribers**: All signups
+- **Confirmed**: Verified emails
+- **Pending**: Awaiting confirmation
+- **Unsubscribed**: Opted out
+- **This Week**: Recent signups
+
+#### Filtering
+
+Filter subscribers by:
+- Email search
+- Status (confirmed, pending, unsubscribed)
+- Source (waitlist, footer, popup)
+- Tags
+
+### Bulk Operations
+
+Select multiple subscribers to:
+- Add tags for segmentation
+- Remove from list
+- Export as CSV
+
+### Exporting Data
+
+Click **Export CSV** to download subscriber data. Options:
+- Export all subscribers
+- Export confirmed only
+- Filter by tag
+
+## Subscribe Form
+
+### Embedded Form
+
+Add the subscribe form anywhere:
+
+```tsx
+import { SubscribeFormBlock } from '@/components/waitlist-builder/blocks/subscribe-form-block';
+
+<SubscribeFormBlock
+  block={{
+    id: 'form-1',
+    type: 'subscribe-form',
+    placeholder: 'Enter your email',
+    buttonText: 'Join Waitlist',
+    successMessage: 'Thanks for signing up!',
+    source: 'homepage',
+    tags: ['early-access'],
+  }}
+/>
+```
+
+### Configuration Options
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `placeholder` | string | Input placeholder text |
+| `buttonText` | string | Submit button text |
+| `successMessage` | string | Message shown after signup |
+| `source` | string | Tracking source identifier |
+| `tags` | string[] | Tags to apply to subscriber |
+| `layout` | 'inline' \| 'stacked' | Form layout |
+
+## API Reference
+
+### Subscribe
+
+```typescript
+POST /api/newsletter/subscribe
+
+// Request
+{
+  "email": "user@example.com",
+  "source": "waitlist",
+  "tags": ["early-access"]
+}
+
+// Response
+{
+  "success": true,
+  "isNew": true,
+  "confirmed": false
+}
+```
+
+### Unsubscribe
+
+```typescript
+POST /api/newsletter/unsubscribe
+
+// Request
+{ "email": "user@example.com" }
+
+// Response
+{ "success": true }
+```
+
+### One-Click Unsubscribe
+
+```typescript
+GET /api/newsletter/unsubscribe?token=xxx
+```
+
+## Library Functions
+
+```typescript
+import { newsletter } from '@/lib/newsletter';
+
+// Subscribe with source and tags
+await newsletter.subscribe({
+  email: 'user@example.com',
+  source: 'waitlist',
+  tags: ['early-access', 'beta'],
+});
+
+// Get subscriber stats
+const stats = await newsletter.getStats();
+// { total, confirmed, pending, unsubscribed, thisWeek }
+
+// Add tags to subscriber
+await newsletter.addTags('user@example.com', ['vip']);
+
+// Export to CSV
+const csv = await newsletter.exportCSV({
+  confirmedOnly: true,
+  tag: 'early-access',
+});
+```
+
+## Database Schema
+
+```prisma
+model NewsletterSubscriber {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  confirmed     Boolean   @default(false)
+  confirmToken  String?   @unique
+  source        String?   // "waitlist", "footer", "popup"
+  tags          String[]  @default([])
+  unsubscribedAt DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+model WaitlistPage {
+  id              String   @id @default("default")
+  config          Json     // Page configuration
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+```
+
+## Environment Variables
+
+No additional environment variables are required. The waitlist uses:
+
+- `DATABASE_URL` - For storing subscribers
+- `NEXT_PUBLIC_APP_URL` - For unsubscribe links
+- `RESEND_API_KEY` - (Optional) For confirmation emails
+- `EMAIL_FROM` - (Optional) Sender address
+
+## Best Practices
+
+1. **Use meaningful tags** - Segment subscribers by source, interest, or campaign
+2. **Set up confirmation emails** - Enable double opt-in for quality lists
+3. **Customize your page** - Match your brand with the page builder
+4. **Monitor stats** - Track conversion rates and engagement
+5. **Export regularly** - Backup your subscriber list

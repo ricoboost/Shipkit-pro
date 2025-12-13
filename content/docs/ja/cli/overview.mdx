@@ -1,0 +1,88 @@
+---
+title: CLIツール概要
+description: ShipKitはセットアップ、スキャフォールディング、開発自動化のための強力なCLIツールを提供します。
+---
+
+# CLIツール
+
+ShipKitには、開発ワークフローを効率化するための包括的なCLIツールスイートが含まれています。初期セットアップからコード生成まで、これらのツールは素早く作業を進めるのに役立ちます。
+
+## クイックスタート
+
+インタラクティブなセットアップウィザードを実行して、アプリケーション全体を設定します：
+
+```bash
+npm run setup
+```
+
+または、適切なデフォルト値でクイックセットアップする場合：
+
+```bash
+npm run setup:quick
+```
+
+## 利用可能なツール
+
+### セットアップコマンド
+
+アプリケーションをステップバイステップで設定します：
+
+| コマンド | 説明 |
+|----------|------|
+| `npm run setup` | インタラクティブセットアップウィザード |
+| `npm run setup:quick` | デフォルト値でクイックセットアップ |
+| `npm run setup:stack` | スタックセレクター（肥大化を削減） |
+| `npm run setup:env` | 環境変数の設定 |
+| `npm run setup:db` | データベース接続の設定 |
+| `npm run setup:auth` | 認証プロバイダーの設定 |
+| `npm run setup:payments` | 決済プロバイダーの設定 |
+| `npm run setup:ai` | AIプロバイダーの設定 |
+| `npm run setup:admin` | 管理者ユーザーの作成 |
+
+### ジェネレーターコマンド
+
+ベストプラクティスを組み込んだ新しいコードを生成します：
+
+| コマンド | 説明 |
+|----------|------|
+| `npm run generate:page` | i18n対応の新しいページを生成 |
+| `npm run generate:api` | 新しいAPIルートを生成 |
+| `npm run generate:component` | 新しいコンポーネントを生成 |
+
+### データベースコマンド
+
+データベーススキーマを管理します：
+
+| コマンド | 説明 |
+|----------|------|
+| `npm run db:generate` | Prismaクライアントを生成 |
+| `npm run db:push` | スキーマ変更をデータベースにプッシュ |
+| `npm run db:migrate` | データベースマイグレーションを実行 |
+| `npm run db:studio` | Prisma Studio GUIを開く |
+
+## Claude Code統合
+
+ShipKitにはClaude Codeユーザー向けのスラッシュコマンドが含まれています。これらはコンテキストに応じたヘルプを提供し、セットアップタスクを実行できます：
+
+- `/setup` - 完全なセットアップウィザードドキュメント
+- `/setup-env` - 環境設定ガイド
+- `/setup-db` - データベースセットアップガイド
+- `/setup-auth` - 認証セットアップガイド
+- `/setup-payments` - 決済セットアップガイド
+- `/setup-ai` - AIプロバイダーセットアップガイド
+- `/create-admin` - 管理者ユーザー作成ガイド
+- `/scaffold-page` - 新しいページを生成
+- `/scaffold-api` - APIルートを生成
+- `/scaffold-component` - コンポーネントを生成
+- `/add-test` - テストファイルを生成
+
+## 次のステップ
+
+<Cards>
+  <Card title="セットアップウィザード" href="/docs/cli/setup-wizard">
+    インタラクティブなセットアップウィザードで始めましょう。
+  </Card>
+  <Card title="コードジェネレーター" href="/docs/cli/generators">
+    ページ、API、コンポーネントの生成方法を学びましょう。
+  </Card>
+</Cards>

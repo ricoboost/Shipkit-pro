@@ -1,0 +1,271 @@
+---
+title: Theme Builder
+description: Interface de personnalisation visuelle du thème pour créer et exporter des schémas de couleurs personnalisés
+---
+
+# Theme Builder
+
+Le composant Theme Builder fournit une interface visuelle pour personnaliser les couleurs de thème de votre application, avec prévisualisation en direct et capacités d'export CSS.
+
+## Vue d'ensemble
+
+Fonctionnalités clés :
+- **5 préréglages pré-construits** : Commencez avec un schéma de couleurs conçu professionnellement
+- **Sélecteur de couleurs HSL** : Affinez n'importe quelle couleur avec les contrôles Teinte, Saturation et Luminosité
+- **Mode Clair/Sombre** : Personnalisez les couleurs pour les deux modes indépendamment
+- **Prévisualisation en direct** : Voyez les changements instantanément avec les composants de prévisualisation
+- **Export CSS** : Téléchargez votre thème personnalisé au format CSS
+
+## Utilisation
+
+### Implémentation de base
+
+```tsx
+import { ThemeBuilder } from '@/components/theme/theme-builder';
+
+export default function ThemeSettingsPage() {
+  return (
+    <div className="container py-8">
+      <h1 className="text-3xl font-bold mb-8">Customize Theme</h1>
+      <ThemeBuilder />
+    </div>
+  );
+}
+```
+
+Le Theme Builder est également disponible dans le tableau de bord admin à `/admin/theme`.
+
+---
+
+## Préréglages de thème
+
+Cinq préréglages conçus professionnellement sont inclus :
+
+| Préréglage | Couleur principale | Style |
+|--------|---------------|-------|
+| Default | Violet | Moderne, neutre |
+| Ocean | Bleu | Professionnel, calme |
+| Forest | Vert | Naturel, organique |
+| Sunset | Orange | Chaleureux, énergique |
+| Midnight | Bleu profond | Sombre, élégant |
+
+### Sélection d'un préréglage
+
+Les préréglages servent de points de départ. Cliquez sur n'importe quelle carte de préréglage pour l'appliquer, puis personnalisez les couleurs individuelles selon les besoins.
+
+```tsx
+// Les préréglages sont définis dans src/lib/theme.ts
+export const themePresets = {
+  default: {
+    name: 'Default',
+    light: { primary: '262 83% 58%', /* ... */ },
+    dark: { primary: '263 70% 50%', /* ... */ },
+    radius: '0.5rem',
+  },
+  ocean: { /* ... */ },
+  forest: { /* ... */ },
+  sunset: { /* ... */ },
+  midnight: { /* ... */ },
+};
+```
+
+---
+
+## Groupes de couleurs
+
+Les couleurs sont organisées en quatre groupes :
+
+### Couleurs de base
+- `background` - Arrière-plan de page
+- `foreground` - Couleur de texte principale
+- `card` - Arrière-plans de cartes
+- `cardForeground` - Texte sur les cartes
+
+### Primaire & Secondaire
+- `primary` - Couleur de marque principale
+- `primaryForeground` - Texte sur arrière-plans primaires
+- `secondary` - Couleur de marque secondaire
+- `secondaryForeground` - Texte sur arrière-plans secondaires
+
+### Éléments UI
+- `muted` - Arrière-plans atténués
+- `mutedForeground` - Texte atténué
+- `accent` - Mises en évidence d'accent
+- `accentForeground` - Texte sur accents
+
+### Retour d'information & Bordures
+- `destructive` - Couleur d'erreur/danger
+- `destructiveForeground` - Texte sur destructive
+- `border` - Couleur de bordure
+- `input` - Couleur de bordure d'entrée
+- `ring` - Couleur d'anneau de focus
+
+---
+
+## Sélecteur de couleurs HSL
+
+Chaque couleur est contrôlée avec des curseurs HSL (Teinte, Saturation, Luminosité) :
+
+| Curseur | Plage | Description |
+|--------|-------|-------------|
+| H (Hue) | 0-360 | La couleur de base (rouge=0, vert=120, bleu=240) |
+| S (Saturation) | 0-100% | Intensité de couleur (0=gris, 100=vif) |
+| L (Lightness) | 0-100% | Luminosité (0=noir, 50=pur, 100=blanc) |
+
+### Pourquoi HSL ?
+
+HSL facilite la création de palettes de couleurs cohérentes :
+- Gardez la même **Teinte** pour la cohérence des couleurs
+- Ajustez la **Saturation** pour l'intensité
+- Ajustez la **Luminosité** pour le contraste (les couleurs de premier plan sont généralement aux extrêmes opposées)
+
+---
+
+## Rayon de bordure
+
+Contrôlez l'arrondi des éléments UI globalement :
+
+| Valeur | Style | Idéal pour |
+|-------|-------|----------|
+| 0rem | Coins nets | Minimal, moderne |
+| 0.25rem | Arrondi subtil | Professionnel |
+| 0.5rem | Arrondi modéré | Équilibré (par défaut) |
+| 0.75rem | Plus arrondi | Amical |
+| 1rem+ | Très arrondi | Ludique, doux |
+
+---
+
+## Prévisualisation en direct
+
+Le panneau de prévisualisation affiche :
+- **Boutons** : Toutes les variantes (primary, secondary, outline, destructive)
+- **Badges** : Différents styles de badges
+- **Section atténuée** : Texte sur arrière-plans atténués
+- **Cartes imbriquées** : Apparence carte sur carte
+
+Utilisez ceci pour vérifier le contraste et l'harmonie visuelle avant l'export.
+
+---
+
+## Export de votre thème
+
+Cliquez sur **Export CSS** pour télécharger votre thème personnalisé :
+
+```css
+/* theme.css généré */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --primary: 262 83% 58%;
+  --primary-foreground: 210 40% 98%;
+  /* ... toutes les couleurs */
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  /* ... couleurs mode sombre */
+}
+```
+
+### Application du thème exporté
+
+1. Copiez le CSS exporté dans votre `src/app/globals.css`
+2. Remplacez les variables de couleur `:root` et `.dark` existantes
+3. Le thème s'appliquera automatiquement
+
+---
+
+## Persistance du thème
+
+Les thèmes sont sauvegardés dans localStorage automatiquement :
+
+```typescript
+// La sélection de thème est persistée
+const saved = getSavedTheme();  // Retourne le nom du préréglage ou 'default'
+
+// Sauvegarde manuelle
+saveTheme('ocean');
+
+// Appliquer le thème
+applyTheme(themeConfig);
+```
+
+---
+
+## Utilisation programmatique
+
+Vous pouvez également utiliser les utilitaires de thème directement :
+
+```tsx
+import {
+  themePresets,
+  applyTheme,
+  saveTheme,
+  getSavedTheme,
+  exportThemeCSS,
+  type ThemeConfig,
+} from '@/lib/theme';
+
+// Appliquer un préréglage
+applyTheme(themePresets.ocean);
+
+// Sauvegarder la préférence utilisateur
+saveTheme('ocean');
+
+// Obtenir le CSS pour une implémentation personnalisée
+const css = exportThemeCSS(customTheme);
+```
+
+---
+
+## Chargement de thème côté serveur
+
+Pour SSR, utilisez le composant `ServerThemeLoader` pour éviter le flash de contenu non stylisé :
+
+```tsx
+// Dans votre layout racine
+import { ServerThemeLoader } from '@/components/theme/server-theme-loader';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <head>
+        <ServerThemeLoader />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+Ceci injecte un script qui applique le thème sauvegardé avant le rendu de la page.
+
+---
+
+## Bonnes pratiques
+
+### Ratios de contraste
+Assurez un contraste suffisant entre les couleurs de premier plan et d'arrière-plan :
+- **Texte normal** : Ratio de contraste minimum 4.5:1
+- **Texte large** : Ratio de contraste minimum 3:1
+
+### Considérations mode sombre
+- N'inversez pas simplement les couleurs - le mode sombre nécessite différents niveaux de saturation
+- Réduisez légèrement la saturation pour les arrière-plans sombres
+- Assurez-vous que les bordures restent visibles
+
+### Cohérence de marque
+- Utilisez la couleur primaire de votre marque pour la variable `primary`
+- Gardez `secondary` et `accent` complémentaires
+- Testez avec du contenu réel, pas seulement la prévisualisation
+
+---
+
+## En relation
+
+- [Fonctionnalité Theming](/docs/features/theming) - Vue d'ensemble du système de thématisation
+- [Primitives UI](/docs/components/ui-primitives) - Personnaliser les composants de base

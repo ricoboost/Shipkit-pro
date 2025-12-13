@@ -1,0 +1,286 @@
+---
+title: Construye Tu Primer SaaS en 30 Minutos
+description: Una guía completa paso a paso para crear una aplicación SaaS funcional con autenticación, pagos y panel de usuario.
+---
+
+# Construye Tu Primer SaaS en 30 Minutos
+
+En este tutorial, crearás una aplicación SaaS completamente funcional desde cero. Al final, tendrás:
+
+- Autenticación de usuarios (registro, inicio de sesión, verificación de email)
+- Facturación por suscripción con Stripe
+- Panel de usuario con gestión de cuenta
+- Panel de administración para supervisión de usuarios
+
+## Requisitos Previos
+
+Antes de comenzar, asegúrate de tener:
+
+- **Node.js 20+** instalado ([descargar](https://nodejs.org/))
+- Base de datos **PostgreSQL** (local o en la nube como [Neon](https://neon.tech), [Supabase](https://supabase.com))
+- **Cuenta de Stripe** en modo de prueba ([registrarse](https://stripe.com))
+
+## Paso 1: Clonar e Instalar
+
+Primero, clona ShipKit e instala las dependencias:
+
+```bash
+git clone https://github.com/your-org/shipkit mi-saas
+cd mi-saas
+npm install
+```
+
+## Paso 2: Ejecutar el Asistente de Configuración
+
+ShipKit incluye un asistente de configuración interactivo que configura todo por ti:
+
+```bash
+npm run setup
+```
+
+El asistente te guiará a través de:
+
+1. **Variables de Entorno** - Configuración básica de la aplicación
+2. **Conexión a Base de Datos** - Configuración de PostgreSQL
+3. **Proveedor de Autenticación** - Usaremos NextAuth para este tutorial
+4. **Proveedor de Pagos** - Configuración de Stripe
+
+### Configuración Manual (Alternativa)
+
+Si prefieres la configuración manual, copia la plantilla de entorno:
+
+```bash
+cp .env.example .env
+```
+
+Luego edita `.env` con tus credenciales:
+
+```bash
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME="Mi SaaS"
+
+# Base de datos
+DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/mibd"
+
+# Auth (NextAuth)
+AUTH_PROVIDER=nextauth
+NEXTAUTH_SECRET="tu-clave-secreta-aqui"
+NEXTAUTH_URL=http://localhost:3000
+
+# Stripe
+PAYMENT_PROVIDER=stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+## Paso 3: Configurar Productos en Stripe
+
+Crea tus productos de suscripción en Stripe:
+
+### 3.1 Crear Productos en el Panel de Stripe
+
+1. Ve al [Panel de Stripe](https://dashboard.stripe.com/test/products)
+2. Haz clic en "Añadir Producto"
+3. Crea dos productos:
+
+**Plan Gratis:**
+- Nombre: Gratis
+- Precio: $0/mes (o no crear precio)
+
+**Plan Pro:**
+- Nombre: Pro
+- Precio: $29/mes
+- Copia el ID del Precio (comienza con `price_`)
+
+### 3.2 Añadir IDs de Precio al Entorno
+
+```bash
+# IDs de Precio de Stripe
+STRIPE_PRO_MONTHLY_PRICE_ID=price_xxx
+STRIPE_PRO_YEARLY_PRICE_ID=price_yyy
+```
+
+### 3.3 Configurar Planes en el Código
+
+Edita `src/lib/payments/config.ts`:
+
+```typescript
+export const pricingPlans = [
+  {
+    id: 'free',
+    name: 'Gratis',
+    description: 'Comienza con funcionalidades básicas',
+    price: { monthly: 0, yearly: 0 },
+    features: [
+      '100 solicitudes API/mes',
+      'Analíticas básicas',
+      'Soporte comunitario',
+    ],
+    limits: {
+      apiRequests: 100,
+      storage: '100MB',
+    },
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    description: 'Para negocios en crecimiento',
+    price: { monthly: 29, yearly: 290 },
+    priceIds: {
+      monthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID!,
+      yearly: process.env.STRIPE_PRO_YEARLY_PRICE_ID!,
+    },
+    features: [
+      'Solicitudes API ilimitadas',
+      'Analíticas avanzadas',
+      'Soporte prioritario',
+      'Integraciones personalizadas',
+    ],
+    limits: {
+      apiRequests: -1, // ilimitado
+      storage: '10GB',
+    },
+    popular: true,
+  },
+];
+```
+
+## Paso 4: Inicializar la Base de Datos
+
+Configura tu esquema de base de datos:
+
+```bash
+# Generar cliente Prisma
+npx prisma generate
+
+# Aplicar esquema a la base de datos
+npx prisma db push
+
+# (Opcional) Abrir Prisma Studio para ver datos
+npx prisma studio
+```
+
+## Paso 5: Iniciar el Servidor de Desarrollo
+
+```bash
+npm run dev
+```
+
+¡Tu aplicación ahora está ejecutándose en [http://localhost:3000](http://localhost:3000)!
+
+## Paso 6: Probar el Flujo Completo
+
+Verifiquemos que todo funciona:
+
+### 6.1 Crear una Cuenta
+
+1. Ve a `http://localhost:3000/signup`
+2. Ingresa tu email y contraseña
+3. Revisa tu email para el enlace de verificación (o revisa la consola en modo dev)
+4. Haz clic en el enlace de verificación
+
+### 6.2 Explorar el Panel
+
+Después de iniciar sesión, verás:
+
+- **Panel** - Resumen de tu cuenta
+- **Configuración** - Perfil, facturación y claves API
+- **Uso** - Estadísticas de uso de API
+
+### 6.3 Actualizar a Pro
+
+1. Ve a Configuración > Facturación
+2. Haz clic en "Actualizar a Pro"
+3. Usa la tarjeta de prueba de Stripe: `4242 4242 4242 4242`
+4. Cualquier fecha futura y cualquier CVC
+5. Completa el checkout
+
+### 6.4 Verificar Suscripción
+
+Después del checkout:
+- Tu plan debería mostrar "Pro"
+- Tendrás acceso a funcionalidades Pro
+- Facturación muestra la próxima fecha de pago
+
+## Paso 7: Configurar Webhooks de Stripe (¡Importante!)
+
+Para producción, Stripe necesita notificar a tu app sobre cambios de suscripción:
+
+### Desarrollo Local (Stripe CLI)
+
+```bash
+# Instalar Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# Iniciar sesión en tu cuenta de Stripe
+stripe login
+
+# Reenviar webhooks a tu servidor local
+stripe listen --forward-to localhost:3000/api/payments/webhook
+```
+
+Copia el secreto de webhook y añádelo a `.env`:
+
+```bash
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+### Producción
+
+1. Ve a Panel de Stripe > Desarrolladores > Webhooks
+2. Añade endpoint: `https://tu-dominio.com/api/payments/webhook`
+3. Selecciona eventos:
+   - `checkout.session.completed`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+   - `invoice.paid`
+   - `invoice.payment_failed`
+
+## Solución de Problemas
+
+### "Invalid API Key" de Stripe
+
+- Asegúrate de usar claves de prueba (comienzan con `sk_test_` y `pk_test_`)
+- Verifica que `.env` no tenga comillas alrededor de los valores
+- Reinicia el servidor de desarrollo después de cambiar `.env`
+
+### Fallo de Conexión a Base de Datos
+
+```bash
+# Probar tu cadena de conexión
+npx prisma db pull
+```
+
+Si falla, verifica:
+- El servidor de base de datos está ejecutándose
+- Las credenciales son correctas
+- La red/firewall permite la conexión
+
+### Emails No Se Envían
+
+En desarrollo, los emails se registran en la consola. Para producción:
+
+```bash
+# Añadir proveedor de email (Resend recomendado)
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@tudominio.com
+```
+
+## Próximos Pasos
+
+¡Felicitaciones! Tienes una aplicación SaaS funcional. Esto es lo que explorar a continuación:
+
+<Cards>
+  <Card title="Añadir Funcionalidades de IA" href="/docs/tutorials/ai-saas">
+    Integra capacidades de IA con facturación basada en créditos.
+  </Card>
+  <Card title="Configurar Organizaciones" href="/docs/tutorials/multi-tenant-app">
+    Añade espacios de trabajo de equipo y acceso basado en roles.
+  </Card>
+  <Card title="Desplegar a Producción" href="/docs/tutorials/deploy-production">
+    Lanza tu app en Vercel, Railway o Docker.
+  </Card>
+</Cards>

@@ -1,0 +1,207 @@
+---
+title: Security Overview
+description: Security best practices and configuration guide for ShipKit applications.
+---
+
+# Security Overview
+
+ShipKit includes multiple security layers out of the box. This guide covers best practices for securing your application.
+
+## Security Checklist
+
+### Authentication
+
+- [ ] Use strong `NEXTAUTH_SECRET` (32+ characters)
+- [ ] Enable email verification for new accounts
+- [ ] Implement rate limiting on auth endpoints
+- [ ] Use secure, HttpOnly cookies
+- [ ] Enable CSRF protection
+
+### Data Protection
+
+- [ ] Encrypt sensitive data at rest
+- [ ] Use HTTPS everywhere
+- [ ] Implement proper input validation
+- [ ] Sanitize user-generated content
+- [ ] Follow principle of least privilege
+
+### Infrastructure
+
+- [ ] Configure security headers
+- [ ] Enable WAF if available
+- [ ] Regular dependency updates
+- [ ] Implement audit logging
+- [ ] Set up monitoring and alerts
+
+---
+
+## Quick Security Setup
+
+### 1. Generate Secure Secrets
+
+```bash
+# Generate NEXTAUTH_SECRET
+openssl rand -base64 32
+
+# Generate API encryption key
+openssl rand -hex 32
+```
+
+### 2. Environment Configuration
+
+```bash
+# Security settings
+NEXTAUTH_SECRET="your-32-char-secret-here"
+ENCRYPTION_KEY="your-hex-encryption-key"
+
+# Cookie settings (production)
+COOKIE_SECURE=true
+COOKIE_SAME_SITE=lax
+
+# Rate limiting
+RATE_LIMIT_ENABLED=true
+RATE_LIMIT_MAX=100
+RATE_LIMIT_WINDOW=60000
+```
+
+### 3. Enable Security Headers
+
+ShipKit includes security headers by default. Verify in `next.config.ts`:
+
+```typescript
+const securityHeaders = [
+  {
+    key: 'X-DNS-Prefetch-Control',
+    value: 'on',
+  },
+  {
+    key: 'Strict-Transport-Security',
+    value: 'max-age=63072000; includeSubDomains; preload',
+  },
+  {
+    key: 'X-Frame-Options',
+    value: 'SAMEORIGIN',
+  },
+  {
+    key: 'X-Content-Type-Options',
+    value: 'nosniff',
+  },
+  {
+    key: 'Referrer-Policy',
+    value: 'strict-origin-when-cross-origin',
+  },
+];
+```
+
+---
+
+## Security Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    CDN / WAF                        │
+│              (Cloudflare, Vercel)                   │
+└─────────────────────┬───────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────┐
+│                 Rate Limiting                        │
+│              (Upstash Redis)                        │
+└─────────────────────┬───────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────┐
+│              Authentication Layer                    │
+│         (NextAuth / Better Auth / Supabase)         │
+└─────────────────────┬───────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────┐
+│              Authorization (RBAC)                    │
+│           (Middleware + API checks)                 │
+└─────────────────────┬───────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────┐
+│              Input Validation                        │
+│              (Zod schemas)                          │
+└─────────────────────┬───────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────┐
+│              Database (Prisma)                       │
+│         (Parameterized queries, RLS)                │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+## Common Vulnerabilities & Prevention
+
+### SQL Injection
+
+ShipKit uses Prisma ORM which automatically parameterizes queries:
+
+```typescript
+// ✅ Safe - Prisma parameterizes automatically
+const user = await prisma.user.findUnique({
+  where: { email: userInput },
+});
+
+// ❌ Dangerous - Never use raw queries with user input
+// await prisma.$queryRaw`SELECT * FROM users WHERE email = ${userInput}`;
+```
+
+### XSS (Cross-Site Scripting)
+
+React escapes content by default. Be careful with:
+
+```tsx
+// ✅ Safe - React escapes this
+<div>{userContent}</div>
+
+// ❌ Dangerous - Only use with trusted content
+<div dangerouslySetInnerHTML={{ __html: userContent }} />
+
+// ✅ If needed, sanitize first
+import DOMPurify from 'dompurify';
+<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(userContent) }} />
+```
+
+### CSRF (Cross-Site Request Forgery)
+
+ShipKit includes CSRF protection via NextAuth:
+
+```typescript
+// CSRF token is automatically included in forms
+import { getCsrfToken } from 'next-auth/react';
+
+const csrfToken = await getCsrfToken();
+```
+
+---
+
+## Security Guides
+
+<Cards>
+  <Card title="Authentication Security" href="/docs/security/authentication">
+    Session management, password hashing, and OAuth security.
+  </Card>
+  <Card title="API Security" href="/docs/security/api-security">
+    Rate limiting, API keys, and input validation.
+  </Card>
+  <Card title="Security Headers" href="/docs/security/headers">
+    CSP, HSTS, and other HTTP security headers.
+  </Card>
+  <Card title="Data Protection" href="/docs/security/data-protection">
+    Encryption, PII handling, and GDPR compliance.
+  </Card>
+</Cards>
+
+---
+
+## Reporting Security Issues
+
+If you discover a security vulnerability, please report it responsibly:
+
+1. **Do not** open a public GitHub issue
+2. Email security@shipkit.dev with details
+3. Include steps to reproduce
+4. Allow 90 days for fix before disclosure
+
+We take security seriously and will respond within 48 hours.

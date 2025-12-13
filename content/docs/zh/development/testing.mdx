@@ -1,0 +1,221 @@
+---
+title: Testing
+description: Unit and end-to-end testing with Vitest and Playwright.
+---
+
+# Testing
+
+ShipKit comes pre-configured with a comprehensive testing setup using Vitest for unit tests and Playwright for end-to-end tests.
+
+## Test Stack
+
+- **Vitest**: Fast unit testing framework with native ESM support
+- **Playwright**: Cross-browser end-to-end testing
+- **Testing Library**: React component testing utilities
+- **Happy DOM**: Lightweight DOM implementation for tests
+
+## Running Tests
+
+### Unit Tests
+
+```bash
+# Run all unit tests
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests once (CI mode)
+npm run test:run
+
+# Run with coverage
+npm run test:coverage
+```
+
+### End-to-End Tests
+
+```bash
+# Run Playwright tests
+npm run test:e2e
+
+# Run with UI
+npm run test:e2e:ui
+
+# Run specific test file
+npx playwright test e2e/home.spec.ts
+```
+
+## Project Structure
+
+```
+├── src/
+│   └── test/
+│       ├── setup.ts         # Test setup and global mocks
+│       └── utils.tsx        # Testing utilities
+├── e2e/
+│   ├── fixtures/
+│   │   └── auth.ts          # Authentication fixtures
+│   ├── home.spec.ts         # Home page tests
+│   └── auth.spec.ts         # Auth flow tests
+├── vitest.config.mts        # Vitest configuration
+└── playwright.config.ts     # Playwright configuration
+```
+
+## Unit Testing
+
+### Writing Tests
+
+```typescript
+// src/lib/utils.test.ts
+import { describe, it, expect } from 'vitest';
+import { formatCurrency } from './utils';
+
+describe('formatCurrency', () => {
+  it('formats USD correctly', () => {
+    expect(formatCurrency(1000, 'USD')).toBe('$10.00');
+  });
+
+  it('handles zero', () => {
+    expect(formatCurrency(0, 'USD')).toBe('$0.00');
+  });
+});
+```
+
+### Testing React Components
+
+```tsx
+// src/components/button.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { Button } from './button';
+
+describe('Button', () => {
+  it('renders children', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByText('Click me')).toBeInTheDocument();
+  });
+
+  it('calls onClick handler', () => {
+    const onClick = vi.fn();
+    render(<Button onClick={onClick}>Click</Button>);
+    fireEvent.click(screen.getByText('Click'));
+    expect(onClick).toHaveBeenCalled();
+  });
+});
+```
+
+### Mocking
+
+```typescript
+import { vi, describe, it, expect } from 'vitest';
+
+// Mock a module
+vi.mock('@/lib/api', () => ({
+  fetchUser: vi.fn().mockResolvedValue({ id: 1, name: 'Test' }),
+}));
+
+// Mock environment variables
+vi.stubEnv('DATABASE_URL', 'test://localhost');
+```
+
+## End-to-End Testing
+
+### Writing E2E Tests
+
+```typescript
+// e2e/auth.spec.ts
+import { test, expect } from '@playwright/test';
+
+test.describe('Authentication', () => {
+  test('user can sign in', async ({ page }) => {
+    await page.goto('/login');
+
+    await page.fill('[name="email"]', 'test@example.com');
+    await page.fill('[name="password"]', 'password123');
+    await page.click('button[type="submit"]');
+
+    await expect(page).toHaveURL('/dashboard');
+  });
+});
+```
+
+### Using Fixtures
+
+```typescript
+// e2e/fixtures/auth.ts
+import { test as base } from '@playwright/test';
+
+type AuthFixtures = {
+  authenticatedPage: Page;
+};
+
+export const test = base.extend<AuthFixtures>({
+  authenticatedPage: async ({ page }, use) => {
+    await page.goto('/login');
+    // ... perform login
+    await use(page);
+  },
+});
+
+// Usage in tests
+test('authenticated user sees dashboard', async ({ authenticatedPage }) => {
+  await authenticatedPage.goto('/dashboard');
+  await expect(authenticatedPage.locator('h1')).toContainText('Dashboard');
+});
+```
+
+## Configuration
+
+### Vitest Config
+
+```typescript
+// vitest.config.mts
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'happy-dom',
+    setupFiles: ['./src/test/setup.ts'],
+    include: ['src/**/*.test.{ts,tsx}'],
+    coverage: {
+      reporter: ['text', 'html'],
+      exclude: ['node_modules/', 'src/test/'],
+    },
+  },
+});
+```
+
+### Playwright Config
+
+```typescript
+// playwright.config.ts
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+  },
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+  ],
+});
+```
+
+## Best Practices
+
+1. **Test behavior, not implementation**: Focus on what components do, not how
+2. **Use meaningful test names**: Describe the expected behavior
+3. **Keep tests isolated**: Each test should be independent
+4. **Mock external dependencies**: API calls, databases, etc.
+5. **Run tests in CI**: Ensure tests pass before merging

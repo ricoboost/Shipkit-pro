@@ -1,0 +1,167 @@
+---
+title: KI-Integration Übersicht
+description: ShipKit bietet einheitliche KI-Integration mit mehreren Anbietern.
+---
+
+# KI-Integration
+
+ShipKit enthält produktionsreife KI-Integration mit Streaming-Unterstützung und mehreren Anbietern.
+
+## Unterstützte Anbieter
+
+<Cards>
+  <Card title="OpenRouter" href="/docs/ai/openrouter">
+    Zugriff auf über 100 Modelle einschließlich GPT-4, Claude, Llama und Mistral.
+  </Card>
+  <Card title="Vercel AI SDK" href="/docs/ai/vercel-ai-sdk">
+    Edge-bereites Streaming mit OpenAI, Anthropic, Google und mehr.
+  </Card>
+</Cards>
+
+## Konfiguration
+
+```bash
+AI_PROVIDER="openrouter"  # oder "vercel"
+
+# OpenRouter
+OPENROUTER_API_KEY="sk-or-xxx"
+
+# Vercel AI SDK / Direkte APIs
+OPENAI_API_KEY="sk-xxx"
+ANTHROPIC_API_KEY="sk-ant-xxx"
+GOOGLE_AI_API_KEY="xxx"
+```
+
+## Einheitliche Schnittstelle
+
+```typescript
+// src/lib/ai/types.ts
+export interface AIProvider {
+  chat(messages: Message[], options?: ChatOptions): Promise<ChatResponse>;
+  stream(messages: Message[], options?: ChatOptions): AsyncIterable<string>;
+}
+```
+
+## Grundlegende Verwendung
+
+```typescript
+import { ai } from '@/lib/ai';
+
+// Einfacher Chat
+const response = await ai.chat([
+  { role: 'user', content: 'Hello!' }
+]);
+
+console.log(response.content);
+```
+
+## Streaming
+
+```typescript
+import { ai } from '@/lib/ai';
+
+// Stream-Antwort
+for await (const chunk of ai.stream([
+  { role: 'system', content: 'You are a helpful assistant.' },
+  { role: 'user', content: 'Tell me a story.' }
+])) {
+  process.stdout.write(chunk);
+}
+```
+
+## API-Route
+
+```typescript
+// src/app/api/ai/chat/route.ts
+import { ai } from '@/lib/ai';
+import { auth } from '@/lib/auth';
+import { credits } from '@/lib/payments/credits';
+
+export async function POST(req: Request) {
+  const session = await auth.getSession();
+  if (!session) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  // Credits überprüfen
+  const hasCredits = await credits.deduct(session.user.id, 1, 'AI chat');
+  if (!hasCredits) {
+    return new Response('Insufficient credits', { status: 402 });
+  }
+
+  const { messages } = await req.json();
+
+  // Streaming-Antwort zurückgeben
+  const stream = ai.stream(messages);
+
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        for await (const chunk of stream) {
+          controller.enqueue(new TextEncoder().encode(chunk));
+        }
+        controller.close();
+      },
+    }),
+    {
+      headers: { 'Content-Type': 'text/event-stream' },
+    }
+  );
+}
+```
+
+## Client-Komponente
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { useChat } from '@/hooks/use-chat';
+
+export function ChatInterface() {
+  const { messages, input, handleSubmit, isLoading } = useChat();
+
+  return (
+    <div>
+      <div className="messages">
+        {messages.map((m) => (
+          <div key={m.id} className={m.role}>
+            {m.content}
+          </div>
+        ))}
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Say something..."
+        />
+        <button disabled={isLoading}>Send</button>
+      </form>
+    </div>
+  );
+}
+```
+
+## Modellauswahl
+
+Wechseln Sie einfach zwischen Modellen:
+
+```typescript
+const response = await ai.chat(messages, {
+  model: 'gpt-4-turbo',  // oder 'claude-3-opus', 'llama-3-70b', etc.
+  temperature: 0.7,
+  maxTokens: 1000,
+});
+```
+
+## Demo-Komponenten
+
+ShipKit enthält einsatzbereite KI-Demo-Komponenten:
+
+- Chat-Oberfläche mit Streaming
+- KI-Playground zum Testen
+- Modellvergleichstools
+
+Zugriff unter `/ai-playground` in Ihrem Dashboard.

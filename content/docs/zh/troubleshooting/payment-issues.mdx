@@ -1,0 +1,378 @@
+---
+title: Payment Issues
+description: Solutions for webhook failures, subscription sync problems, and checkout issues.
+---
+
+# Payment Issues
+
+Troubleshoot common payment integration problems with Stripe, webhooks, and subscriptions.
+
+---
+
+## Webhook Issues
+
+### Webhooks Not Receiving Events
+
+**Symptoms:**
+- Subscription created but not reflected in database
+- Payment succeeded but credits not added
+- No webhook logs in Stripe dashboard
+
+**Diagnosis:**
+
+1. Check Stripe webhook configuration:
+   - Go to Stripe Dashboard → Developers → Webhooks
+   - Verify endpoint URL: `https://your-domain.com/api/webhooks/stripe`
+   - Check events are selected
+
+2. Verify webhook secret:
+
+```bash
+# .env
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+```
+
+3. Test locally with Stripe CLI:
+
+```bash
+# Install Stripe CLI
+brew install stripe/stripe-cli/stripe
+
+# Login and forward webhooks
+stripe login
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
+
+---
+
+### Webhook Signature Verification Failed
+
+**Error:** `Webhook signature verification failed`
+
+**Causes:**
+- Wrong webhook secret
+- Request body modified by middleware
+- Clock skew between servers
+
+**Solutions:**
+
+1. Use correct webhook secret:
+
+```bash
+# For local testing (from stripe listen output)
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+
+# For production (from Stripe Dashboard)
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+```
+
+2. Ensure raw body is used for verification:
+
+```typescript
+// src/app/api/webhooks/stripe/route.ts
+export async function POST(req: Request) {
+  const body = await req.text(); // Raw body, not JSON
+  const signature = req.headers.get('stripe-signature');
+
+  try {
+    const event = stripe.webhooks.constructEvent(
+      body,
+      signature!,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+    // Handle event...
+  } catch (err) {
+    console.error('Webhook signature verification failed:', err);
+    return new Response('Invalid signature', { status: 400 });
+  }
+}
+```
+
+---
+
+### Webhook Events Not Processing
+
+**Check event handling:**
+
+```typescript
+// Log incoming events for debugging
+console.log('Received webhook event:', event.type);
+
+switch (event.type) {
+  case 'checkout.session.completed':
+    console.log('Processing checkout session:', event.data.object.id);
+    await handleCheckoutComplete(event.data.object);
+    break;
+  case 'customer.subscription.updated':
+    console.log('Processing subscription update:', event.data.object.id);
+    await handleSubscriptionUpdate(event.data.object);
+    break;
+  // Add more cases...
+}
+```
+
+---
+
+## Checkout Issues
+
+### Checkout Session Not Creating
+
+**Error:** `Cannot create checkout session`
+
+**Check configuration:**
+
+```typescript
+const session = await stripe.checkout.sessions.create({
+  mode: 'subscription', // or 'payment'
+  payment_method_types: ['card'],
+  line_items: [
+    {
+      price: process.env.STRIPE_PRICE_ID, // Verify this exists
+      quantity: 1,
+    },
+  ],
+  success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
+  customer_email: user.email,
+  metadata: {
+    userId: user.id, // For webhook handling
+  },
+});
+```
+
+**Common issues:**
+- Price ID doesn't exist in Stripe
+- Invalid success/cancel URLs
+- Missing customer information
+
+---
+
+### Customer Portal Not Working
+
+**Error:** `No such customer`
+
+**Solution:**
+
+```typescript
+// Ensure customer exists before creating portal session
+const user = await prisma.user.findUnique({
+  where: { id: userId },
+  select: { stripeCustomerId: true },
+});
+
+if (!user?.stripeCustomerId) {
+  // Create customer first
+  const customer = await stripe.customers.create({
+    email: userEmail,
+    metadata: { userId },
+  });
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { stripeCustomerId: customer.id },
+  });
+}
+
+// Now create portal session
+const portalSession = await stripe.billingPortal.sessions.create({
+  customer: user.stripeCustomerId,
+  return_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings/billing`,
+});
+```
+
+---
+
+## Subscription Issues
+
+### Subscription Status Out of Sync
+
+**Symptoms:**
+- User shows as subscribed but Stripe shows canceled
+- Features accessible after subscription ended
+
+**Sync subscription status:**
+
+```typescript
+// src/lib/payments/sync.ts
+async function syncSubscriptionStatus(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { subscription: true },
+  });
+
+  if (!user?.subscription?.stripeSubscriptionId) return;
+
+  const stripeSubscription = await stripe.subscriptions.retrieve(
+    user.subscription.stripeSubscriptionId
+  );
+
+  await prisma.subscription.update({
+    where: { id: user.subscription.id },
+    data: {
+      status: stripeSubscription.status,
+      currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
+    },
+  });
+}
+```
+
+---
+
+### Subscription Not Canceling
+
+**Check cancellation flow:**
+
+```typescript
+async function cancelSubscription(subscriptionId: string) {
+  // Cancel at period end (recommended)
+  await stripe.subscriptions.update(subscriptionId, {
+    cancel_at_period_end: true,
+  });
+
+  // Or cancel immediately
+  // await stripe.subscriptions.cancel(subscriptionId);
+
+  // Update local database
+  await prisma.subscription.update({
+    where: { stripeSubscriptionId: subscriptionId },
+    data: { cancelAtPeriodEnd: true },
+  });
+}
+```
+
+---
+
+## Price & Product Issues
+
+### Price Not Found
+
+**Error:** `No such price: 'price_xxxxx'`
+
+**Solutions:**
+
+1. Verify price exists in Stripe Dashboard
+2. Check correct environment (test vs live):
+
+```bash
+# Test mode prices start with price_xxxxx (test dashboard)
+# Live mode prices from live dashboard
+STRIPE_PRICE_ID=price_xxxxx
+```
+
+3. Ensure API key matches environment:
+
+```bash
+# Test mode
+STRIPE_SECRET_KEY=sk_test_xxxxx
+
+# Live mode
+STRIPE_SECRET_KEY=sk_live_xxxxx
+```
+
+---
+
+## Credits System Issues
+
+### Credits Not Adding After Purchase
+
+**Check webhook handler:**
+
+```typescript
+case 'checkout.session.completed':
+  const session = event.data.object;
+
+  if (session.mode === 'payment') {
+    // One-time purchase - add credits
+    const userId = session.metadata?.userId;
+    const credits = parseInt(session.metadata?.credits || '0');
+
+    if (userId && credits > 0) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          credits: { increment: credits },
+        },
+      });
+
+      // Log transaction
+      await prisma.creditTransaction.create({
+        data: {
+          userId,
+          amount: credits,
+          type: 'purchase',
+          stripeSessionId: session.id,
+        },
+      });
+    }
+  }
+  break;
+```
+
+---
+
+## Testing Payments
+
+### Test Card Numbers
+
+| Card Number | Description |
+|-------------|-------------|
+| `4242 4242 4242 4242` | Success |
+| `4000 0000 0000 0002` | Declined |
+| `4000 0000 0000 9995` | Insufficient funds |
+| `4000 0027 6000 3184` | Requires authentication |
+
+Use any future expiry date and any CVC.
+
+---
+
+### Local Testing Workflow
+
+```bash
+# Terminal 1: Run your app
+npm run dev
+
+# Terminal 2: Forward Stripe webhooks
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+
+# Terminal 3: Trigger test events
+stripe trigger checkout.session.completed
+stripe trigger customer.subscription.updated
+```
+
+---
+
+## Quick Diagnosis Checklist
+
+```bash
+# 1. Check Stripe keys
+node -e "console.log({
+  publishable: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.slice(0, 10),
+  secret: process.env.STRIPE_SECRET_KEY?.slice(0, 10),
+  webhook: process.env.STRIPE_WEBHOOK_SECRET?.slice(0, 10),
+})"
+
+# 2. Test Stripe connection
+node -e "
+const Stripe = require('stripe');
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+stripe.customers.list({ limit: 1 }).then(console.log).catch(console.error);
+"
+
+# 3. Check webhook endpoint
+curl -X POST https://your-domain.com/api/webhooks/stripe \
+  -H 'Content-Type: application/json' \
+  -d '{}'
+```
+
+---
+
+## Common Fixes Checklist
+
+- [ ] Stripe API keys are correct (test vs live)
+- [ ] Webhook secret matches environment
+- [ ] Price IDs exist in Stripe
+- [ ] Webhook endpoint is publicly accessible
+- [ ] Raw body used for signature verification
+- [ ] userId included in session metadata
+- [ ] Database updated after webhook processing
+- [ ] Stripe CLI used for local testing

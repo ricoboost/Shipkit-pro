@@ -1,0 +1,231 @@
+---
+title: AIプロバイダーセットアップ
+description: OpenAI、Anthropic、Google AI、またはOpenRouterでAI/LLM統合を設定します。
+---
+
+# AIプロバイダーセットアップ
+
+AIセットアップコマンドは、ShipKitのAI機能用のAI/LLMプロバイダーの設定を支援します。
+
+## クイックスタート
+
+```bash
+npm run setup:ai
+```
+
+## サポートされているプロバイダー
+
+### OpenAI
+
+GPT-4、GPT-3.5、埋め込みモデル。
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider openai
+```
+
+**必須：** `OPENAI_API_KEY`
+
+**利用可能なモデル：**
+- `gpt-4o` - 最も高性能、マルチモーダル
+- `gpt-4o-mini` - 高速で手頃
+- `gpt-4-turbo` - 前世代のフラッグシップ
+- `gpt-3.5-turbo` - 高速、シンプルなタスクに最適
+
+**APIキーを取得：** [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+
+### Anthropic
+
+Claude 3.5 Sonnet、Claude 3 Opus、その他のClaudeモデル。
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider anthropic
+```
+
+**必須：** `ANTHROPIC_API_KEY`
+
+**利用可能なモデル：**
+- `claude-3-5-sonnet-20241022` - 速度と性能の最適なバランス
+- `claude-3-opus-20240229` - 複雑なタスクに最も高性能
+- `claude-3-haiku-20240307` - 最速で最も手頃
+
+**APIキーを取得：** [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+
+### Google AI (Gemini)
+
+Gemini Pro、Gemini Flash、その他のGoogleモデル。
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider google
+```
+
+**必須：** `GOOGLE_GENERATIVE_AI_API_KEY`
+
+**利用可能なモデル：**
+- `gemini-1.5-pro` - 最も高性能
+- `gemini-1.5-flash` - 高速で効率的
+- `gemini-pro` - 前世代
+
+**APIキーを取得：** [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+
+### OpenRouter
+
+1つのAPIで100以上のモデルにアクセス。
+
+```bash
+npx tsx scripts/setup/setup-ai.ts --provider openrouter
+```
+
+**必須：** `OPENROUTER_API_KEY`
+
+**利用可能なモデル：**
+- すべてのOpenAIモデル
+- すべてのAnthropicモデル
+- Meta Llamaモデル
+- Mistralモデル
+- その他多数
+
+**APIキーを取得：** [openrouter.ai/keys](https://openrouter.ai/keys)
+
+## セットアップの動作
+
+1. **プロバイダーを選択** - AIプロバイダーを選択
+2. **`.env`を更新** - `AI_PROVIDER`変数を設定
+3. **APIキーを設定** - 適切なキーの設定を支援
+4. **フォーマットを検証** - APIキーフォーマットをチェック
+5. **利用可能なモデルを表示** - 使用できるモデルをリスト
+
+## アプリケーションでのAI使用
+
+セットアップ後、アプリケーション全体でAI SDKを使用できます：
+
+### 基本的なチャット補完
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const response = await ai.chat({
+  model: 'gpt-4o',
+  messages: [
+    { role: 'system', content: 'あなたは親切なアシスタントです。' },
+    { role: 'user', content: 'こんにちは！' }
+  ],
+});
+
+console.log(response.content);
+```
+
+### ストリーミングレスポンス
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const stream = await ai.chatStream({
+  model: 'claude-3-5-sonnet-20241022',
+  messages: [
+    { role: 'user', content: 'ロボットについての短い物語を書いてください。' }
+  ],
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk);
+}
+```
+
+### テキスト埋め込み
+
+```typescript
+import { ai } from '@/lib/ai';
+
+const embedding = await ai.embed({
+  model: 'text-embedding-3-small',
+  input: '素早い茶色のキツネが怠惰な犬を飛び越える。',
+});
+
+console.log(embedding.vector);
+```
+
+## セットアップのテスト
+
+`/ai-playground`のAI Playgroundにアクセスして設定をテスト：
+
+1. ドロップダウンからモデルを選択
+2. メッセージを入力
+3. リアルタイムでAI応答を確認
+
+## 環境変数リファレンス
+
+```bash
+# AIプロバイダー選択
+AI_PROVIDER="openai"  # または "anthropic"、"google"、"openrouter"
+
+# OpenAI
+OPENAI_API_KEY="sk-..."
+
+# Anthropic
+ANTHROPIC_API_KEY="sk-ant-..."
+
+# Google AI
+GOOGLE_GENERATIVE_AI_API_KEY="..."
+
+# OpenRouter
+OPENROUTER_API_KEY="sk-or-..."
+```
+
+## プロバイダーの切り替え
+
+AIプロバイダー間で切り替えるには：
+
+1. セットアップコマンドを実行：
+   ```bash
+   npm run setup:ai
+   ```
+
+2. 新しいプロバイダーを選択
+
+3. コードは自動的に設定されたプロバイダーを使用：
+   ```typescript
+   // これはどのプロバイダーでも動作します
+   const response = await ai.chat({
+     model: 'gpt-4o', // またはclaude、geminiなど
+     messages: [...]
+   });
+   ```
+
+## コストに関する考慮事項
+
+| プロバイダー | 料金モデル |
+|--------------|------------|
+| OpenAI | トークン単位（入力/出力） |
+| Anthropic | トークン単位（入力/出力） |
+| Google AI | 無料枠あり、その後トークン単位 |
+| OpenRouter | 従量課金、モデルにより異なる |
+
+**コスト管理のヒント：**
+- シンプルなタスクには小さいモデルを使用
+- 繰り返しクエリにはキャッシュを実装
+- `maxTokens`を設定してレスポンス長を制限
+- 追加コストなしでUXを向上させるためストリーミングを使用
+
+## トラブルシューティング
+
+### 「無効なAPIキー」
+
+APIキーフォーマットを確認：
+- OpenAI：`sk-`で始まる
+- Anthropic：`sk-ant-`で始まる
+- OpenRouter：`sk-or-`で始まる
+
+### 「モデルが見つからない」
+
+モデル名が正確に一致することを確認。モデル名は大文字小文字を区別します。
+
+### 「レート制限を超過」
+
+APIレート制限に達しました。解決策：
+- 待ってから再試行
+- APIプランをアップグレード
+- エクスポネンシャルバックオフを実装
+
+### 「クォータ不足」
+
+AIプロバイダーアカウントに請求情報またはクレジットを追加してください。

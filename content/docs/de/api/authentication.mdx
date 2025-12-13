@@ -1,0 +1,97 @@
+---
+title: Authentifizierungs-API
+description: API-Referenz für Authentifizierungs-Endpunkte.
+---
+
+# Authentifizierungs-API
+
+## Endpunkte
+
+### Registrierung
+
+Ein neues Benutzerkonto erstellen.
+
+```http
+POST /api/auth/signup
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword",
+  "name": "John Doe"
+}
+```
+
+**Antwort:**
+
+```json
+{
+  "user": {
+    "id": "cuid",
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+### Anmeldung
+
+Einen Benutzer authentifizieren.
+
+```http
+POST /api/auth/signin
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+**Antwort:**
+
+```json
+{
+  "user": { ... },
+  "session": { ... }
+}
+```
+
+### Abmeldung
+
+Die aktuelle Sitzung beenden.
+
+```http
+POST /api/auth/signout
+```
+
+### Sitzung Abrufen
+
+Die aktuelle authentifizierte Sitzung abrufen.
+
+```http
+GET /api/auth/session
+```
+
+**Antwort:**
+
+```json
+{
+  "user": {
+    "id": "cuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "image": "https://..."
+  },
+  "expires": "2024-02-15T00:00:00.000Z"
+}
+```
+
+## Fehlercodes
+
+| Code | Beschreibung |
+|------|-------------|
+| 400 | Ungültiger Anfragekörper |
+| 401 | Ungültige Anmeldedaten |
+| 409 | E-Mail existiert bereits |
+| 429 | Zu viele Anfragen |

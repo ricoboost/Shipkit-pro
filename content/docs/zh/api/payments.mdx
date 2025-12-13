@@ -1,0 +1,105 @@
+---
+title: 支付API
+description: 支付端点的API参考。
+---
+
+# 支付API
+
+## 端点
+
+### 创建结账
+
+为订阅创建结账会话。
+
+```http
+POST /api/payments/checkout
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "priceId": "price_xxx",
+  "successUrl": "/dashboard?success=true",
+  "cancelUrl": "/pricing"
+}
+```
+
+**响应:**
+
+```json
+{
+  "url": "https://checkout.stripe.com/...",
+  "sessionId": "cs_xxx"
+}
+```
+
+### 客户门户
+
+获取客户计费门户的URL。
+
+```http
+POST /api/payments/portal
+Authorization: Bearer <token>
+```
+
+**响应:**
+
+```json
+{
+  "url": "https://billing.stripe.com/..."
+}
+```
+
+### Webhook
+
+处理支付提供商的Webhook。
+
+```http
+POST /api/payments/webhook
+```
+
+## 积分API
+
+### 获取余额
+
+```http
+GET /api/credits/balance
+Authorization: Bearer <token>
+```
+
+**响应:**
+
+```json
+{
+  "balance": 100
+}
+```
+
+### 获取历史记录
+
+```http
+GET /api/credits/history
+Authorization: Bearer <token>
+```
+
+**响应:**
+
+```json
+{
+  "transactions": [
+    {
+      "id": "cuid",
+      "amount": -10,
+      "reason": "AI generation",
+      "createdAt": "2024-01-15T10:00:00Z"
+    }
+  ]
+}
+```
+
+## 错误代码
+
+| 代码 | 描述 |
+|------|------|
+| 401 | 未授权 |
+| 402 | 需要付款 |
+| 404 | 未找到订阅 |

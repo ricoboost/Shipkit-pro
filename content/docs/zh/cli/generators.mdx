@@ -1,0 +1,226 @@
+---
+title: 代码生成器
+description: 使用内置最佳实践生成页面、API路由和组件。
+---
+
+# 代码生成器
+
+ShipKit包含按照项目约定创建代码的生成器。每个生成器创建带有TypeScript、正确导入和i18n支持的文件。
+
+## 页面生成器
+
+创建带有自动i18n翻译文件的新页面：
+
+```bash
+npm run generate:page
+```
+
+### 交互模式
+
+生成器会询问：
+
+1. **页面名称** - 例如：`analytics`、`team-settings`
+2. **路由组** - `(dashboard)`、`(admin)`、`(marketing)`或无
+3. **页面类型** - 客户端组件或服务器组件
+
+### 命令行模式
+
+```bash
+npx tsx scripts/generators/generate-page.ts \
+  --name analytics \
+  --group dashboard \
+  --type server
+```
+
+### 创建的内容
+
+对于dashboard组中名为`analytics`的页面：
+
+```
+src/app/[locale]/(dashboard)/analytics/
+├── page.tsx              # 页面组件
+└── loading.tsx           # 加载状态
+
+src/i18n/messages/
+├── en.json               # 英文翻译（已更新）
+├── es.json               # 西班牙文翻译（已更新）
+├── fr.json               # 法文翻译（已更新）
+├── de.json               # 德文翻译（已更新）
+├── pt.json               # 葡萄牙文翻译（已更新）
+├── ja.json               # 日文翻译（已更新）
+└── zh.json               # 中文翻译（已更新）
+```
+
+### 生成的页面示例
+
+```tsx
+import { getTranslations } from 'next-intl/server';
+
+export default async function AnalyticsPage() {
+  const t = await getTranslations('analytics');
+
+  return (
+    <div className="container py-6">
+      <h1 className="text-3xl font-bold">{t('title')}</h1>
+      <p className="text-muted-foreground">{t('description')}</p>
+    </div>
+  );
+}
+```
+
+## API生成器
+
+创建带有验证和错误处理的API路由：
+
+```bash
+npm run generate:api
+```
+
+### 交互模式
+
+生成器会询问：
+
+1. **路由名称** - 例如：`analytics`、`team/members`
+2. **HTTP方法** - GET、POST、PUT、DELETE、PATCH
+
+### 命令行模式
+
+```bash
+npx tsx scripts/generators/generate-api.ts \
+  --name analytics \
+  --methods GET,POST
+```
+
+### 创建的内容
+
+对于名为`analytics`的API路由：
+
+```
+src/app/api/analytics/
+└── route.ts              # API路由处理程序
+```
+
+### 生成的API示例
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+const analyticsSchema = z.object({
+  // 在此定义您的架构
+});
+
+export async function GET(request: NextRequest) {
+  try {
+    // 您的GET逻辑在此
+    return NextResponse.json({ data: [] });
+  } catch (error) {
+    console.error('[API] GET /api/analytics error:', error);
+    return NextResponse.json(
+      { error: '内部服务器错误' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const validated = analyticsSchema.parse(body);
+
+    // 您的POST逻辑在此
+    return NextResponse.json({ success: true }, { status: 201 });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: '验证失败', details: error.errors },
+        { status: 400 }
+      );
+    }
+    console.error('[API] POST /api/analytics error:', error);
+    return NextResponse.json(
+      { error: '内部服务器错误' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## 组件生成器
+
+创建带有TypeScript props的可重用组件：
+
+```bash
+npm run generate:component
+```
+
+### 交互模式
+
+生成器会询问：
+
+1. **组件名称** - 例如：`DataCard`、`UserAvatar`
+2. **组件类型** - 客户端或服务器
+3. **目录** - `ui`、`layout`、`features`或自定义
+
+### 命令行模式
+
+```bash
+npx tsx scripts/generators/generate-component.ts \
+  --name DataCard \
+  --type client \
+  --dir features
+```
+
+### 创建的内容
+
+对于名为`DataCard`的组件：
+
+```
+src/components/features/
+└── data-card.tsx         # 组件文件
+```
+
+### 生成的组件示例
+
+```tsx
+'use client';
+
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+
+interface DataCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  // 在此添加您的props
+}
+
+export function DataCard({ className, ...props }: DataCardProps) {
+  return (
+    <div
+      className={cn(
+        'rounded-lg border bg-card p-4 text-card-foreground shadow-sm',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+```
+
+## Claude Code集成
+
+如果您使用Claude Code，可以改用斜杠命令：
+
+```
+/scaffold-page analytics --group dashboard
+/scaffold-api analytics --methods GET,POST
+/scaffold-component DataCard --type client
+```
+
+这些命令提供交互式指导，可以直接生成文件。
+
+## 最佳实践
+
+1. **使用有意义的名称** - 名称应描述功能或用途
+2. **遵循约定** - 文件使用kebab-case，组件使用PascalCase
+3. **立即添加翻译** - 页面生成器会自动处理
+4. **包含加载状态** - 生成的页面包含`loading.tsx`
+5. **添加验证** - API路由默认包含Zod验证

@@ -1,0 +1,169 @@
+---
+title: 认证设置
+description: 使用NextAuth.js、Supabase Auth或Better Auth配置认证。
+---
+
+# 认证设置
+
+认证设置命令帮助您配置认证提供商和OAuth凭据。
+
+## 快速开始
+
+```bash
+npm run setup:auth
+```
+
+## 支持的提供商
+
+### NextAuth.js
+
+功能完整的认证，支持多个提供商、会话和JWT。
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider next-auth
+```
+
+**必需的环境变量：**
+- `AUTH_SECRET` - 会话加密密钥（自动生成）
+- `AUTH_GOOGLE_ID` - Google OAuth客户端ID
+- `AUTH_GOOGLE_SECRET` - Google OAuth客户端密钥
+- `AUTH_GITHUB_ID` - GitHub OAuth客户端ID
+- `AUTH_GITHUB_SECRET` - GitHub OAuth客户端密钥
+
+### Supabase Auth
+
+由Supabase提供支持的认证，具有行级安全性。
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider supabase
+```
+
+**必需的环境变量：**
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase项目URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase匿名密钥
+- `SUPABASE_SERVICE_ROLE_KEY` - Supabase服务角色密钥
+
+### Better Auth
+
+现代类型安全的认证库。
+
+```bash
+npx tsx scripts/setup/setup-auth.ts --provider better-auth
+```
+
+**必需的环境变量：**
+- `AUTH_SECRET` - 会话加密密钥
+- 您选择的提供商的OAuth凭据
+
+## OAuth提供商设置
+
+### Google OAuth
+
+1. 访问 [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. 创建新项目或选择现有项目
+3. 导航到**凭据 > 创建凭据 > OAuth 2.0客户端ID**
+4. 选择**Web应用程序**
+5. 添加授权的重定向URI：
+   ```
+   http://localhost:3000/api/auth/callback/google
+   ```
+6. 将**客户端ID**和**客户端密钥**复制到您的`.env`
+
+### GitHub OAuth
+
+1. 访问 [GitHub开发者设置](https://github.com/settings/applications/new)
+2. 填写应用程序详情：
+   - **应用程序名称**：您的应用名称
+   - **主页URL**：`http://localhost:3000`
+   - **授权回调URL**：`http://localhost:3000/api/auth/callback/github`
+3. 复制**客户端ID**并生成**客户端密钥**
+4. 添加到您的`.env`
+
+### Discord OAuth
+
+1. 访问 [Discord开发者门户](https://discord.com/developers/applications)
+2. 创建新应用程序
+3. 导航到**OAuth2 > 通用**
+4. 添加重定向URL：
+   ```
+   http://localhost:3000/api/auth/callback/discord
+   ```
+5. 复制**客户端ID**和**客户端密钥**
+
+## 设置执行的操作
+
+1. **提示选择提供商** - 选择NextAuth、Supabase或Better Auth
+2. **更新`.env`** - 设置`AUTH_PROVIDER`变量
+3. **检查凭据** - 识别缺少的环境变量
+4. **引导配置** - 提供设置说明
+5. **验证格式** - 在可能的情况下检查API密钥格式
+
+## 切换提供商
+
+要在认证提供商之间切换：
+
+1. 运行设置命令：
+   ```bash
+   npm run setup:auth
+   ```
+
+2. 选择您的新提供商
+
+3. 环境变量`AUTH_PROVIDER`控制哪个提供商处于活动状态：
+   ```bash
+   AUTH_PROVIDER="next-auth"  # 或 "supabase" 或 "better-auth"
+   ```
+
+4. 重启您的开发服务器
+
+## 生产环境注意事项
+
+### 更新回调URL
+
+部署前，将所有OAuth回调URL更新为您的生产域名：
+
+```
+https://您的域名.com/api/auth/callback/google
+https://您的域名.com/api/auth/callback/github
+```
+
+### 生成新的密钥
+
+为生产环境生成新的`AUTH_SECRET`：
+
+```bash
+openssl rand -base64 32
+```
+
+### 保护环境变量
+
+永远不要将密钥提交到git。使用您的托管提供商的环境变量管理：
+
+- Vercel：项目设置 > 环境变量
+- Railway：Variables选项卡
+- Fly.io：`fly secrets set`
+
+## 故障排除
+
+### 「无效的重定向URI」
+
+确保您的回调URL与OAuth提供商配置的完全匹配。
+
+### 「会话未持久化」
+
+验证`AUTH_SECRET`已设置且在所有部署中保持一致。
+
+### 「CORS错误」
+
+确保`NEXT_PUBLIC_APP_URL`配置正确：
+
+```bash
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+### 「Supabase认证不工作」
+
+验证所有三个Supabase变量已设置：
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`

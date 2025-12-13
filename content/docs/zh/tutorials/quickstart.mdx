@@ -1,0 +1,58 @@
+---
+title: 30分钟构建您的第一个SaaS
+description: 创建一个包含认证、支付和用户仪表板的可运行SaaS应用程序的完整分步指南。
+---
+
+# 30分钟构建您的第一个SaaS
+
+本教程将指导您从零开始创建一个完整功能的SaaS应用程序。
+
+## 前提条件
+
+- 已安装**Node.js 20+**
+- **PostgreSQL**数据库
+- 测试模式下的**Stripe账户**
+
+## 步骤1：克隆和安装
+
+```bash
+git clone https://github.com/your-org/shipkit my-saas
+cd my-saas
+npm install
+```
+
+## 步骤2：运行设置向导
+
+```bash
+npm run setup
+```
+
+## 步骤3：配置Stripe产品
+
+在Stripe仪表板中创建订阅产品。
+
+## 步骤4：初始化数据库
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+## 步骤5：启动开发服务器
+
+```bash
+npm run dev
+```
+
+您的应用现在运行在[http://localhost:3000](http://localhost:3000)！
+
+## 下一步
+
+<Cards>
+  <Card title="添加AI功能" href="/docs/tutorials/ai-saas">
+    集成具有积分计费的AI功能。
+  </Card>
+  <Card title="部署到生产环境" href="/docs/tutorials/deploy-production">
+    在Vercel、Railway或Docker上启动您的应用。
+  </Card>
+</Cards>

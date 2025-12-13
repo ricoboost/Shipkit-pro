@@ -1,0 +1,66 @@
+---
+title: LemonSqueezy
+description: 将LemonSqueezy配置为您的记录商家。
+---
+
+# LemonSqueezy设置
+
+LemonSqueezy充当记录商家，为您处理税务和合规问题。
+
+## 配置
+
+```bash
+PAYMENT_PROVIDER="lemonsqueezy"
+LEMONSQUEEZY_API_KEY="your-api-key"
+LEMONSQUEEZY_STORE_ID="your-store-id"
+LEMONSQUEEZY_WEBHOOK_SECRET="your-webhook-secret"
+```
+
+## 获取凭据
+
+1. 在[lemonsqueezy.com](https://lemonsqueezy.com)创建账户
+2. 前往 Settings > API
+3. 创建API密钥
+4. 从 Settings > Stores 获取Store ID
+5. 在 Settings > Webhooks 设置webhook
+
+## 创建产品
+
+1. 前往 Products
+2. 为每个计划创建产品
+3. 设置月度/年度变体
+4. 将变体ID复制到`src/config/plans.ts`
+
+## 实现
+
+```typescript
+// src/lib/payments/lemonsqueezy.ts
+import { lemonSqueezySetup, createCheckout } from '@lemonsqueezy/lemonsqueezy.js';
+
+lemonSqueezySetup({ apiKey: process.env.LEMONSQUEEZY_API_KEY! });
+
+export const lemonProvider: PaymentProvider = {
+  async createCheckout({ priceId, userId, successUrl }) {
+    const checkout = await createCheckout(
+      process.env.LEMONSQUEEZY_STORE_ID!,
+      priceId,
+      {
+        checkoutData: {
+          custom: { user_id: userId },
+        },
+        productOptions: {
+          redirectUrl: successUrl,
+        },
+      }
+    );
+    return { url: checkout.data.attributes.url };
+  },
+};
+```
+
+## 优势
+
+- 全球处理销售税
+- 包含欧盟增值税合规
+- 无需Stripe Atlas
+- 内置联盟营销系统

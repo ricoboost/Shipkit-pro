@@ -1,0 +1,271 @@
+---
+title: Theme Builder
+description: Visuelle Theme-Anpassungsoberfläche zum Erstellen und Exportieren benutzerdefinierter Farbschemata
+---
+
+# Theme Builder
+
+Die Theme-Builder-Komponente bietet eine visuelle Oberfläche zur Anpassung der Theme-Farben Ihrer Anwendung mit Live-Vorschau und CSS-Export-Funktionen.
+
+## Übersicht
+
+Hauptfunktionen:
+- **5 vorgefertigte Vorlagen**: Beginnen Sie mit einem professionell gestalteten Farbschema
+- **HSL-Farbwähler**: Feinabstimmung jeder Farbe mit Farbton-, Sättigungs- und Helligkeitsreglern
+- **Light/Dark-Modus**: Passen Sie Farben für beide Modi unabhängig an
+- **Live-Vorschau**: Sehen Sie Änderungen sofort mit Vorschau-Komponenten
+- **CSS-Export**: Laden Sie Ihr benutzerdefiniertes Theme als CSS herunter
+
+## Verwendung
+
+### Grundlegende Implementierung
+
+```tsx
+import { ThemeBuilder } from '@/components/theme/theme-builder';
+
+export default function ThemeSettingsPage() {
+  return (
+    <div className="container py-8">
+      <h1 className="text-3xl font-bold mb-8">Theme anpassen</h1>
+      <ThemeBuilder />
+    </div>
+  );
+}
+```
+
+Der Theme Builder ist auch im Admin-Dashboard unter `/admin/theme` verfügbar.
+
+---
+
+## Theme-Vorlagen
+
+Fünf professionell gestaltete Vorlagen sind enthalten:
+
+| Vorlage | Primärfarbe | Stil |
+|--------|---------------|-------|
+| Standard | Lila | Modern, neutral |
+| Ozean | Blau | Professionell, ruhig |
+| Wald | Grün | Natürlich, organisch |
+| Sonnenuntergang | Orange | Warm, energetisch |
+| Mitternacht | Tiefblau | Dunkel, elegant |
+
+### Vorlage auswählen
+
+Vorlagen dienen als Ausgangspunkte. Klicken Sie auf eine Vorlagenkarte, um sie anzuwenden, und passen Sie dann einzelne Farben nach Bedarf an.
+
+```tsx
+// Vorlagen sind in src/lib/theme.ts definiert
+export const themePresets = {
+  default: {
+    name: 'Standard',
+    light: { primary: '262 83% 58%', /* ... */ },
+    dark: { primary: '263 70% 50%', /* ... */ },
+    radius: '0.5rem',
+  },
+  ocean: { /* ... */ },
+  forest: { /* ... */ },
+  sunset: { /* ... */ },
+  midnight: { /* ... */ },
+};
+```
+
+---
+
+## Farbgruppen
+
+Farben sind in vier Gruppen organisiert:
+
+### Basis-Farben
+- `background` - Seitenhintergrund
+- `foreground` - Primäre Textfarbe
+- `card` - Kartenhintergründe
+- `cardForeground` - Text auf Karten
+
+### Primär & Sekundär
+- `primary` - Hauptmarkenfarbe
+- `primaryForeground` - Text auf primären Hintergründen
+- `secondary` - Sekundäre Markenfarbe
+- `secondaryForeground` - Text auf sekundären Hintergründen
+
+### UI-Elemente
+- `muted` - Gedämpfte Hintergründe
+- `mutedForeground` - Gedämpfter Text
+- `accent` - Akzent-Highlights
+- `accentForeground` - Text auf Akzenten
+
+### Feedback & Ränder
+- `destructive` - Fehler-/Gefahrenfarbe
+- `destructiveForeground` - Text auf destruktiv
+- `border` - Randfarbe
+- `input` - Eingaberandfarbe
+- `ring` - Fokusring-Farbe
+
+---
+
+## HSL-Farbwähler
+
+Jede Farbe wird mit HSL (Farbton, Sättigung, Helligkeit) Slidern gesteuert:
+
+| Slider | Bereich | Beschreibung |
+|--------|-------|-------------|
+| H (Farbton) | 0-360 | Die Basisfarbe (rot=0, grün=120, blau=240) |
+| S (Sättigung) | 0-100% | Farbintensität (0=grau, 100=leuchtend) |
+| L (Helligkeit) | 0-100% | Helligkeit (0=schwarz, 50=rein, 100=weiß) |
+
+### Warum HSL?
+
+HSL erleichtert die Erstellung konsistenter Farbpaletten:
+- Behalten Sie denselben **Farbton** für Farbkonsistenz
+- Passen Sie die **Sättigung** für Intensität an
+- Passen Sie die **Helligkeit** für Kontrast an (Vordergrundfarben sind typischerweise entgegengesetzte Enden)
+
+---
+
+## Rahmenradius
+
+Steuern Sie die Rundung von UI-Elementen global:
+
+| Wert | Stil | Geeignet für |
+|-------|-------|----------|
+| 0rem | Scharfe Ecken | Minimal, modern |
+| 0.25rem | Dezente Rundung | Professionell |
+| 0.5rem | Mittlere Rundung | Ausgewogen (Standard) |
+| 0.75rem | Mehr gerundet | Freundlich |
+| 1rem+ | Sehr gerundet | Verspielt, weich |
+
+---
+
+## Live-Vorschau
+
+Das Vorschau-Panel zeigt:
+- **Buttons**: Alle Varianten (primary, secondary, outline, destructive)
+- **Badges**: Verschiedene Badge-Stile
+- **Gedämpfte Sektion**: Text auf gedämpften Hintergründen
+- **Verschachtelte Karten**: Karte-auf-Karte-Erscheinungsbild
+
+Verwenden Sie dies, um Kontrast und visuelle Harmonie vor dem Export zu überprüfen.
+
+---
+
+## Theme exportieren
+
+Klicken Sie auf **CSS exportieren**, um Ihr benutzerdefiniertes Theme herunterzuladen:
+
+```css
+/* Generiertes theme.css */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --primary: 262 83% 58%;
+  --primary-foreground: 210 40% 98%;
+  /* ... alle Farben */
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  /* ... Dark-Mode-Farben */
+}
+```
+
+### Exportiertes Theme anwenden
+
+1. Kopieren Sie das exportierte CSS in Ihre `src/app/globals.css`
+2. Ersetzen Sie die vorhandenen `:root` und `.dark` Farbvariablen
+3. Das Theme wird automatisch angewendet
+
+---
+
+## Theme-Persistenz
+
+Themes werden automatisch im localStorage gespeichert:
+
+```typescript
+// Theme-Auswahl wird persistiert
+const saved = getSavedTheme();  // Gibt Vorlagenname oder 'default' zurück
+
+// Manuelles Speichern
+saveTheme('ocean');
+
+// Theme anwenden
+applyTheme(themeConfig);
+```
+
+---
+
+## Programmatische Verwendung
+
+Sie können die Theme-Utilities auch direkt verwenden:
+
+```tsx
+import {
+  themePresets,
+  applyTheme,
+  saveTheme,
+  getSavedTheme,
+  exportThemeCSS,
+  type ThemeConfig,
+} from '@/lib/theme';
+
+// Vorlage anwenden
+applyTheme(themePresets.ocean);
+
+// Benutzerpräferenz speichern
+saveTheme('ocean');
+
+// CSS für benutzerdefinierte Implementierung abrufen
+const css = exportThemeCSS(customTheme);
+```
+
+---
+
+## Serverseitiges Theme-Laden
+
+Verwenden Sie für SSR die `ServerThemeLoader`-Komponente, um Flash von unstilisiertem Inhalt zu verhindern:
+
+```tsx
+// In Ihrem Root-Layout
+import { ServerThemeLoader } from '@/components/theme/server-theme-loader';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <head>
+        <ServerThemeLoader />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+Dies injiziert ein Skript, das das gespeicherte Theme anwendet, bevor die Seite rendert.
+
+---
+
+## Best Practices
+
+### Kontrastverhältnisse
+Stellen Sie ausreichenden Kontrast zwischen Vordergrund- und Hintergrundfarben sicher:
+- **Normaler Text**: Mindestens 4,5:1 Kontrastverhältnis
+- **Großer Text**: Mindestens 3:1 Kontrastverhältnis
+
+### Dark-Mode-Überlegungen
+- Invertieren Sie nicht einfach Farben - Dark-Mode benötigt unterschiedliche Sättigungsstufen
+- Reduzieren Sie die Sättigung leicht für dunkle Hintergründe
+- Stellen Sie sicher, dass Ränder sichtbar bleiben
+
+### Markenkonsistenz
+- Verwenden Sie die Primärfarbe Ihrer Marke für die `primary`-Variable
+- Halten Sie `secondary` und `accent` komplementär
+- Testen Sie mit echtem Inhalt, nicht nur der Vorschau
+
+---
+
+## Verwandte Themen
+
+- [Theming-Feature](/docs/features/theming) - Übersicht über das Theming-System
+- [UI-Primitive](/docs/components/ui-primitives) - Basis-Komponenten anpassen

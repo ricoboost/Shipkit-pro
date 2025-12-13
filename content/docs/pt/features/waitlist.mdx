@@ -1,0 +1,285 @@
+---
+title: Lista de Espera e Construtor de Páginas
+description: Crie e personalize páginas de lista de espera com um editor visual de arrastar e soltar.
+---
+
+# Lista de Espera e Construtor de Páginas
+
+ShipKit inclui um sistema completo de gerenciamento de lista de espera com um construtor de páginas visual para criar landing pages personalizadas.
+
+## Visão Geral
+
+O recurso de lista de espera permite que você:
+
+- Colete inscrições por email antes do lançamento
+- Crie belas landing pages sem código
+- Gerencie assinantes com tags e segmentação
+- Exporte dados de assinantes como CSV
+- Ative o modo lista de espera para redirecionar novos cadastros
+
+## Ativando o Modo Lista de Espera
+
+### Via Painel Admin
+
+1. Vá para **Admin** > **Configurações** > **Feature Flags**
+2. Ative **Modo Lista de Espera**
+3. Novos usuários serão redirecionados para a página de lista de espera em vez do cadastro
+
+### Via Código
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// Ativar modo lista de espera
+await admin.toggleFeatureFlag('waitlistMode', true);
+
+// Desativar modo lista de espera
+await admin.toggleFeatureFlag('waitlistMode', false);
+```
+
+## Construtor de Páginas
+
+O construtor de páginas visual permite criar landing pages de lista de espera personalizadas.
+
+### Acessando o Editor
+
+Navegue para **Admin** > **Lista de Espera** > **Editar Página** ou vá diretamente para `/admin/waitlist/editor`.
+
+### Seções Disponíveis
+
+#### Seção Hero
+
+A seção principal do cabeçalho com:
+- Texto de badge (ex. "Em Breve")
+- Título e subtítulo
+- Formulário de inscrição ou botão CTA
+- Imagem hero opcional
+
+#### Grade de Recursos (Bento)
+
+Mostre os recursos do seu produto:
+- Layouts de 2, 3 ou 4 colunas
+- Cards de recursos com ícones
+- Fundos personalizáveis
+
+#### Como Funciona
+
+Explicação do processo passo a passo:
+- Passos numerados com ícones
+- Layout horizontal ou vertical
+- Títulos e descrições personalizados
+
+#### Rodapé
+
+Rodapé da página com:
+- Texto de copyright
+- Links de navegação
+- Ícones de redes sociais
+
+### Personalizando Seções
+
+Clique em qualquer seção para selecioná-la, depois use a barra lateral direita para:
+
+- **Fundo**: Definir cor sólida, gradiente ou imagem
+- **Espaçamento**: Ajustar padding e margens
+- **Visibilidade**: Ocultar/mostrar seções
+- **CSS Personalizado**: Adicionar estilos personalizados
+
+### Editando Conteúdo
+
+- Clique no texto para editar inline
+- Modifique a tipografia (tamanho, peso, cor, alinhamento)
+- Atualize texto e estilos de botões
+- Personalize o placeholder do formulário e mensagem de sucesso
+
+### Publicando
+
+1. Clique em **Salvar** para persistir suas alterações
+2. Clique em **Publicar** para tornar a página pública
+3. Visualize sua página em `/waitlist`
+
+### Atalhos de Teclado
+
+| Atalho | Ação |
+|--------|------|
+| `Cmd/Ctrl + S` | Salvar alterações |
+| `Cmd/Ctrl + Z` | Desfazer |
+| `Cmd/Ctrl + Shift + Z` | Refazer |
+
+## Gerenciando Assinantes
+
+### Painel Admin
+
+Acesse o painel de assinantes em **Admin** > **Lista de Espera**.
+
+#### Estatísticas
+
+- **Total de Assinantes**: Todas as inscrições
+- **Confirmados**: Emails verificados
+- **Pendentes**: Aguardando confirmação
+- **Cancelados**: Optaram por sair
+- **Esta Semana**: Inscrições recentes
+
+#### Filtragem
+
+Filtre assinantes por:
+- Busca por email
+- Status (confirmado, pendente, cancelado)
+- Fonte (waitlist, footer, popup)
+- Tags
+
+### Operações em Massa
+
+Selecione múltiplos assinantes para:
+- Adicionar tags para segmentação
+- Remover da lista
+- Exportar como CSV
+
+### Exportando Dados
+
+Clique em **Exportar CSV** para baixar dados de assinantes. Opções:
+- Exportar todos os assinantes
+- Exportar apenas confirmados
+- Filtrar por tag
+
+## Formulário de Inscrição
+
+### Formulário Embutido
+
+Adicione o formulário de inscrição em qualquer lugar:
+
+```tsx
+import { SubscribeFormBlock } from '@/components/waitlist-builder/blocks/subscribe-form-block';
+
+<SubscribeFormBlock
+  block={{
+    id: 'form-1',
+    type: 'subscribe-form',
+    placeholder: 'Digite seu email',
+    buttonText: 'Entrar na Lista',
+    successMessage: 'Obrigado por se inscrever!',
+    source: 'homepage',
+    tags: ['early-access'],
+  }}
+/>
+```
+
+### Opções de Configuração
+
+| Propriedade | Tipo | Descrição |
+|-------------|------|-----------|
+| `placeholder` | string | Texto placeholder do input |
+| `buttonText` | string | Texto do botão de envio |
+| `successMessage` | string | Mensagem exibida após inscrição |
+| `source` | string | Identificador de fonte de rastreamento |
+| `tags` | string[] | Tags a aplicar ao assinante |
+| `layout` | 'inline' \| 'stacked' | Layout do formulário |
+
+## Referência da API
+
+### Inscrever
+
+```typescript
+POST /api/newsletter/subscribe
+
+// Requisição
+{
+  "email": "usuario@exemplo.com",
+  "source": "waitlist",
+  "tags": ["early-access"]
+}
+
+// Resposta
+{
+  "success": true,
+  "isNew": true,
+  "confirmed": false
+}
+```
+
+### Cancelar Inscrição
+
+```typescript
+POST /api/newsletter/unsubscribe
+
+// Requisição
+{ "email": "usuario@exemplo.com" }
+
+// Resposta
+{ "success": true }
+```
+
+### Cancelamento com Um Clique
+
+```typescript
+GET /api/newsletter/unsubscribe?token=xxx
+```
+
+## Funções da Biblioteca
+
+```typescript
+import { newsletter } from '@/lib/newsletter';
+
+// Inscrever com fonte e tags
+await newsletter.subscribe({
+  email: 'usuario@exemplo.com',
+  source: 'waitlist',
+  tags: ['early-access', 'beta'],
+});
+
+// Obter estatísticas de assinantes
+const stats = await newsletter.getStats();
+// { total, confirmed, pending, unsubscribed, thisWeek }
+
+// Adicionar tags ao assinante
+await newsletter.addTags('usuario@exemplo.com', ['vip']);
+
+// Exportar para CSV
+const csv = await newsletter.exportCSV({
+  confirmedOnly: true,
+  tag: 'early-access',
+});
+```
+
+## Schema do Banco de Dados
+
+```prisma
+model NewsletterSubscriber {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  confirmed     Boolean   @default(false)
+  confirmToken  String?   @unique
+  source        String?   // "waitlist", "footer", "popup"
+  tags          String[]  @default([])
+  unsubscribedAt DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+model WaitlistPage {
+  id              String   @id @default("default")
+  config          Json     // Configuração da página
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+```
+
+## Variáveis de Ambiente
+
+Nenhuma variável de ambiente adicional é necessária. A lista de espera usa:
+
+- `DATABASE_URL` - Para armazenar assinantes
+- `NEXT_PUBLIC_APP_URL` - Para links de cancelamento
+- `RESEND_API_KEY` - (Opcional) Para emails de confirmação
+- `EMAIL_FROM` - (Opcional) Endereço do remetente
+
+## Melhores Práticas
+
+1. **Use tags significativas** - Segmente assinantes por fonte, interesse ou campanha
+2. **Configure emails de confirmação** - Ative double opt-in para listas de qualidade
+3. **Personalize sua página** - Adapte sua marca com o construtor de páginas
+4. **Monitore estatísticas** - Acompanhe taxas de conversão e engajamento
+5. **Exporte regularmente** - Faça backup da sua lista de assinantes

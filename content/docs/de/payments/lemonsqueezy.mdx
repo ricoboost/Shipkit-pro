@@ -1,0 +1,66 @@
+---
+title: LemonSqueezy
+description: LemonSqueezy als Ihren Merchant of Record konfigurieren.
+---
+
+# LemonSqueezy-Einrichtung
+
+LemonSqueezy fungiert als Merchant of Record und kümmert sich um Steuern und Compliance für Sie.
+
+## Konfiguration
+
+```bash
+PAYMENT_PROVIDER="lemonsqueezy"
+LEMONSQUEEZY_API_KEY="your-api-key"
+LEMONSQUEEZY_STORE_ID="your-store-id"
+LEMONSQUEEZY_WEBHOOK_SECRET="your-webhook-secret"
+```
+
+## Zugangsdaten Erhalten
+
+1. Konto erstellen auf [lemonsqueezy.com](https://lemonsqueezy.com)
+2. Gehe zu Settings > API
+3. API-Schlüssel erstellen
+4. Store-ID abrufen unter Settings > Stores
+5. Webhook einrichten unter Settings > Webhooks
+
+## Produkte Erstellen
+
+1. Gehe zu Products
+2. Produkt für jeden Plan erstellen
+3. Varianten für monatlich/jährlich einrichten
+4. Varianten-IDs in `src/config/plans.ts` kopieren
+
+## Implementierung
+
+```typescript
+// src/lib/payments/lemonsqueezy.ts
+import { lemonSqueezySetup, createCheckout } from '@lemonsqueezy/lemonsqueezy.js';
+
+lemonSqueezySetup({ apiKey: process.env.LEMONSQUEEZY_API_KEY! });
+
+export const lemonProvider: PaymentProvider = {
+  async createCheckout({ priceId, userId, successUrl }) {
+    const checkout = await createCheckout(
+      process.env.LEMONSQUEEZY_STORE_ID!,
+      priceId,
+      {
+        checkoutData: {
+          custom: { user_id: userId },
+        },
+        productOptions: {
+          redirectUrl: successUrl,
+        },
+      }
+    );
+    return { url: checkout.data.attributes.url };
+  },
+};
+```
+
+## Vorteile
+
+- Verwaltet Verkaufssteuern weltweit
+- EU-MwSt.-Compliance enthalten
+- Kein Stripe Atlas benötigt
+- Integriertes Affiliate-System

@@ -1,0 +1,97 @@
+---
+title: 認証API
+description: 認証エンドポイントのAPIリファレンス。
+---
+
+# 認証API
+
+## エンドポイント
+
+### サインアップ
+
+新しいユーザーアカウントを作成します。
+
+```http
+POST /api/auth/signup
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword",
+  "name": "John Doe"
+}
+```
+
+**レスポンス:**
+
+```json
+{
+  "user": {
+    "id": "cuid",
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+### サインイン
+
+ユーザーを認証します。
+
+```http
+POST /api/auth/signin
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+**レスポンス:**
+
+```json
+{
+  "user": { ... },
+  "session": { ... }
+}
+```
+
+### サインアウト
+
+現在のセッションを終了します。
+
+```http
+POST /api/auth/signout
+```
+
+### セッション取得
+
+現在の認証済みセッションを取得します。
+
+```http
+GET /api/auth/session
+```
+
+**レスポンス:**
+
+```json
+{
+  "user": {
+    "id": "cuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "image": "https://..."
+  },
+  "expires": "2024-02-15T00:00:00.000Z"
+}
+```
+
+## エラーコード
+
+| コード | 説明 |
+|--------|------|
+| 400 | 無効なリクエストボディ |
+| 401 | 無効な認証情報 |
+| 409 | メールアドレスが既に存在します |
+| 429 | リクエストが多すぎます |

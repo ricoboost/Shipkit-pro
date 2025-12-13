@@ -1,0 +1,74 @@
+---
+title: Painel Administrativo
+description: Painel de administração integrado para gerenciar seu SaaS.
+---
+
+# Painel Administrativo
+
+ShipKit inclui um painel administrativo abrangente em `/admin`.
+
+## Recursos
+
+- Gerenciamento de usuários
+- Análises de assinaturas
+- Rastreamento de receita
+- Configurações do sistema
+
+## Controle de Acesso
+
+Apenas usuários com `role: ADMIN` podem acessar o painel administrativo.
+
+## Páginas
+
+### Visão Geral (`/admin`)
+
+- Total de usuários
+- Assinaturas ativas
+- Receita mensal
+- Cadastros recentes
+
+### Usuários (`/admin/users`)
+
+- Listar todos os usuários
+- Buscar e filtrar
+- Editar detalhes do usuário
+- Gerenciar funções
+
+### Análises (`/admin/analytics`)
+
+- Gráficos de crescimento de usuários
+- Tendências de receita
+- Taxas de conversão
+- Análise de cancelamento
+
+### Assinaturas (`/admin/subscriptions`)
+
+- Assinaturas ativas
+- Distribuição de planos
+- Rastreamento de MRR
+- Cancelamentos
+
+## Uso
+
+```typescript
+import { admin } from '@/lib/admin';
+
+// Get dashboard stats
+const stats = await admin.getStats();
+
+// List users with pagination
+const users = await admin.getUsers({ page: 1, limit: 20 });
+
+// Update user
+await admin.updateUser(userId, { role: 'ADMIN' });
+```
+
+## Componentes
+
+```tsx
+import { AdminStats } from '@/components/admin/stats';
+import { UsersTable } from '@/components/admin/users-table';
+
+<AdminStats />
+<UsersTable users={users} />
+```

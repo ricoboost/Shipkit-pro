@@ -1,0 +1,141 @@
+---
+title: Configuração
+description: Configure as variáveis de ambiente e as configurações de provedores do ShipKit.
+---
+
+# Configuração
+
+O ShipKit usa variáveis de ambiente para configuração, facilitando a alternância entre provedores e ambientes.
+
+## Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do seu projeto com as seguintes variáveis:
+
+### Configuração do Aplicativo
+
+```bash
+# URL do aplicativo (obrigatório)
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_APP_NAME="ShipKit"
+```
+
+### Banco de Dados
+
+```bash
+# PostgreSQL (recomendado)
+DATABASE_URL="postgresql://user:password@localhost:5432/shipkit"
+
+# Ou MongoDB
+# MONGODB_URI="mongodb+srv://user:password@cluster.mongodb.net/shipkit"
+```
+
+### Provedor de Autenticação
+
+Escolha um provedor de autenticação:
+
+```bash
+# Opções: nextauth | supabase | betterauth
+AUTH_PROVIDER="nextauth"
+
+# NextAuth.js
+AUTH_SECRET="your-secret-key"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Supabase (se estiver usando)
+NEXT_PUBLIC_SUPABASE_URL="your-supabase-url"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+
+# Provedores OAuth (opcional)
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+```
+
+### Provedor de Pagamento
+
+Escolha um provedor de pagamento:
+
+```bash
+# Opções: stripe | lemonsqueezy | polar
+PAYMENT_PROVIDER="stripe"
+
+# Stripe
+STRIPE_SECRET_KEY=""
+STRIPE_PUBLISHABLE_KEY=""
+STRIPE_WEBHOOK_SECRET=""
+
+# LemonSqueezy
+LEMONSQUEEZY_API_KEY=""
+LEMONSQUEEZY_STORE_ID=""
+LEMONSQUEEZY_WEBHOOK_SECRET=""
+
+# Polar
+POLAR_ACCESS_TOKEN=""
+POLAR_ORGANIZATION_ID=""
+```
+
+### Provedor de IA
+
+```bash
+# Opções: openrouter | vercel
+AI_PROVIDER="openrouter"
+
+# OpenRouter
+OPENROUTER_API_KEY=""
+
+# Vercel AI SDK / OpenAI
+OPENAI_API_KEY=""
+```
+
+### Email (Resend)
+
+```bash
+RESEND_API_KEY=""
+EMAIL_FROM="noreply@yourdomain.com"
+```
+
+## Seleção de Provedores
+
+O ShipKit usa uma camada de abstração unificada. Altere os provedores atualizando a variável de ambiente:
+
+```bash
+# Mudar de Stripe para LemonSqueezy
+PAYMENT_PROVIDER="lemonsqueezy"
+
+# Mudar de NextAuth para Supabase
+AUTH_PROVIDER="supabase"
+```
+
+Nenhuma alteração de código necessária - a camada de abstração cuida do resto.
+
+## Arquivos de Configuração
+
+### `src/config/site.ts`
+
+Configuração geral do site:
+
+```typescript
+export const siteConfig = {
+  name: "ShipKit",
+  description: "Your SaaS description",
+  url: process.env.NEXT_PUBLIC_APP_URL,
+  // ...
+};
+```
+
+### `src/config/plans.ts`
+
+Configuração de planos de assinatura. Consulte [Pagamentos](/docs/payments/overview) para detalhes.
+
+## Próximos Passos
+
+<Cards>
+  <Card title="Autenticação" href="/docs/authentication/overview">
+    Configure a autenticação de usuários.
+  </Card>
+  <Card title="Pagamentos" href="/docs/payments/overview">
+    Configure o processamento de pagamentos.
+  </Card>
+</Cards>

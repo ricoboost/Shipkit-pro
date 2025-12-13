@@ -1,0 +1,70 @@
+---
+title: Integrações
+description: Integrações com serviços de terceiros para monitoramento, email, armazenamento e mais.
+---
+
+# Integrações
+
+O ShipKit integra-se com serviços populares de terceiros para fornecer monitoramento, entrega de emails, armazenamento e capacidades de cache.
+
+---
+
+## Integrações Disponíveis
+
+<Cards>
+  <Card title="Sentry" href="/docs/integrations/sentry">
+    Rastreamento de erros e monitoramento de desempenho.
+  </Card>
+  <Card title="Resend" href="/docs/integrations/resend">
+    Entrega de emails transacionais.
+  </Card>
+  <Card title="Analytics" href="/docs/integrations/analytics">
+    Google Analytics, PostHog e Plausible.
+  </Card>
+  <Card title="Upstash" href="/docs/integrations/upstash">
+    Cache Redis e limitação de taxa.
+  </Card>
+  <Card title="Armazenamento" href="/docs/integrations/storage">
+    AWS S3, Cloudflare R2 e upload de arquivos.
+  </Card>
+</Cards>
+
+---
+
+## Guia de Configuração Rápida
+
+### Serviços Essenciais
+
+| Serviço | Propósito | Requerido |
+|---------|-----------|-----------|
+| [Sentry](/docs/integrations/sentry) | Rastreamento de erros | Recomendado |
+| [Resend](/docs/integrations/resend) | Entrega de emails | Requerido para auth |
+| [Upstash](/docs/integrations/upstash) | Limitação de taxa | Recomendado |
+| [Analytics](/docs/integrations/analytics) | Análise de usuários | Opcional |
+| [Armazenamento](/docs/integrations/storage) | Upload de arquivos | Opcional |
+
+---
+
+## Variáveis de Ambiente
+
+Adicione estas ao seu arquivo `.env` conforme os serviços que usar:
+
+```bash
+# Sentry - Rastreamento de Erros
+NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.sentry.io/xxx
+SENTRY_ORG=sua-org
+SENTRY_PROJECT=seu-projeto
+SENTRY_AUTH_TOKEN=sntrys_xxx
+
+# Resend - Email
+RESEND_API_KEY=re_xxx
+EMAIL_FROM=noreply@seu-dominio.com
+
+# Upstash - Redis
+UPSTASH_REDIS_REST_URL=https://xxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=xxx
+
+# Analytics
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+```

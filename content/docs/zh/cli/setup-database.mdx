@@ -1,0 +1,205 @@
+---
+title: 数据库设置
+description: 配置数据库连接，支持PostgreSQL、MySQL、SQLite和云提供商。
+---
+
+# 数据库设置
+
+数据库设置命令帮助您配置数据库连接并初始化架构。
+
+## 快速开始
+
+```bash
+npm run setup:db
+```
+
+## 支持的数据库
+
+### PostgreSQL
+
+标准PostgreSQL数据库，本地或云托管。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider postgresql
+```
+
+连接字符串格式：
+```
+postgresql://用户名:密码@主机:5432/数据库名
+```
+
+### MySQL
+
+MySQL数据库，本地或云托管。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider mysql
+```
+
+连接字符串格式：
+```
+mysql://用户名:密码@主机:3306/数据库名
+```
+
+### SQLite
+
+基于文件的数据库，非常适合本地开发。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider sqlite
+```
+
+连接字符串格式：
+```
+file:./dev.db
+```
+
+<Callout type="warning">
+SQLite非常适合开发，但不建议用于生产环境。
+</Callout>
+
+### Supabase
+
+带有Supabase附加功能的PostgreSQL。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider supabase
+```
+
+连接字符串格式：
+```
+postgresql://postgres:[密码]@db.[项目].supabase.co:5432/postgres
+```
+
+从Supabase仪表板的**设置 > 数据库**获取您的连接字符串。
+
+### Neon
+
+支持分支的无服务器PostgreSQL。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider neon
+```
+
+连接字符串格式：
+```
+postgresql://[用户名]:[密码]@[主机].neon.tech/[数据库名]?sslmode=require
+```
+
+### PlanetScale
+
+支持分支的无服务器MySQL。
+
+```bash
+npx tsx scripts/setup/setup-db.ts --provider planetscale
+```
+
+连接字符串格式：
+```
+mysql://[用户名]:[密码]@[主机]/[数据库名]?ssl={"rejectUnauthorized":true}
+```
+
+<Callout type="info">
+PlanetScale需要在Prisma架构中设置`relationMode = "prisma"`。
+</Callout>
+
+## 设置执行的操作
+
+1. **提示选择提供商** - 选择您的数据库类型
+2. **配置连接** - 更新`.env`中的`DATABASE_URL`
+3. **更新Prisma架构** - 如需要则更改提供商
+4. **测试连接** - 验证数据库可访问
+5. **运行迁移** - 执行`prisma generate`和`prisma db push`
+
+## 命令选项
+
+跳过迁移步骤：
+```bash
+npx tsx scripts/setup/setup-db.ts --skip-migrate
+```
+
+直接选择提供商：
+```bash
+npx tsx scripts/setup/setup-db.ts --provider postgresql
+```
+
+## 手动设置
+
+如果您偏好手动配置：
+
+### 1. 更新`.env`
+
+```bash
+DATABASE_URL="postgresql://用户名:密码@localhost:5432/shipkit"
+```
+
+### 2. 生成Prisma客户端
+
+```bash
+npm run db:generate
+```
+
+### 3. 将架构推送到数据库
+
+```bash
+npm run db:push
+```
+
+### 4. 使用Prisma Studio验证
+
+```bash
+npm run db:studio
+```
+
+## 数据库命令参考
+
+| 命令 | 描述 |
+|------|------|
+| `npm run db:generate` | 生成Prisma客户端 |
+| `npm run db:push` | 将架构推送到数据库（无迁移） |
+| `npm run db:migrate` | 在开发环境运行迁移 |
+| `npm run db:studio` | 打开Prisma Studio |
+
+## 故障排除
+
+### 连接被拒绝
+
+确保您的数据库正在运行：
+
+```bash
+# PostgreSQL
+pg_isready -h localhost -p 5432
+
+# MySQL
+mysqladmin ping -h localhost
+```
+
+### 权限被拒绝
+
+检查您的数据库用户是否具有所需权限：
+
+```sql
+-- PostgreSQL
+GRANT ALL PRIVILEGES ON DATABASE shipkit TO 您的用户名;
+
+-- MySQL
+GRANT ALL PRIVILEGES ON shipkit.* TO '您的用户名'@'localhost';
+```
+
+### 需要SSL
+
+对于云数据库，确保启用SSL：
+
+```bash
+# 添加到连接字符串
+?sslmode=require
+```
+
+### 架构不同步
+
+如果您的架构与数据库不同步：
+
+```bash
+# 重置并推送（警告：会销毁数据）
+npx prisma db push --force-reset
+```
