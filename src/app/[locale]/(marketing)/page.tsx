@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/config/site';
+import { isDatabaseConfigured } from '@/lib/setup-mode';
 import {
   ArrowRight,
   Zap,
@@ -15,12 +16,12 @@ import {
 
 // Check if setup is already complete
 async function checkSetupComplete(): Promise<boolean> {
-  try {
-    // In development without proper DB, return false to redirect to setup
-    if (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes('user:password')) {
-      return false;
-    }
+  // Skip database check if not configured (placeholder or missing)
+  if (!isDatabaseConfigured()) {
+    return false;
+  }
 
+  try {
     // Dynamically import db to avoid errors when DATABASE_URL is not set
     const { db } = await import('@/lib/db');
 
@@ -31,7 +32,7 @@ async function checkSetupComplete(): Promise<boolean> {
 
     return !!adminUser;
   } catch {
-    // If database is not configured, setup is not complete
+    // If database query fails, setup is not complete
     return false;
   }
 }

@@ -19,6 +19,8 @@ function isDatabasePlaceholder(): boolean {
   return (
     DATABASE_URL_PLACEHOLDERS.includes(dbUrl) ||
     dbUrl.includes('user:password') ||
+    dbUrl.includes('localhost:5432') ||
+    dbUrl.includes('127.0.0.1:5432') ||
     !dbUrl
   );
 }

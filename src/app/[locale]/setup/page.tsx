@@ -6,15 +6,16 @@
 import { redirect } from 'next/navigation';
 import { SetupWizard } from '@/components/setup-wizard';
 import { DemoProvider } from '@/components/providers/demo-provider';
+import { isDatabaseConfigured } from '@/lib/setup-mode';
 
 // Check if setup is already complete
 async function checkSetupComplete(): Promise<boolean> {
-  try {
-    // In development without proper DB, return false to show wizard
-    if (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes('user:password')) {
-      return false;
-    }
+  // Skip database check if not configured (placeholder or missing)
+  if (!isDatabaseConfigured()) {
+    return false;
+  }
 
+  try {
     // Dynamically import db to avoid errors when DATABASE_URL is not set
     const { db } = await import('@/lib/db');
 
@@ -24,9 +25,8 @@ async function checkSetupComplete(): Promise<boolean> {
     });
 
     return !!adminUser;
-  } catch (error) {
-    // If database is not configured, setup is not complete
-    console.error('Setup check error:', error);
+  } catch {
+    // If database query fails, setup is not complete
     return false;
   }
 }
