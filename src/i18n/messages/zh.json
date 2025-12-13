@@ -1345,5 +1345,44 @@
     "successDescription": "当有空位时我们会通知您。感谢您的关注！",
     "errorMessage": "出现问题，请重试。",
     "backToHome": "返回首页"
+  },
+  "setupWizard": {
+    "steps": {
+      "welcome": {
+        "title": "欢迎",
+        "description": "开始使用您的应用"
+      },
+      "database": {
+        "title": "数据库",
+        "description": "连接您的数据库"
+      },
+      "auth": {
+        "title": "身份验证",
+        "description": "设置用户登录"
+      },
+      "payments": {
+        "title": "支付",
+        "description": "接受付款"
+      },
+      "ai": {
+        "title": "AI功能",
+        "description": "添加AI能力"
+      },
+      "launch": {
+        "title": "发布",
+        "description": "创建管理员并上线"
+      }
+    },
+    "navigation": {
+      "back": "返回",
+      "continue": "继续",
+      "skip": "跳过",
+      "finish": "完成"
+    },
+    "sidebar": {
+      "current": "当前",
+      "total": "总计",
+      "complete": "已完成"
+    }
   }
 }

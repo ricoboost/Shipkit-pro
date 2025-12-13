@@ -1345,5 +1345,44 @@
     "successDescription": "Wir benachrichtigen Sie, wenn ein Platz frei wird. Danke für Ihr Interesse!",
     "errorMessage": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
     "backToHome": "Zurück zur Startseite"
+  },
+  "setupWizard": {
+    "steps": {
+      "welcome": {
+        "title": "Willkommen",
+        "description": "Starten Sie mit Ihrer App"
+      },
+      "database": {
+        "title": "Datenbank",
+        "description": "Verbinden Sie Ihre Datenbank"
+      },
+      "auth": {
+        "title": "Authentifizierung",
+        "description": "Benutzeranmeldung einrichten"
+      },
+      "payments": {
+        "title": "Zahlungen",
+        "description": "Zahlungen akzeptieren"
+      },
+      "ai": {
+        "title": "KI-Funktionen",
+        "description": "KI-Fähigkeiten hinzufügen"
+      },
+      "launch": {
+        "title": "Start",
+        "description": "Admin erstellen & starten"
+      }
+    },
+    "navigation": {
+      "back": "Zurück",
+      "continue": "Weiter",
+      "skip": "Überspringen",
+      "finish": "Fertig"
+    },
+    "sidebar": {
+      "current": "Aktuell",
+      "total": "Gesamt",
+      "complete": "Abgeschlossen"
+    }
   }
 }

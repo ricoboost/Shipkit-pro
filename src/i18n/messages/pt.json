@@ -1345,5 +1345,44 @@
     "successDescription": "Notificaremos você quando uma vaga abrir. Obrigado pelo interesse!",
     "errorMessage": "Algo deu errado. Por favor, tente novamente.",
     "backToHome": "Voltar ao Início"
+  },
+  "setupWizard": {
+    "steps": {
+      "welcome": {
+        "title": "Bem-vindo",
+        "description": "Comece com seu aplicativo"
+      },
+      "database": {
+        "title": "Banco de Dados",
+        "description": "Conecte seu banco de dados"
+      },
+      "auth": {
+        "title": "Autenticação",
+        "description": "Configure o login de usuário"
+      },
+      "payments": {
+        "title": "Pagamentos",
+        "description": "Aceite pagamentos"
+      },
+      "ai": {
+        "title": "Recursos de IA",
+        "description": "Adicione capacidades de IA"
+      },
+      "launch": {
+        "title": "Lançar",
+        "description": "Crie admin e publique"
+      }
+    },
+    "navigation": {
+      "back": "Voltar",
+      "continue": "Continuar",
+      "skip": "Pular",
+      "finish": "Finalizar"
+    },
+    "sidebar": {
+      "current": "Atual",
+      "total": "Total",
+      "complete": "Concluído"
+    }
   }
 }

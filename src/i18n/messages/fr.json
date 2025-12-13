@@ -1345,5 +1345,44 @@
     "successDescription": "Nous vous notifierons quand une place se libère. Merci pour votre intérêt !",
     "errorMessage": "Une erreur s'est produite. Veuillez réessayer.",
     "backToHome": "Retour à l'Accueil"
+  },
+  "setupWizard": {
+    "steps": {
+      "welcome": {
+        "title": "Bienvenue",
+        "description": "Démarrez avec votre application"
+      },
+      "database": {
+        "title": "Base de données",
+        "description": "Connectez votre base de données"
+      },
+      "auth": {
+        "title": "Authentification",
+        "description": "Configurez la connexion"
+      },
+      "payments": {
+        "title": "Paiements",
+        "description": "Acceptez les paiements"
+      },
+      "ai": {
+        "title": "Fonctions IA",
+        "description": "Ajoutez des capacités IA"
+      },
+      "launch": {
+        "title": "Lancement",
+        "description": "Créez l'admin et lancez"
+      }
+    },
+    "navigation": {
+      "back": "Retour",
+      "continue": "Continuer",
+      "skip": "Passer",
+      "finish": "Terminer"
+    },
+    "sidebar": {
+      "current": "Actuel",
+      "total": "Total",
+      "complete": "Terminé"
+    }
   }
 }

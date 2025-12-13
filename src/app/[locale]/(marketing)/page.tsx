@@ -1,7 +1,7 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/config/site';
-import { SetupWizard } from '@/components/setup/setup-wizard';
 import {
   ArrowRight,
   Zap,
@@ -12,6 +12,29 @@ import {
   Palette,
   Check,
 } from 'lucide-react';
+
+// Check if setup is already complete
+async function checkSetupComplete(): Promise<boolean> {
+  try {
+    // In development without proper DB, return false to redirect to setup
+    if (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes('user:password')) {
+      return false;
+    }
+
+    // Dynamically import db to avoid errors when DATABASE_URL is not set
+    const { db } = await import('@/lib/db');
+
+    // Check if at least one admin user exists
+    const adminUser = await db.user.findFirst({
+      where: { role: 'ADMIN' },
+    });
+
+    return !!adminUser;
+  } catch {
+    // If database is not configured, setup is not complete
+    return false;
+  }
+}
 
 const features = [
   {
@@ -94,16 +117,21 @@ const tiers = [
   },
 ];
 
-export default function HomePage(): React.JSX.Element {
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<React.JSX.Element> {
+  const { locale } = await params;
+  const setupComplete = await checkSetupComplete();
+
+  // Redirect to setup wizard if setup is not complete
+  if (!setupComplete) {
+    redirect(`/${locale}/setup`);
+  }
+
   return (
     <>
-      {/* Setup Wizard - Shows during initial launch */}
-      <section className="py-8 md:py-12">
-        <div className="container">
-          <SetupWizard />
-        </div>
-      </section>
-
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 md:py-32">
         <div className="container relative z-10">

@@ -1345,5 +1345,44 @@
     "successDescription": "We'll notify you when a spot opens up. Thanks for your interest!",
     "errorMessage": "Something went wrong. Please try again.",
     "backToHome": "Back to Home"
+  },
+  "setupWizard": {
+    "steps": {
+      "welcome": {
+        "title": "Welcome",
+        "description": "Get started with your app"
+      },
+      "database": {
+        "title": "Database",
+        "description": "Connect your database"
+      },
+      "auth": {
+        "title": "Authentication",
+        "description": "Setup user login"
+      },
+      "payments": {
+        "title": "Payments",
+        "description": "Accept payments"
+      },
+      "ai": {
+        "title": "AI Features",
+        "description": "Add AI capabilities"
+      },
+      "launch": {
+        "title": "Launch",
+        "description": "Create admin & go live"
+      }
+    },
+    "navigation": {
+      "back": "Back",
+      "continue": "Continue",
+      "skip": "Skip",
+      "finish": "Finish"
+    },
+    "sidebar": {
+      "current": "Current",
+      "total": "Total",
+      "complete": "Complete"
+    }
   }
 }

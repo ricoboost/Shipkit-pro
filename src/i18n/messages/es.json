@@ -1345,5 +1345,44 @@
     "successDescription": "Te notificaremos cuando haya un lugar disponible. ¡Gracias por tu interés!",
     "errorMessage": "Algo salió mal. Por favor intenta de nuevo.",
     "backToHome": "Volver al Inicio"
+  },
+  "setupWizard": {
+    "steps": {
+      "welcome": {
+        "title": "Bienvenido",
+        "description": "Comienza con tu aplicación"
+      },
+      "database": {
+        "title": "Base de Datos",
+        "description": "Conecta tu base de datos"
+      },
+      "auth": {
+        "title": "Autenticación",
+        "description": "Configura el inicio de sesión"
+      },
+      "payments": {
+        "title": "Pagos",
+        "description": "Acepta pagos"
+      },
+      "ai": {
+        "title": "Funciones IA",
+        "description": "Agrega capacidades de IA"
+      },
+      "launch": {
+        "title": "Lanzar",
+        "description": "Crea admin y publica"
+      }
+    },
+    "navigation": {
+      "back": "Atrás",
+      "continue": "Continuar",
+      "skip": "Omitir",
+      "finish": "Finalizar"
+    },
+    "sidebar": {
+      "current": "Actual",
+      "total": "Total",
+      "complete": "Completo"
+    }
   }
 }

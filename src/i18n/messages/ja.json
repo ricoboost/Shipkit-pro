@@ -1345,5 +1345,44 @@
     "successDescription": "空きが出た際にお知らせいたします。ご関心をお寄せいただきありがとうございます！",
     "errorMessage": "エラーが発生しました。もう一度お試しください。",
     "backToHome": "ホームに戻る"
+  },
+  "setupWizard": {
+    "steps": {
+      "welcome": {
+        "title": "ようこそ",
+        "description": "アプリを始めましょう"
+      },
+      "database": {
+        "title": "データベース",
+        "description": "データベースを接続"
+      },
+      "auth": {
+        "title": "認証",
+        "description": "ログインを設定"
+      },
+      "payments": {
+        "title": "決済",
+        "description": "決済を受け付ける"
+      },
+      "ai": {
+        "title": "AI機能",
+        "description": "AI機能を追加"
+      },
+      "launch": {
+        "title": "公開",
+        "description": "管理者を作成して公開"
+      }
+    },
+    "navigation": {
+      "back": "戻る",
+      "continue": "続ける",
+      "skip": "スキップ",
+      "finish": "完了"
+    },
+    "sidebar": {
+      "current": "現在",
+      "total": "合計",
+      "complete": "完了"
+    }
   }
 }
