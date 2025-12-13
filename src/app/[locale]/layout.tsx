@@ -8,12 +8,28 @@ import { ImpersonationWrapper } from '@/components/layout/impersonation-wrapper'
 import { ServerThemeLoader } from '@/components/theme/server-theme-loader';
 import { siteConfig } from '@/config/site';
 import { locales, type Locale } from '@/i18n/config';
-import { db } from '@/lib/db';
+import { isDatabaseConfigured } from '@/lib/setup-mode';
 import '../globals.css';
+
+// Default site settings when database is not configured
+const defaultSiteSettings = {
+  siteName: 'ShipKit',
+  siteIcon: 'Rocket',
+  siteUrl: null,
+  siteDescription: null,
+};
 
 // Fetch site settings from database
 async function getSiteSettings() {
+  // Skip database query if not configured (setup mode)
+  if (!isDatabaseConfigured()) {
+    return defaultSiteSettings;
+  }
+
   try {
+    // Dynamically import db to avoid initialization errors
+    const { db } = await import('@/lib/db');
+
     const config = await db.appConfig.findUnique({
       where: { id: 'default' },
       select: {
@@ -23,19 +39,9 @@ async function getSiteSettings() {
         siteDescription: true,
       },
     });
-    return config || {
-      siteName: 'ShipKit',
-      siteIcon: 'Rocket',
-      siteUrl: null,
-      siteDescription: null,
-    };
+    return config || defaultSiteSettings;
   } catch {
-    return {
-      siteName: 'ShipKit',
-      siteIcon: 'Rocket',
-      siteUrl: null,
-      siteDescription: null,
-    };
+    return defaultSiteSettings;
   }
 }
 

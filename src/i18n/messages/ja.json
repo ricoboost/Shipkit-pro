@@ -923,13 +923,17 @@
       "complete": "完了",
       "step": "ステップ",
       "of": "/",
-      "completed": "完了"
+      "completed": "完了",
+      "optional": "任意"
     },
     "navigation": {
       "back": "戻る",
       "next": "続ける",
+      "continue": "続ける",
       "finish": "セットアップを完了",
       "skip": "スキップ",
+      "step": "ステップ",
+      "of": "/",
       "stepOf": "ステップ {current}/{total}"
     },
     "steps": {

@@ -923,13 +923,17 @@
       "complete": "abgeschlossen",
       "step": "Schritt",
       "of": "von",
-      "completed": "abgeschlossen"
+      "completed": "abgeschlossen",
+      "optional": "Optional"
     },
     "navigation": {
       "back": "Zurück",
       "next": "Weiter",
+      "continue": "Weiter",
       "finish": "Einrichtung Abschließen",
       "skip": "Überspringen",
+      "step": "Schritt",
+      "of": "von",
       "stepOf": "Schritt {current} von {total}"
     },
     "steps": {

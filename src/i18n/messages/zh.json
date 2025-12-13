@@ -923,13 +923,17 @@
       "complete": "完成",
       "step": "步骤",
       "of": "/",
-      "completed": "已完成"
+      "completed": "已完成",
+      "optional": "可选"
     },
     "navigation": {
       "back": "返回",
       "next": "继续",
+      "continue": "继续",
       "finish": "完成设置",
       "skip": "跳过",
+      "step": "步骤",
+      "of": "/",
       "stepOf": "第 {current} 步，共 {total} 步"
     },
     "steps": {

@@ -923,13 +923,17 @@
       "complete": "complete",
       "step": "Step",
       "of": "of",
-      "completed": "completed"
+      "completed": "completed",
+      "optional": "Optional"
     },
     "navigation": {
       "back": "Back",
       "next": "Continue",
+      "continue": "Continue",
       "finish": "Finish Setup",
       "skip": "Skip",
+      "step": "Step",
+      "of": "of",
       "stepOf": "Step {current} of {total}"
     },
     "steps": {

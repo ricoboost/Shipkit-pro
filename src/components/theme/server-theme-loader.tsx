@@ -6,7 +6,7 @@
  * SECURITY: Validates theme schema before injecting into DOM
  */
 
-import { db } from '@/lib/db';
+import { isDatabaseConfigured } from '@/lib/setup-mode';
 import { themePresets, ThemeConfig } from '@/lib/theme';
 
 // Convert camelCase to kebab-case
@@ -80,7 +80,15 @@ function generateThemeCSSVars(theme: ThemeConfig): string {
 }
 
 async function getThemeFromDB(): Promise<ThemeConfig> {
+  // Skip database query if not configured (setup mode)
+  if (!isDatabaseConfigured()) {
+    return themePresets.default;
+  }
+
   try {
+    // Dynamically import db to avoid initialization errors
+    const { db } = await import('@/lib/db');
+
     const config = await db.appConfig.findUnique({
       where: { id: 'default' },
       select: { theme: true },
@@ -91,7 +99,10 @@ async function getThemeFromDB(): Promise<ThemeConfig> {
       return config.theme;
     }
   } catch (error) {
-    console.error('Failed to load theme from database:', error);
+    // Silently fail in setup mode - database not ready
+    if (isDatabaseConfigured()) {
+      console.error('Failed to load theme from database:', error);
+    }
   }
 
   return themePresets.default;

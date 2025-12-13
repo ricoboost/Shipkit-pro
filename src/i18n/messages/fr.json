@@ -923,13 +923,17 @@
       "complete": "terminé",
       "step": "Étape",
       "of": "sur",
-      "completed": "terminé"
+      "completed": "terminé",
+      "optional": "Optionnel"
     },
     "navigation": {
       "back": "Retour",
       "next": "Continuer",
+      "continue": "Continuer",
       "finish": "Terminer la Configuration",
       "skip": "Passer",
+      "step": "Étape",
+      "of": "sur",
       "stepOf": "Étape {current} sur {total}"
     },
     "steps": {
