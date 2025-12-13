@@ -10,6 +10,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { hash } from 'bcryptjs';
 import { db } from '@/lib/db';
+import { isDatabaseConfigured } from '@/lib/setup-mode';
 import { withRateLimit, rateLimitPresets } from '@/lib/security/rate-limit';
 
 // Strong password requirements for admin accounts
@@ -28,6 +29,14 @@ const schema = z.object({
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
+    // Check if database is configured
+    if (!isDatabaseConfigured()) {
+      return Response.json(
+        { error: 'Database is not configured. Please set up your DATABASE_URL first.' },
+        { status: 503 }
+      );
+    }
+
     // Rate limit: 5 attempts per hour
     const { allowed, headers } = await withRateLimit(req, rateLimitPresets.authStrict);
     if (!allowed) {
@@ -97,22 +106,27 @@ export async function POST(req: NextRequest): Promise<Response> {
       },
     });
 
-    // Grant signup bonus credits
+    // Grant signup bonus credits (non-blocking - don't fail if this errors)
     const bonusCredits = parseInt(process.env.SIGNUP_BONUS_CREDITS || '100', 10);
     if (bonusCredits > 0) {
-      await db.creditBalance.create({
-        data: {
-          userId: user.id,
-          balance: bonusCredits,
-          ledger: {
-            create: {
-              amount: bonusCredits,
-              type: 'GRANT',
-              description: 'Admin setup bonus',
+      try {
+        await db.creditBalance.create({
+          data: {
+            userId: user.id,
+            balance: bonusCredits,
+            ledger: {
+              create: {
+                amount: bonusCredits,
+                type: 'GRANT',
+                description: 'Admin setup bonus',
+              },
             },
           },
-        },
-      });
+        });
+      } catch (creditError) {
+        // Log but don't fail - admin was created successfully
+        console.warn('Failed to grant signup bonus credits:', creditError);
+      }
     }
 
     return Response.json({
@@ -129,7 +143,14 @@ export async function POST(req: NextRequest): Promise<Response> {
       return Response.json({ error: error.issues[0].message }, { status: 400 });
     }
 
+    // Log detailed error for debugging
     console.error('Admin setup error:', error);
-    return Response.json({ error: 'Failed to create admin account' }, { status: 500 });
+
+    // Return more specific error message
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return Response.json(
+      { error: `Failed to create admin account: ${errorMessage}` },
+      { status: 500 }
+    );
   }
 }
