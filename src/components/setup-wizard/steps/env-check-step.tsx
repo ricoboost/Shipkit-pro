@@ -164,9 +164,10 @@ export function EnvCheckStep() {
       icon: Shield,
       status: envStatus.auth,
       required: true,
-      help: 'Add AUTH_SECRET (min 32 characters)',
+      help: 'Pre-generated for NextAuth. Switch to Supabase Auth or BetterAuth by updating AUTH_SECRET.',
+      configuredHelp: 'Using NextAuth by default. Switch to Supabase Auth or BetterAuth by changing AUTH_SECRET.',
       action: {
-        label: 'Generate Secret',
+        label: 'Generate New Secret',
         onClick: generateAuthSecret,
       },
     },
@@ -264,11 +265,26 @@ export function EnvCheckStep() {
                         <StatusIcon className={`h-4 w-4 ml-auto ${statusColor}`} />
                       </div>
                       {isConfigured ? (
-                        <p className="text-sm text-green-600">
-                          {item.status.provider
-                            ? `Connected via ${item.status.provider}`
-                            : 'Configured'}
-                        </p>
+                        <div className="space-y-2">
+                          <p className="text-sm text-green-600">
+                            {item.status.provider
+                              ? `Connected via ${item.status.provider}`
+                              : 'Configured'}
+                          </p>
+                          {'configuredHelp' in item && item.configuredHelp && (
+                            <p className="text-xs text-muted-foreground">{item.configuredHelp}</p>
+                          )}
+                          {item.action && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={item.action.onClick}
+                              className="text-xs h-7"
+                            >
+                              {item.action.label}
+                            </Button>
+                          )}
+                        </div>
                       ) : (
                         <div className="space-y-2">
                           <p className="text-sm text-muted-foreground">{item.help}</p>
