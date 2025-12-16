@@ -145,11 +145,22 @@ export async function POST(req: NextRequest): Promise<Response> {
       return Response.json({ error: error.issues[0].message }, { status: 400 });
     }
 
+    // Check for Prisma initialization/connection errors
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    if (
+      errorMessage.includes('Environment variable not found: DATABASE_URL') ||
+      errorMessage.includes('prisma') ||
+      errorMessage.includes('PrismaClient')
+    ) {
+      return Response.json(
+        { error: 'Database is not configured. Please add a valid DATABASE_URL to your .env.local file and restart the server.' },
+        { status: 503 }
+      );
+    }
+
     // Log detailed error for debugging
     console.error('Admin setup error:', error);
 
-    // Return more specific error message
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return Response.json(
       { error: `Failed to create admin account: ${errorMessage}` },
       { status: 500 }
