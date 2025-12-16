@@ -87,6 +87,7 @@ async function getThemeFromDB(): Promise<ThemeConfig> {
 
   try {
     // Dynamically import db to avoid initialization errors
+    // This can still throw if DATABASE_URL is invalid/missing at runtime
     const { db } = await import('@/lib/db');
 
     const config = await db.appConfig.findUnique({
@@ -98,11 +99,9 @@ async function getThemeFromDB(): Promise<ThemeConfig> {
     if (config?.theme && validateTheme(config.theme)) {
       return config.theme;
     }
-  } catch (error) {
-    // Silently fail in setup mode - database not ready
-    if (isDatabaseConfigured()) {
-      console.error('Failed to load theme from database:', error);
-    }
+  } catch {
+    // Silently fail - database may not be ready or configured
+    // This handles both setup mode and runtime connection issues
   }
 
   return themePresets.default;
