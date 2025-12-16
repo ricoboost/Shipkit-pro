@@ -9,7 +9,6 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { hash } from 'bcryptjs';
-import { db } from '@/lib/db';
 import { isDatabaseConfigured } from '@/lib/setup-mode';
 import { withRateLimit, rateLimitPresets } from '@/lib/security/rate-limit';
 
@@ -66,6 +65,9 @@ export async function POST(req: NextRequest): Promise<Response> {
         { status: 401 }
       );
     }
+
+    // Dynamically import db to avoid Prisma initialization errors when DATABASE_URL is missing
+    const { db } = await import('@/lib/db');
 
     // Check if an admin already exists
     const existingAdmin = await db.user.findFirst({
