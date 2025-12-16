@@ -20,6 +20,8 @@ import {
   Shield,
   CreditCard,
   Bot,
+  Info,
+  Terminal,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWizard } from '../wizard-context';
@@ -372,8 +374,40 @@ export function EnvCheckStep() {
             </pre>
             <p className="text-xs text-muted-foreground mt-2">
               Add these to <code className="bg-muted px-1 rounded">.env.local</code> in your
-              project root, then click Re-check.
+              project root.
             </p>
+          </motion.div>
+
+          {/* Important: Steps after editing .env */}
+          <motion.div variants={fadeInVariants} className="mb-6">
+            <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30">
+              <div className="flex items-start gap-3">
+                <Info className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                    After updating .env.local:
+                  </p>
+                  <ol className="text-xs text-muted-foreground space-y-1.5 list-decimal list-inside">
+                    <li>
+                      <strong>Restart your dev server</strong> - Next.js only reads env vars at startup
+                    </li>
+                    <li>
+                      <strong>Run database migration</strong> - Sync your schema with the database:
+                      <code className="ml-2 px-1.5 py-0.5 rounded bg-muted font-mono">npx prisma db push</code>
+                    </li>
+                    <li>
+                      <strong>Return here</strong> and click &quot;Re-check Environment&quot;
+                    </li>
+                  </ol>
+                  <div className="pt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                    <Terminal className="h-3.5 w-3.5" />
+                    <code className="bg-muted px-1.5 py-0.5 rounded font-mono">
+                      Ctrl+C → npx prisma db push → npm run dev
+                    </code>
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
 
           {/* Re-check Button */}
