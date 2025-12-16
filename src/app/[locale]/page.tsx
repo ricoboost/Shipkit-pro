@@ -1,12 +1,16 @@
 import { redirect } from 'next/navigation';
+import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { db } from '@/lib/db';
+import { auth } from '@/lib/auth';
 import { WelcomeHero, BentoGrid } from '@/components/home';
 import { HomeNavLogo } from '@/components/home/home-nav-logo';
 import { BookOpen, Github } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { getPublishedWaitlistPage } from '@/lib/waitlist-builder';
+import { PageRenderer } from '@/components/waitlist-builder/preview/page-renderer';
 
 async function checkSetupComplete(): Promise<boolean> {
   try {
@@ -26,7 +30,7 @@ async function checkSetupComplete(): Promise<boolean> {
         select: { id: true },
       });
       if (anyUser) {
-        // Database has users, likely a schema mismatch - don't redirect to onboarding
+        // Database has users, likely a schema mismatch - don't redirect to setup
         return true;
       }
     } catch {
@@ -40,15 +44,55 @@ interface HomePageProps {
   params: Promise<{ locale: string }>;
 }
 
+// Dynamic metadata based on waitlist status
+export async function generateMetadata(): Promise<Metadata> {
+  const session = await auth.getSession();
+  const isAdmin = session?.user?.role === 'ADMIN';
+
+  // Only show waitlist metadata if published and user is not admin
+  if (!isAdmin) {
+    const waitlistPage = await getPublishedWaitlistPage();
+    if (waitlistPage) {
+      return {
+        title: waitlistPage.metaTitle || 'Join the Waitlist',
+        description: waitlistPage.metaDescription || 'Be the first to know when we launch.',
+        openGraph: waitlistPage.ogImage
+          ? { images: [waitlistPage.ogImage] }
+          : undefined,
+      };
+    }
+  }
+
+  // Default metadata for landing page
+  return {
+    title: 'Welcome',
+    description: 'Your SaaS application',
+  };
+}
+
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   const isSetupComplete = await checkSetupComplete();
 
-  // Redirect to onboarding if setup is not complete
+  // Redirect to setup wizard if setup is not complete
   if (!isSetupComplete) {
-    redirect(`/${locale}/onboarding`);
+    redirect(`/${locale}/setup`);
   }
 
+  // Check if user is admin
+  const session = await auth.getSession();
+  const isAdmin = session?.user?.role === 'ADMIN';
+
+  // Check for published waitlist page (only for non-admin users)
+  if (!isAdmin) {
+    const waitlistPage = await getPublishedWaitlistPage();
+    if (waitlistPage) {
+      // Render waitlist page for non-admin visitors
+      return <PageRenderer config={waitlistPage.config} />;
+    }
+  }
+
+  // Show regular landing page for admins or when no waitlist is published
   const t = await getTranslations('home');
 
   return (

@@ -3,6 +3,12 @@
 /**
  * Setup Wizard - Main Component
  * Full-screen wizard with sidebar and animated step transitions
+ *
+ * New 4-step flow:
+ * 1. Welcome - Interactive preview of what they're building
+ * 2. Environment - Auto-detect and verify configuration
+ * 3. Admin - Create admin account with real-time validation
+ * 4. Success - Celebration + clear next steps
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,13 +16,11 @@ import { WizardProvider, useWizard } from './wizard-context';
 import { WizardSidebar } from './wizard-sidebar';
 import { slideVariants, slideTransition } from './constants';
 
-// Step Components
+// New Step Components (4 steps)
 import { WelcomeStep } from './steps/welcome-step';
-import { DatabaseStep } from './steps/database-step';
-import { AuthStep } from './steps/auth-step';
-import { PaymentsStep } from './steps/payments-step';
-import { AIStep } from './steps/ai-step';
-import { LaunchStep } from './steps/launch-step';
+import { EnvCheckStep } from './steps/env-check-step';
+import { AdminStep } from './steps/admin-step';
+import { SuccessStep } from './steps/success-step';
 
 function WizardContent() {
   const { state, progress } = useWizard();
@@ -26,15 +30,11 @@ function WizardContent() {
       case 0:
         return <WelcomeStep />;
       case 1:
-        return <DatabaseStep />;
+        return <EnvCheckStep />;
       case 2:
-        return <AuthStep />;
+        return <AdminStep />;
       case 3:
-        return <PaymentsStep />;
-      case 4:
-        return <AIStep />;
-      case 5:
-        return <LaunchStep />;
+        return <SuccessStep />;
       default:
         return <WelcomeStep />;
     }

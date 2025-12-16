@@ -5,11 +5,12 @@
 
 import {
   Sparkles,
+  Settings,
+  User,
+  Rocket,
   Database,
-  Shield,
   CreditCard,
   Bot,
-  Rocket,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -23,59 +24,50 @@ export interface WizardStep {
   hasWarning?: boolean;
 }
 
+/**
+ * New simplified 4-step onboarding flow:
+ * 1. Welcome - Interactive preview of what they're building
+ * 2. Environment - Auto-detect and verify configuration
+ * 3. Admin - Create admin account with real-time validation
+ * 4. Success - Celebration + clear next steps
+ */
 export const WIZARD_STEPS: WizardStep[] = [
   {
     id: 'welcome',
     title: 'Welcome',
-    description: 'Get started with your app',
+    description: 'See what you\'re building',
     icon: Sparkles,
     required: false,
     skippable: true,
   },
   {
-    id: 'database',
-    title: 'Database',
-    description: 'Connect your database',
-    icon: Database,
-    required: false,
-    skippable: true,
-    hasWarning: true,
-  },
-  {
-    id: 'auth',
-    title: 'Authentication',
-    description: 'Setup user login',
-    icon: Shield,
+    id: 'environment',
+    title: 'Environment',
+    description: 'Check your configuration',
+    icon: Settings,
     required: true,
     skippable: false,
   },
   {
-    id: 'payments',
-    title: 'Payments',
-    description: 'Accept payments',
-    icon: CreditCard,
-    required: false,
-    skippable: true,
+    id: 'admin',
+    title: 'Admin Account',
+    description: 'Create your login',
+    icon: User,
+    required: true,
+    skippable: false,
   },
   {
-    id: 'ai',
-    title: 'AI Features',
-    description: 'Add AI capabilities',
-    icon: Bot,
-    required: false,
-    skippable: true,
-  },
-  {
-    id: 'launch',
-    title: 'Launch',
-    description: 'Create admin & go live',
+    id: 'success',
+    title: 'Ready!',
+    description: 'Start building',
     icon: Rocket,
     required: true,
     skippable: false,
   },
 ];
 
-export const STORAGE_KEY = 'shipkit-setup-v2';
+// Bump version to reset old wizard state when step structure changes
+export const STORAGE_KEY = 'shipkit-setup-v3';
 
 // Animation variants for framer-motion
 export const slideVariants = {
@@ -95,7 +87,7 @@ export const slideVariants = {
 
 export const slideTransition = {
   duration: 0.3,
-  ease: [0.4, 0, 0.2, 1],
+  ease: [0.4, 0, 0.2, 1] as const,
 };
 
 export const fadeInVariants = {
