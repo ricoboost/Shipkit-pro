@@ -17,7 +17,7 @@ export const test = base.extend<{
 }>({
   // Placeholder for authenticated page fixture
   // Will be implemented when auth is set up in test environment
-  authenticatedPage: async ({ page }, use) => {
+  authenticatedPage: async ({ page: _page }, use) => {
     // For now, just use the regular page
     await use(base)
   },

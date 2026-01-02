@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Github, Twitter, Linkedin, Youtube } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface FooterLink {
   label: string;
@@ -81,7 +82,7 @@ export function Footer({
             <div className="space-y-4">
               <Link href="/" className="flex items-center gap-2">
                 {logoSrc ? (
-                  <img src={logoSrc} alt={brandName} className="h-8 w-auto" />
+                  <Image src={logoSrc} alt={brandName} width={32} height={32} className="h-8 w-auto" />
                 ) : (
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
                     {brandName[0]}

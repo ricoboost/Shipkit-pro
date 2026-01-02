@@ -24,7 +24,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import {
   Search,
   MoreHorizontal,
@@ -144,7 +143,7 @@ export function DataTable<T extends Record<string, unknown>>({
             <Input
               placeholder={searchPlaceholder}
               value={search}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setSearch(e.target.value);
                 setCurrentPage(1);
               }}

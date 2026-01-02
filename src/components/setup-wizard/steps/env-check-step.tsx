@@ -140,10 +140,13 @@ export function EnvCheckStep() {
   const handleNext = () => {
     if (canProceed) {
       markComplete('environment', {
-        database: envStatus.database,
-        auth: envStatus.auth,
-        payments: envStatus.payments,
-        ai: envStatus.ai,
+        configured: true,
+        data: {
+          database: envStatus.database,
+          auth: envStatus.auth,
+          payments: envStatus.payments,
+          ai: envStatus.ai,
+        },
       });
       nextStep();
     }
@@ -269,7 +272,7 @@ export function EnvCheckStep() {
                       {isConfigured ? (
                         <div className="space-y-2">
                           <p className="text-sm text-green-600">
-                            {item.status.provider
+                            {'provider' in item.status && item.status.provider
                               ? `Connected via ${item.status.provider}`
                               : 'Configured'}
                           </p>

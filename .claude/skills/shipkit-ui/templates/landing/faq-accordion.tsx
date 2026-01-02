@@ -4,6 +4,7 @@
  * Best for: FAQ pages, support sections, product information
  */
 
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import {
   Accordion,
@@ -83,12 +84,12 @@ export function FAQAccordion({
         <div className="mt-12 text-center">
           <p className="text-muted-foreground">
             Still have questions?{' '}
-            <a
+            <Link
               href="/contact"
               className="font-medium text-primary hover:underline"
             >
               Contact our support team
-            </a>
+            </Link>
           </p>
         </div>
       </div>

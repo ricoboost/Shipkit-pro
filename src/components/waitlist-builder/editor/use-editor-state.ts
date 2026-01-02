@@ -27,6 +27,8 @@ interface EditorStore {
   isPublishing: boolean;
   isLoading: boolean;
   published: boolean;
+  waitlistActive: boolean;
+  isTogglingWaitlist: boolean;
   metaTitle: string;
   metaDescription: string;
   ogImage: string;
@@ -40,6 +42,7 @@ interface EditorStore {
   loadFromServer: () => Promise<void>;
   saveToServer: () => Promise<void>;
   publishPage: (publish: boolean) => Promise<void>;
+  toggleWaitlistActive: () => Promise<void>;
   resetToDefaults: () => Promise<void>;
 
   // Section actions
@@ -93,6 +96,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   isPublishing: false,
   isLoading: true,
   published: false,
+  waitlistActive: false,
+  isTogglingWaitlist: false,
   metaTitle: '',
   metaDescription: '',
   ogImage: '',
@@ -108,9 +113,14 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   loadFromServer: async () => {
     set({ isLoading: true });
     try {
-      const res = await fetch('/api/admin/waitlist-page');
-      if (res.ok) {
-        const data = await res.json();
+      // Fetch page config and waitlist mode status in parallel
+      const [pageRes, flagsRes] = await Promise.all([
+        fetch('/api/admin/waitlist-page'),
+        fetch('/api/admin/settings/flags'),
+      ]);
+
+      if (pageRes.ok) {
+        const data = await pageRes.json();
         set({
           config: data.config,
           originalConfig: data.config,
@@ -120,6 +130,11 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
           ogImage: data.ogImage || '',
           isDirty: false,
         });
+      }
+
+      if (flagsRes.ok) {
+        const flagsData = await flagsRes.json();
+        set({ waitlistActive: flagsData.waitlistMode || false });
       }
     } catch (error) {
       console.error('Failed to load page config:', error);
@@ -171,6 +186,27 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
       throw error;
     } finally {
       set({ isPublishing: false });
+    }
+  },
+
+  // Toggle waitlist active mode (blocks /register, shows /join-waitlist)
+  toggleWaitlistActive: async () => {
+    const currentState = get().waitlistActive;
+    set({ isTogglingWaitlist: true });
+    try {
+      const res = await fetch('/api/admin/settings/flags', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ waitlistMode: !currentState }),
+      });
+      if (res.ok) {
+        set({ waitlistActive: !currentState });
+      }
+    } catch (error) {
+      console.error('Failed to toggle waitlist mode:', error);
+      throw error;
+    } finally {
+      set({ isTogglingWaitlist: false });
     }
   },
 

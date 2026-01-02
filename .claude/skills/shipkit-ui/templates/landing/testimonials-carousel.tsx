@@ -42,7 +42,7 @@ export function TestimonialsCarousel({
   title,
   subtitle,
   testimonials,
-  autoRotate = 0,
+  autoRotate: _autoRotate = 0,
   className,
 }: TestimonialsCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);

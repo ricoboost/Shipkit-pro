@@ -25,11 +25,14 @@ export interface ThemeColors {
   ring: string;
 }
 
+export type ThemeMode = 'light' | 'dark' | 'system';
+
 export interface ThemeConfig {
   name: string;
   light: ThemeColors;
   dark: ThemeColors;
   radius: string;
+  defaultMode?: ThemeMode;
 }
 
 // Built-in theme presets

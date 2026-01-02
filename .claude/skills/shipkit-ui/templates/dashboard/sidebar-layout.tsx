@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface NavItem {
   /** Nav item label */
@@ -97,7 +98,7 @@ export function SidebarLayout({
         <div className="flex h-16 items-center justify-between border-b px-4">
           <Link href="/dashboard" className="flex items-center gap-2">
             {logoSrc ? (
-              <img src={logoSrc} alt={appName} className="h-8 w-8" />
+              <Image src={logoSrc} alt={appName} width={32} height={32} className="h-8 w-8" />
             ) : (
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
                 {appName[0]}

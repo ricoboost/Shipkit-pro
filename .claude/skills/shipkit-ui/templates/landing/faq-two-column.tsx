@@ -4,6 +4,7 @@
  * Best for: Shorter FAQs, scannable content, landing pages
  */
 
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { MessageCircle } from 'lucide-react';
@@ -84,11 +85,11 @@ export function FAQTwoColumn({
               Still have questions?
             </h3>
             <p className="mt-2 text-muted-foreground">
-              Can't find the answer you're looking for? Our support team is here
+              Can&apos;t find the answer you&apos;re looking for? Our support team is here
               to help.
             </p>
             <Button className="mt-6" asChild>
-              <a href="/contact">Contact Support</a>
+              <Link href="/contact">Contact Support</Link>
             </Button>
           </div>
         )}

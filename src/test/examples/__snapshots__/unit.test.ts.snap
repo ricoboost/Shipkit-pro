@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Snapshot Tests > should match snapshot for admin user 1`] = `
+{
+  "contact": "admin@example.com",
+  "displayName": "Admin User",
+  "formatted": "Admin User (admin@example.com)",
+  "permissions": [
+    "read",
+    "write",
+    "delete",
+  ],
+}
+`;
+
+exports[`Snapshot Tests > should match snapshot for regular user 1`] = `
+{
+  "contact": "john@example.com",
+  "displayName": "John Doe",
+  "formatted": "John Doe (john@example.com)",
+  "permissions": [
+    "read",
+  ],
+}
+`;

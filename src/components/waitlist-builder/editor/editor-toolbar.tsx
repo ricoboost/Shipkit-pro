@@ -1,6 +1,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import {
   Save,
   Eye,
@@ -11,6 +14,7 @@ import {
   GlobeLock,
   RotateCcw,
   Loader2,
+  Power,
 } from 'lucide-react';
 import { useEditorStore } from './use-editor-state';
 import { toast } from 'sonner';
@@ -25,6 +29,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 export function EditorToolbar() {
   const {
@@ -33,10 +43,13 @@ export function EditorToolbar() {
     isSaving,
     isPublishing,
     published,
+    waitlistActive,
+    isTogglingWaitlist,
     undoStack,
     redoStack,
     saveToServer,
     publishPage,
+    toggleWaitlistActive,
     resetToDefaults,
     togglePreviewMode,
     undo,
@@ -70,14 +83,64 @@ export function EditorToolbar() {
     }
   };
 
+  const handleToggleWaitlist = async () => {
+    try {
+      await toggleWaitlistActive();
+      toast.success(waitlistActive ? 'Waitlist deactivated' : 'Waitlist activated');
+    } catch {
+      toast.error('Failed to toggle waitlist');
+    }
+  };
+
   return (
-    <div className="flex items-center justify-between border-b bg-background px-4 py-2">
-      <div className="flex items-center gap-2">
-        <h1 className="text-lg font-semibold">Page Builder</h1>
-        {isDirty && (
-          <span className="text-xs text-muted-foreground">(unsaved)</span>
-        )}
-      </div>
+    <TooltipProvider>
+      <div className="flex items-center justify-between border-b bg-background px-4 py-2">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold">Page Builder</h1>
+            {isDirty && (
+              <span className="text-xs text-muted-foreground">(unsaved)</span>
+            )}
+          </div>
+
+          {/* Waitlist Active Toggle */}
+          <div className="flex items-center gap-2 border-l pl-4">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="waitlist-active"
+                    checked={waitlistActive}
+                    onCheckedChange={handleToggleWaitlist}
+                    disabled={isTogglingWaitlist}
+                  />
+                  <Label
+                    htmlFor="waitlist-active"
+                    className="flex items-center gap-1.5 text-sm font-medium cursor-pointer"
+                  >
+                    <Power className="h-3.5 w-3.5" />
+                    Active
+                    {waitlistActive ? (
+                      <Badge variant="default" className="ml-1 bg-green-600 text-xs">
+                        ON
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="ml-1 text-xs">
+                        OFF
+                      </Badge>
+                    )}
+                  </Label>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-xs">
+                <p className="font-medium">Waitlist Mode</p>
+                <p className="text-xs text-muted-foreground">
+                  When active, visitors cannot register and are redirected to join the waitlist.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </div>
 
       <div className="flex items-center gap-2">
         {/* Undo/Redo */}
@@ -176,6 +239,7 @@ export function EditorToolbar() {
           {published ? 'Unpublish' : 'Publish'}
         </Button>
       </div>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }

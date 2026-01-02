@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="public/logo.svg" alt="ShipKit Logo" width="80" height="80">
+  <img src="public/shipkitlogo.svg" alt="ShipKit Logo" width="80" height="80">
 </p>
 
-<h1 align="center">ShipKit</h1>
+<h1 align="center">ShipKit Pro</h1>
 
 <p align="center">
   <strong>The AI-Native SaaS Boilerplate for Vibecoding</strong>
@@ -108,7 +108,7 @@ npm run generate:component # Generate component via CLI
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/yourusername/shipkit.git my-saas
+git clone https://github.com/ricoboost/Shipkit-pro.git my-saas
 cd my-saas
 npm install
 ```
@@ -304,7 +304,7 @@ SENTRY_DSN=
 
 ### Vercel (Recommended)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/shipkit)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ricoboost/Shipkit-pro.git)
 
 ### Docker
 
@@ -315,19 +315,54 @@ docker run -p 3000:3000 shipkit
 
 ---
 
-## Contributing
-
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
-
----
-
 ## License
 
-[MIT](LICENSE) - Build whatever you want.
+This software is licensed under the **ShipKit Commercial License** by Webscalers LLC.
+
+### License Grant
+
+Upon purchase, you receive a **non-exclusive, perpetual, worldwide, non-transferable** license.
+
+### What You CAN Do
+
+- Use in **unlimited** personal and commercial projects
+- Create end products for clients (freelance/agency work)
+- Modify and customize source code
+- Build SaaS applications without per-project fees
+- Charge users for products built with the software
+- Combine with other code and libraries
+
+### What You CANNOT Do
+
+- Redistribute source code publicly or privately
+- Share with unlicensed individuals
+- Post to public repositories (GitHub, GitLab, etc.)
+- Include in open-source projects
+- Resell, sublicense, lease, or white-label
+- Create competing products
+- Remove copyright notices or claim ownership
+- Transfer the license to another party
+
+### GitHub Access
+
+- One GitHub account per license
+- Account linking is permanent (changeable via support)
+- Team members need individual licenses
+
+### Support & Updates
+
+- Lifetime access to updates, bug fixes, and security patches
+- Documentation and community support included
+
+### Refund Policy
+
+30-day money-back guarantee on first purchase (if terms not violated).
+
+For full license terms, visit: [shipkit.pro/license](https://www.shipkit.pro/license)
 
 ---
 
 <p align="center">
-  <strong>Built for developers who ship fast.</strong><br>
+  <strong>Built for developers who ship with or without AI.</strong><br>
   <a href="https://shipkit.pro">shipkit.pro</a>
 </p>

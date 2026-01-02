@@ -14,9 +14,10 @@ import {
   Check, Copy, Download, Palette, Sun, Moon, RotateCcw, Save,
   Loader2, AlertCircle, Sparkles
 } from 'lucide-react';
-import { themePresets, ThemeConfig, applyTheme, exportThemeCSS } from '@/lib/theme';
+import { themePresets, ThemeConfig, ThemeMode, applyTheme, exportThemeCSS } from '@/lib/theme';
 import { useCustomTheme } from '@/components/theme-provider';
 import { ColorPicker } from '@/components/admin/color-picker';
+import { ThemeModeControl } from '@/components/admin/theme-mode-control';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
@@ -66,7 +67,7 @@ const colorGroups = [
 
 export default function ThemeBuilderPage() {
   const t = useTranslations('admin.theme');
-  const { theme: savedTheme, setTheme: setGlobalTheme, saveTheme, resetTheme, isSaving } = useCustomTheme();
+  const { theme: savedTheme, setTheme: setGlobalTheme, saveTheme, resetTheme, setDefaultMode, isSaving } = useCustomTheme();
   const [activePreset, setActivePreset] = useState('custom');
   const [customTheme, setCustomTheme] = useState<ThemeConfig>(savedTheme);
   const [mode, setMode] = useState<'light' | 'dark'>('light');
@@ -321,7 +322,32 @@ export default function ThemeBuilderPage() {
                 />
               </div>
               <div className="space-y-2">
+                <Label>{t('defaultThemeMode')}</Label>
+                <p className="text-xs text-muted-foreground mb-2">
+                  {t('defaultThemeModeDesc')}
+                </p>
+                <ThemeModeControl
+                  value={customTheme.defaultMode || 'system'}
+                  onChange={(newMode: ThemeMode) => {
+                    const newTheme = { ...customTheme, defaultMode: newMode };
+                    setCustomTheme(newTheme);
+                    setGlobalTheme(newTheme);
+                    setDefaultMode(newMode);
+                    setHasChanges(true);
+                  }}
+                  labels={{
+                    light: t('light'),
+                    dark: t('dark'),
+                    system: t('system'),
+                  }}
+                />
+              </div>
+              <Separator />
+              <div className="space-y-2">
                 <Label>{t('editingMode')}</Label>
+                <p className="text-xs text-muted-foreground mb-2">
+                  {t('editingModeDesc')}
+                </p>
                 <div className="flex items-center gap-2">
                   <Button
                     variant={mode === 'light' ? 'default' : 'outline'}

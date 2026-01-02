@@ -13,9 +13,10 @@ import {
   SheetContent,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface NavLink {
   /** Link label */
@@ -88,7 +89,7 @@ export function Navbar({
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             {logoSrc ? (
-              <img src={logoSrc} alt={brandName} className="h-8 w-auto" />
+              <Image src={logoSrc} alt={brandName} width={32} height={32} className="h-8 w-auto" />
             ) : (
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
                 {brandName[0]}

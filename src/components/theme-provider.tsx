@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { ThemeConfig, themePresets, applyTheme } from '@/lib/theme';
+import { ThemeConfig, ThemeMode, themePresets, applyTheme } from '@/lib/theme';
 import { useTheme } from 'next-themes';
 import { getServerTheme } from '@/components/theme/server-theme-loader';
 
@@ -11,6 +11,7 @@ interface ThemeContextType {
   setTheme: (theme: ThemeConfig) => void;
   saveTheme: () => Promise<void>;
   resetTheme: () => Promise<void>;
+  setDefaultMode: (mode: ThemeMode) => void;
   isLoading: boolean;
   isSaving: boolean;
 }
@@ -24,7 +25,7 @@ export function CustomThemeProvider({ children }: { children: React.ReactNode })
   const [theme, setThemeState] = useState<ThemeConfig>(themePresets.default);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const { resolvedTheme } = useTheme();
+  const { resolvedTheme, setTheme: setNextTheme } = useTheme();
   const themeRef = useRef<ThemeConfig>(themePresets.default);
   const pathname = usePathname();
 
@@ -36,8 +37,12 @@ export function CustomThemeProvider({ children }: { children: React.ReactNode })
       themeRef.current = serverTheme;
       // Re-apply to ensure CSS variables are set correctly after hydration
       applyTheme(serverTheme);
+      // Apply default mode if set
+      if (serverTheme.defaultMode) {
+        setNextTheme(serverTheme.defaultMode);
+      }
     }
-  }, []);
+  }, [setNextTheme]);
 
   // Re-apply theme when dark/light mode changes
   useEffect(() => {
@@ -99,15 +104,26 @@ export function CustomThemeProvider({ children }: { children: React.ReactNode })
         setThemeState(data.theme);
         themeRef.current = data.theme;
         applyTheme(data.theme);
+        // Reset to system theme mode
+        setNextTheme('system');
       }
     } finally {
       setIsSaving(false);
     }
-  }, []);
+  }, [setNextTheme]);
+
+  const setDefaultMode = useCallback((mode: ThemeMode) => {
+    // Update the theme config with the new default mode
+    const newTheme = { ...themeRef.current, defaultMode: mode };
+    setThemeState(newTheme);
+    themeRef.current = newTheme;
+    // Apply the mode immediately
+    setNextTheme(mode);
+  }, [setNextTheme]);
 
   return (
     <ThemeContext.Provider
-      value={{ theme, setTheme, saveTheme, resetTheme, isLoading, isSaving }}
+      value={{ theme, setTheme, saveTheme, resetTheme, setDefaultMode, isLoading, isSaving }}
     >
       {children}
     </ThemeContext.Provider>
