@@ -21,8 +21,6 @@ import {
   ImpersonationData,
 } from './types';
 
-// Import type augmentation
-import '@/types/next-auth';
 import { getImpersonationState, getImpersonatedUser } from '@/lib/impersonation';
 
 // NextAuth configuration
