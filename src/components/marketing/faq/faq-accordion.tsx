@@ -135,32 +135,60 @@ export function FAQAccordion({
         )}
 
         <Wrapper {...wrapperProps}>
-          <Accordion
-            type={allowMultiple ? 'multiple' : 'single'}
-            defaultValue={defaultValue as string | string[] | undefined}
-            collapsible={!allowMultiple}
-            className={cn(variant === 'default' && 'divide-y')}
-          >
-            {items.map((item, index) => (
-              <Item key={index} {...itemProps}>
-                <AccordionItem
-                  value={`item-${index}`}
-                  className={cn(
-                    variant === 'bordered' && itemVariants({ colorScheme }),
-                    variant === 'separated' && 'border rounded-lg px-4 mb-3 bg-card',
-                    variant === 'default' && 'border-0'
-                  )}
-                >
-                  <AccordionTrigger className="text-left font-medium hover:no-underline py-4">
-                    {item.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-4">
-                    {item.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              </Item>
-            ))}
-          </Accordion>
+          {allowMultiple ? (
+            <Accordion
+              type="multiple"
+              defaultValue={defaultValue as string[] | undefined}
+              className={cn(variant === 'default' && 'divide-y')}
+            >
+              {items.map((item, index) => (
+                <Item key={index} {...itemProps}>
+                  <AccordionItem
+                    value={`item-${index}`}
+                    className={cn(
+                      variant === 'bordered' && itemVariants({ colorScheme }),
+                      variant === 'separated' && 'border rounded-lg px-4 mb-3 bg-card',
+                      variant === 'default' && 'border-0'
+                    )}
+                  >
+                    <AccordionTrigger className="text-left font-medium hover:no-underline py-4">
+                      {item.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground pb-4">
+                      {item.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Item>
+              ))}
+            </Accordion>
+          ) : (
+            <Accordion
+              type="single"
+              defaultValue={defaultValue as string | undefined}
+              collapsible
+              className={cn(variant === 'default' && 'divide-y')}
+            >
+              {items.map((item, index) => (
+                <Item key={index} {...itemProps}>
+                  <AccordionItem
+                    value={`item-${index}`}
+                    className={cn(
+                      variant === 'bordered' && itemVariants({ colorScheme }),
+                      variant === 'separated' && 'border rounded-lg px-4 mb-3 bg-card',
+                      variant === 'default' && 'border-0'
+                    )}
+                  >
+                    <AccordionTrigger className="text-left font-medium hover:no-underline py-4">
+                      {item.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground pb-4">
+                      {item.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Item>
+              ))}
+            </Accordion>
+          )}
         </Wrapper>
       </div>
     </section>
