@@ -12,7 +12,31 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Auto-generated files
+    ".source/**",
+    // Test fixtures that use require() for mocking
+    "src/test/examples/**",
+    // E2E test fixtures
+    "e2e/**",
   ]),
+  // Custom rules
+  {
+    rules: {
+      // React Compiler rules - disable experimental warnings
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/preserve-manual-memoization": "off",
+      "react-hooks/immutability": "off",
+      // Allow unused variables with underscore prefix (intentionally unused params)
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

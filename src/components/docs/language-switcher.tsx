@@ -42,7 +42,7 @@ export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
 
     // Use full page navigation to ensure theme state is preserved
     // (navigating between /docs and /[locale]/docs crosses different root layouts)
-    window.location.href = newPath;
+    globalThis.location.href = newPath;
   };
 
   const currentLanguageName = localeNames[currentLocale as Locale] || currentLocale;

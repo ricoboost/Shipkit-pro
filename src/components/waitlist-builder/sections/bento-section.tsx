@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import * as LucideIcons from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { BentoSection as BentoSectionType } from '@/lib/waitlist-builder/types';
@@ -106,11 +107,13 @@ export function BentoSection({ section }: BentoSectionProps) {
 
                 {/* Image */}
                 {item.image && (
-                  <div className="mb-4 overflow-hidden rounded-lg">
-                    <img
+                  <div className="relative mb-4 h-32 w-full overflow-hidden rounded-lg">
+                    <Image
                       src={item.image}
                       alt={item.title}
-                      className="h-32 w-full object-cover"
+                      fill
+                      className="object-cover"
+                      unoptimized
                     />
                   </div>
                 )}

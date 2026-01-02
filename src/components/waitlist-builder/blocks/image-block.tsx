@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { ImageBlock } from '@/lib/waitlist-builder/types';
@@ -85,9 +86,11 @@ export function ImageBlockComponent({
         </Button>
       )}
 
-      <img
+      <Image
         src={block.src}
         alt={block.alt}
+        width={block.width || 400}
+        height={block.height || 300}
         className={cn(
           'max-w-full transition-all',
           shadowStyles[block.shadow || 'none'],
@@ -100,6 +103,7 @@ export function ImageBlockComponent({
             'hover:ring-2 hover:ring-muted-foreground/20 hover:ring-offset-2'
         )}
         style={imageStyle}
+        unoptimized
       />
     </div>
   );

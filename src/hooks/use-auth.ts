@@ -70,7 +70,7 @@ export function useAuth(): UseAuthReturn {
 
       await fetchSession();
       return {};
-    } catch (error) {
+    } catch {
       return { error: 'An error occurred' };
     }
   };
@@ -95,7 +95,7 @@ export function useAuth(): UseAuthReturn {
       }
 
       return {};
-    } catch (error) {
+    } catch {
       return { error: 'An error occurred' };
     }
   };

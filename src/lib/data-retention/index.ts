@@ -250,8 +250,8 @@ export const dataRetention = {
 
     if (!user) return null;
 
-    // Remove sensitive fields
-    const { passwordHash, twoFactorSecret, twoFactorBackupCodes, ...safeUser } = user;
+    // Remove sensitive fields (using _prefix to indicate intentional omission)
+    const { passwordHash: _pw, twoFactorSecret: _tfa, twoFactorBackupCodes: _codes, ...safeUser } = user;
 
     return {
       exportedAt: new Date().toISOString(),

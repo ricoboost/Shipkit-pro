@@ -24,12 +24,12 @@ export class SupabaseAuthProvider implements AuthProviderInterface {
     return session?.user || null;
   }
 
-  async signIn(options: SignInOptions): Promise<{ url?: string; error?: string }> {
+  async signIn(_options: SignInOptions): Promise<{ url?: string; error?: string }> {
     // TODO: Implement Supabase sign in
     throw new Error('Supabase auth not implemented yet');
   }
 
-  async signUp(options: SignUpOptions): Promise<{ user?: AuthUser; error?: string }> {
+  async signUp(_options: SignUpOptions): Promise<{ user?: AuthUser; error?: string }> {
     // TODO: Implement Supabase sign up
     throw new Error('Supabase auth not implemented yet');
   }
@@ -39,27 +39,27 @@ export class SupabaseAuthProvider implements AuthProviderInterface {
     throw new Error('Supabase auth not implemented yet');
   }
 
-  async signInWithOAuth(provider: string): Promise<{ url: string; error?: string }> {
+  async signInWithOAuth(_provider: string): Promise<{ url: string; error?: string }> {
     // TODO: Implement Supabase OAuth
     throw new Error('Supabase auth not implemented yet');
   }
 
-  async resetPassword(options: ResetPasswordOptions): Promise<{ error?: string }> {
+  async resetPassword(_options: ResetPasswordOptions): Promise<{ error?: string }> {
     // TODO: Implement Supabase password reset
     throw new Error('Supabase auth not implemented yet');
   }
 
-  async updatePassword(options: UpdatePasswordOptions): Promise<{ error?: string }> {
+  async updatePassword(_options: UpdatePasswordOptions): Promise<{ error?: string }> {
     // TODO: Implement Supabase password update
     throw new Error('Supabase auth not implemented yet');
   }
 
-  async verifyEmail(token: string): Promise<{ error?: string }> {
+  async verifyEmail(_token: string): Promise<{ error?: string }> {
     // TODO: Implement Supabase email verification
     throw new Error('Supabase auth not implemented yet');
   }
 
-  async resendVerification(email: string): Promise<{ error?: string }> {
+  async resendVerification(_email: string): Promise<{ error?: string }> {
     // TODO: Implement Supabase resend verification
     throw new Error('Supabase auth not implemented yet');
   }

@@ -137,7 +137,7 @@ export async function stopImpersonation(): Promise<{ success: boolean }> {
         where: { id: state.logId },
         data: { endedAt: new Date() },
       });
-    } catch (e) {
+    } catch {
       // Cookie was invalid, just delete it
     }
 

@@ -1,5 +1,4 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
-import { BookOpen, Rocket, Zap, Shield, CreditCard, Bot } from 'lucide-react';
 
 export const baseOptions: BaseLayoutProps = {
   nav: {

@@ -85,7 +85,7 @@ export function TestimonialsCarousel({
             {/* Testimonial Content */}
             <div className="relative z-10 text-center">
               <blockquote className="text-xl font-medium md:text-2xl lg:text-3xl">
-                "{currentTestimonial.quote}"
+                &ldquo;{currentTestimonial.quote}&rdquo;
               </blockquote>
 
               {/* Author */}

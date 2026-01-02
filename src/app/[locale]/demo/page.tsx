@@ -6,11 +6,9 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { enableDemoMode, isDemoMode } from '@/lib/demo';
 
 export default function DemoPage() {
-  const router = useRouter();
   const [status, setStatus] = useState('Enabling demo mode...');
 
   useEffect(() => {

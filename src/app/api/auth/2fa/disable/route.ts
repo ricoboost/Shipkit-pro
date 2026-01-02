@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { code, password } = await request.json()
+    const { code } = await request.json()
 
     if (!code) {
       return NextResponse.json(

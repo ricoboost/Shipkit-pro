@@ -14,7 +14,7 @@ interface SubscribeFormBlockProps {
 
 export function SubscribeFormBlockComponent({
   block,
-  onUpdate,
+  onUpdate: _onUpdate,
   className,
 }: SubscribeFormBlockProps) {
   const { isPreviewMode, selectedBlockId, selectBlock } = useEditorStore();

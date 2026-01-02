@@ -137,7 +137,7 @@ export function FAQAccordion({
         <Wrapper {...wrapperProps}>
           <Accordion
             type={allowMultiple ? 'multiple' : 'single'}
-            defaultValue={defaultValue as any}
+            defaultValue={defaultValue as string | string[] | undefined}
             collapsible={!allowMultiple}
             className={cn(variant === 'default' && 'divide-y')}
           >

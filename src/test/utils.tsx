@@ -8,9 +8,7 @@ import { render, RenderOptions } from '@testing-library/react'
 import { vi } from 'vitest'
 
 // Custom render function with providers
-interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
-  // Add any provider options here
-}
+type CustomRenderOptions = Omit<RenderOptions, 'wrapper'>
 
 function AllTheProviders({ children }: { children: React.ReactNode }) {
   // Wrap with any providers needed for testing

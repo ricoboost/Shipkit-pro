@@ -12,7 +12,6 @@ import { useDemoContext } from '@/components/providers/demo-provider';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, X } from 'lucide-react';
-import { isDemoMode } from '@/lib/demo';
 
 interface DashboardGuardProps {
   children: React.ReactNode;
@@ -21,7 +20,7 @@ interface DashboardGuardProps {
 export function DashboardGuard({ children }: DashboardGuardProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { isDemo, disable } = useDemoContext();
+  const { disable } = useDemoContext();
   const [showDemoBanner, setShowDemoBanner] = useState(true);
   const [demoChecked, setDemoChecked] = useState(false);
   const [isDemoEnabled, setIsDemoEnabled] = useState(false);

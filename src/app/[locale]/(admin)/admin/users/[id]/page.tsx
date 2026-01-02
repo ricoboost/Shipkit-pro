@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowLeft, Mail, Calendar, CreditCard, Cpu, Users, Shield, Ban, UserCheck } from 'lucide-react';
+import { ArrowLeft, Mail, Calendar, CreditCard, Cpu, Users, Shield, UserCheck } from 'lucide-react';
 import { UserActions } from '@/components/admin/user-actions';
 import { UserEditor } from '@/components/admin/user-editor';
 import { CreditAdjuster } from '@/components/admin/credit-adjuster';

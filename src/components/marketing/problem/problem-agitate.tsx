@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
-import { X, AlertTriangle, Frown } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { BaseMarketingProps } from '../types';
 
 const sectionVariants = cva('relative px-4 py-16 sm:py-20', {

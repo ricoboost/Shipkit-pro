@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -152,7 +153,7 @@ export function TestimonialFeatured({
   rating,
   image,
   imagePosition = 'left',
-  colorScheme = 'primary',
+  colorScheme: _colorScheme = 'primary',
   className,
 }: TestimonialFeaturedProps) {
   return (
@@ -165,10 +166,12 @@ export function TestimonialFeatured({
     >
       {image && imagePosition === 'left' && (
         <div className="relative aspect-square rounded-2xl overflow-hidden">
-          <img
+          <Image
             src={image}
             alt={`${author.name}'s testimonial`}
             className="object-cover w-full h-full"
+            fill
+            unoptimized
           />
         </div>
       )}
@@ -208,10 +211,12 @@ export function TestimonialFeatured({
 
       {image && imagePosition === 'right' && (
         <div className="relative aspect-square rounded-2xl overflow-hidden">
-          <img
+          <Image
             src={image}
             alt={`${author.name}'s testimonial`}
             className="object-cover w-full h-full"
+            fill
+            unoptimized
           />
         </div>
       )}

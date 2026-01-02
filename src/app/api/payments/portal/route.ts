@@ -3,12 +3,11 @@
  * Creates billing portal sessions for subscription management
  */
 
-import { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
 import { payments } from '@/lib/payments';
 import { db } from '@/lib/db';
 
-export async function POST(req: NextRequest): Promise<Response> {
+export async function POST(): Promise<Response> {
   try {
     const session = await auth.getSession();
     if (!session?.user) {

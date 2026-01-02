@@ -15,7 +15,7 @@ interface RegisterFormProps {
   callbackUrl?: string;
 }
 
-export function RegisterForm({ callbackUrl = '/dashboard' }: RegisterFormProps): React.JSX.Element {
+export function RegisterForm({}: RegisterFormProps): React.JSX.Element {
   const router = useRouter();
   const searchParams = useSearchParams();
   const referralCode = searchParams.get('ref');
@@ -66,7 +66,7 @@ export function RegisterForm({ callbackUrl = '/dashboard' }: RegisterFormProps):
         // SECURITY: Don't include email in URL to prevent logging/caching of PII
         router.push('/login?registered=true');
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);

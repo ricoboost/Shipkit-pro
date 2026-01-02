@@ -11,7 +11,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
-import { execSync, exec } from 'child_process';
+import { execSync } from 'child_process';
 
 type DbProvider = 'postgresql' | 'mysql' | 'sqlite' | 'supabase' | 'neon' | 'planetscale';
 
@@ -99,7 +99,7 @@ const dbProviders: Record<DbProvider, DbConfig> = {
 };
 
 async function main() {
-  console.log('\n=Ä  ShipKit Database Setup\n');
+  console.log('\n=ï¿½  ShipKit Database Setup\n');
   console.log('Configure your database connection.\n');
 
   const rl = readline.createInterface({
@@ -116,7 +116,7 @@ async function main() {
   // Parse command line arguments
   const args = process.argv.slice(2);
   let selectedProvider: DbProvider | undefined;
-  let skipMigration = args.includes('--skip-migrate');
+  const skipMigration = args.includes('--skip-migrate');
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--provider' && args[i + 1]) {
@@ -133,7 +133,7 @@ async function main() {
     console.log('Available database providers:\n');
 
     const providerList = Object.entries(dbProviders);
-    providerList.forEach(([key, config], index) => {
+    providerList.forEach(([, config], index) => {
       console.log(`  ${index + 1}. ${config.name}`);
       console.log(`     ${config.description}\n`);
     });
@@ -154,7 +154,7 @@ async function main() {
   console.log(`\n Selected: ${config.name}\n`);
 
   // Show URL template
-  console.log('=Ë Connection string format:');
+  console.log('=ï¿½ Connection string format:');
   console.log(`   ${config.urlTemplate}\n`);
 
   // Get current DATABASE_URL from .env
@@ -199,7 +199,7 @@ async function main() {
   }
 
   // Show setup instructions
-  console.log('=Ë Setup Instructions:\n');
+  console.log('=ï¿½ Setup Instructions:\n');
   config.setupInstructions.forEach((instruction) => {
     console.log(`  ${instruction}`);
   });
@@ -211,7 +211,7 @@ async function main() {
     const currentProvider = schema.match(/provider\s*=\s*"(\w+)"/)?.[1];
 
     if (currentProvider !== config.prismaProvider) {
-      console.log(`\n   Prisma schema uses "${currentProvider}" but selected provider needs "${config.prismaProvider}"`);
+      console.log(`\nï¿½  Prisma schema uses "${currentProvider}" but selected provider needs "${config.prismaProvider}"`);
 
       const updateSchema = await question('Update Prisma schema? (y/N): ');
       if (updateSchema.toLowerCase() === 'y') {
@@ -235,7 +235,7 @@ async function main() {
     });
     console.log(' Database connection successful!\n');
   } catch {
-    console.log('   Could not connect to database.');
+    console.log('ï¿½  Could not connect to database.');
     console.log('   Make sure the database exists and is running.\n');
   }
 
@@ -255,7 +255,7 @@ async function main() {
     });
 
     if (runMigration) {
-      console.log('\n=æ Running Prisma generate...\n');
+      console.log('\n=ï¿½ Running Prisma generate...\n');
       try {
         execSync('npx prisma generate', { stdio: 'inherit' });
         console.log('\n Prisma client generated\n');
@@ -263,7 +263,7 @@ async function main() {
         console.error('L Failed to generate Prisma client\n');
       }
 
-      console.log('=æ Pushing schema to database...\n');
+      console.log('=ï¿½ Pushing schema to database...\n');
       try {
         execSync('npx prisma db push', { stdio: 'inherit' });
         console.log('\n Database schema updated\n');

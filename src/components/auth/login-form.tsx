@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,6 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ callbackUrl = '/dashboard' }: LoginFormProps): React.JSX.Element {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

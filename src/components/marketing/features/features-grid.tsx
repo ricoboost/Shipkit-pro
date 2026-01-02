@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import type { BaseMarketingProps, FeatureItem } from '../types';
-import { type ReactNode } from 'react';
 
 const sectionVariants = cva(
   'relative px-4 py-16 sm:py-20',

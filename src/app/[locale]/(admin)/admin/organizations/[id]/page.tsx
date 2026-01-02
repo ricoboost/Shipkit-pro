@@ -27,7 +27,6 @@ import {
   Cpu,
   Mail,
   CreditCard,
-  Clock,
   Crown,
   ExternalLink,
 } from 'lucide-react';

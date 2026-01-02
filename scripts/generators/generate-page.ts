@@ -21,11 +21,6 @@ function kebabToPascal(str: string): string {
     .join('');
 }
 
-function kebabToCamel(str: string): string {
-  const pascal = kebabToPascal(str);
-  return pascal.charAt(0).toLowerCase() + pascal.slice(1);
-}
-
 function generatePageContent(pageName: string, namespace: string): string {
   const componentName = kebabToPascal(pageName);
 
@@ -70,11 +65,11 @@ function generateTranslations(title: string, locale: string): Record<string, str
     },
     es: {
       title: title,
-      description: `Administra tu configuración de ${title.toLowerCase()}`,
+      description: `Administra tu configuraciï¿½n de ${title.toLowerCase()}`,
     },
     fr: {
       title: title,
-      description: `Gérez vos paramètres de ${title.toLowerCase()}`,
+      description: `Gï¿½rez vos paramï¿½tres de ${title.toLowerCase()}`,
     },
     de: {
       title: title,
@@ -82,15 +77,15 @@ function generateTranslations(title: string, locale: string): Record<string, str
     },
     pt: {
       title: title,
-      description: `Gerencie suas configurações de ${title.toLowerCase()}`,
+      description: `Gerencie suas configuraï¿½ï¿½es de ${title.toLowerCase()}`,
     },
     ja: {
       title: title,
-      description: `${title}n-š’¡W~Y`,
+      description: `${title}n-ï¿½ï¿½ï¿½W~Y`,
     },
     zh: {
       title: title,
-      description: `¡¨„${title}¾n`,
+      description: `ï¿½ï¿½ï¿½${title}ï¿½n`,
     },
   };
 

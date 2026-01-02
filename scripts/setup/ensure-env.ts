@@ -16,7 +16,6 @@ import * as crypto from 'crypto';
 
 const ROOT_DIR = process.cwd();
 const ENV_PATH = path.join(ROOT_DIR, '.env');
-const ENV_EXAMPLE_PATH = path.join(ROOT_DIR, '.env.example');
 
 // ANSI colors for terminal output
 const colors = {
@@ -32,10 +31,6 @@ const colors = {
 
 function log(message: string) {
   console.log(message);
-}
-
-function generateSecret(length = 32): string {
-  return crypto.randomBytes(length).toString('base64');
 }
 
 function generateHexSecret(length = 32): string {

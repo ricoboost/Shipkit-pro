@@ -23,7 +23,7 @@ export function CustomThemeProvider({ children }: { children: React.ReactNode })
   // The useEffect below will update to server-injected theme after mount
   // CSS variables are already correct from ServerThemeLoader
   const [theme, setThemeState] = useState<ThemeConfig>(themePresets.default);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, _setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { resolvedTheme, setTheme: setNextTheme } = useTheme();
   const themeRef = useRef<ThemeConfig>(themePresets.default);

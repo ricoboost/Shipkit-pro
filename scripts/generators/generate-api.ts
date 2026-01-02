@@ -24,7 +24,6 @@ function kebabToPascal(str: string): string {
 function generateRouteContent(routePath: string, isDynamic: boolean): string {
   const resourceName = routePath.split('/')[0];
   const pascalName = kebabToPascal(resourceName);
-  const _schemaName = `${resourceName}Schema`;
 
   if (isDynamic) {
     return `/**

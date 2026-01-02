@@ -177,7 +177,7 @@ export interface RatingBadgeProps {
 
 export function RatingBadge({
   value,
-  max = 5,
+  max: _max = 5,
   count,
   size = 'sm',
   className,
@@ -238,7 +238,7 @@ export function RatingDistribution({
       <div className="space-y-2">
         {distribution
           .sort((a, b) => b.rating - a.rating)
-          .map(({ rating, count, percentage }) => (
+          .map(({ rating, count: _count, percentage }) => (
             <div key={rating} className="flex items-center gap-3">
               <span className="text-sm w-3">{rating}</span>
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />

@@ -106,7 +106,7 @@ async function main() {
     console.log('Available auth providers:\n');
 
     const providerList = Object.entries(providers);
-    providerList.forEach(([key, config], index) => {
+    providerList.forEach(([, config], index) => {
       console.log(`  ${index + 1}. ${config.name}`);
       console.log(`     ${config.description}\n`);
     });
@@ -147,7 +147,7 @@ async function main() {
   }
 
   fs.writeFileSync(envPath, envContent);
-  console.log('=Ä Updated .env with AUTH_PROVIDER\n');
+  console.log('=ï¿½ Updated .env with AUTH_PROVIDER\n');
 
   // Check which env vars are configured
   console.log('Required environment variables:\n');
@@ -167,7 +167,7 @@ async function main() {
   }
 
   // Show setup instructions
-  console.log('\n=Ë Setup Instructions:\n');
+  console.log('\n=ï¿½ Setup Instructions:\n');
   config.setupInstructions.forEach((instruction) => {
     console.log(`  ${instruction}`);
   });
@@ -212,12 +212,12 @@ async function main() {
 
   // Provider-specific additional setup
   if (selectedProvider === 'supabase') {
-    console.log('\n=æ Supabase Additional Setup:\n');
+    console.log('\n=ï¿½ Supabase Additional Setup:\n');
     console.log('  Run the following to set up Supabase tables:');
     console.log('  npx supabase init');
     console.log('  npx supabase db push\n');
   } else if (selectedProvider === 'better-auth') {
-    console.log('\n=æ Better Auth Additional Setup:\n');
+    console.log('\n=ï¿½ Better Auth Additional Setup:\n');
     console.log('  Run the following to generate auth schema:');
     console.log('  npx @better-auth/cli generate\n');
   }

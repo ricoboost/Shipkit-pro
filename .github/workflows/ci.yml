@@ -75,38 +75,44 @@ jobs:
           path: coverage/
           retention-days: 7
 
-  e2e:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run E2E tests
-        run: npx playwright test --project=chromium
-        env:
-          CI: true
-
-      - name: Upload Playwright Report
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
+  # E2E Tests - Disabled for this distribution repo (no test DB/environment)
+  # Users can uncomment this job when setting up their own environment with:
+  # - A test database (DATABASE_URL)
+  # - Required environment variables (.env.test)
+  # - Playwright browsers installed
+  #
+  # e2e:
+  #   name: E2E Tests
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 15
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ env.NODE_VERSION }}
+  #         cache: 'npm'
+  #
+  #     - name: Install dependencies
+  #       run: npm ci
+  #
+  #     - name: Install Playwright Browsers
+  #       run: npx playwright install --with-deps chromium
+  #
+  #     - name: Run E2E tests
+  #       run: npx playwright test --project=chromium
+  #       env:
+  #         CI: true
+  #
+  #     - name: Upload Playwright Report
+  #       uses: actions/upload-artifact@v4
+  #       if: failure()
+  #       with:
+  #         name: playwright-report
+  #         path: playwright-report/
+  #         retention-days: 7
 
   build:
     name: Build

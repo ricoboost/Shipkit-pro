@@ -91,7 +91,7 @@ const paymentProviders: Record<PaymentProvider, PaymentConfig> = {
 };
 
 async function main() {
-  console.log('\n=³ ShipKit Payments Setup\n');
+  console.log('\n=ï¿½ ShipKit Payments Setup\n');
   console.log('Configure payment processing for your application.\n');
 
   const rl = readline.createInterface({
@@ -124,7 +124,7 @@ async function main() {
     console.log('Available payment providers:\n');
 
     const providerList = Object.entries(paymentProviders);
-    providerList.forEach(([key, config], index) => {
+    providerList.forEach(([, config], index) => {
       console.log(`  ${index + 1}. ${config.name}`);
       console.log(`     ${config.description}\n`);
     });
@@ -171,16 +171,16 @@ async function main() {
   }
 
   fs.writeFileSync(envPath, envContent);
-  console.log('=Ä Updated .env with PAYMENTS_PROVIDER\n');
+  console.log('=ï¿½ Updated .env with PAYMENTS_PROVIDER\n');
 
   // Show setup instructions
-  console.log('=Ë Setup Instructions:\n');
+  console.log('=ï¿½ Setup Instructions:\n');
   config.setupInstructions.forEach((instruction) => {
     console.log(`  ${instruction}`);
   });
 
   // Check and configure env vars
-  console.log('\n=Ý Environment Variables:\n');
+  console.log('\n=ï¿½ Environment Variables:\n');
 
   const missingRequired: string[] = [];
   const missingOptional: string[] = [];
@@ -250,7 +250,7 @@ async function main() {
 
   // Create products/prices helper
   if (selectedProvider === 'stripe') {
-    console.log('=¡ Quick Stripe Setup:\n');
+    console.log('=ï¿½ Quick Stripe Setup:\n');
     console.log('  Create test products with the Stripe CLI:');
     console.log('  stripe products create --name="Basic Plan" --default-price-data.unit-amount=999 --default-price-data.currency=usd --default-price-data.recurring.interval=month\n');
   }

@@ -35,7 +35,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { MoreHorizontal, Ban, UserCheck, UserX, Trash2, AlertTriangle, LogIn } from 'lucide-react';
+import { MoreHorizontal, Ban, UserCheck, Trash2, AlertTriangle, LogIn } from 'lucide-react';
 
 interface User {
   id: string;
@@ -158,7 +158,7 @@ export function UserActions({ user }: UserActionsProps) {
   };
 
   const isActive = user.status === 'ACTIVE';
-  const isBanned = user.status === 'BANNED';
+  const _isBanned = user.status === 'BANNED';
   const isSuspended = user.status === 'SUSPENDED';
   const canImpersonate = user.role !== 'ADMIN';
 

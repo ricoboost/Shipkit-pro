@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { MoreHorizontal, Trash2, ArrowRightLeft, ExternalLink } from 'lucide-react';
+import { MoreHorizontal, Trash2, ExternalLink } from 'lucide-react';
 
 interface Organization {
   id: string;

@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { organizations } from '@/lib/organizations';
 import { z } from 'zod';
-import { withRateLimit, rateLimitPresets } from '@/lib/security/rate-limit';
+import { withRateLimit } from '@/lib/security/rate-limit';
 
 // Reserved slugs that could conflict with routes
 const RESERVED_SLUGS = [

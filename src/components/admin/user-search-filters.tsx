@@ -33,7 +33,7 @@ export function UserSearchFilters({
   defaultPlan = '',
 }: UserSearchFiltersProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const _searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const t = useTranslations('admin.users');
 

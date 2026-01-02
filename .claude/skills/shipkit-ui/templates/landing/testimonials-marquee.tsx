@@ -57,7 +57,7 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
       )}
 
       {/* Quote */}
-      <p className="text-sm text-muted-foreground">"{testimonial.quote}"</p>
+      <p className="text-sm text-muted-foreground">&ldquo;{testimonial.quote}&rdquo;</p>
 
       {/* Author */}
       <div className="mt-4 flex items-center gap-3">

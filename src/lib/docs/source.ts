@@ -13,9 +13,6 @@ type PageTreeRoot = typeof baseSource.pageTree;
 type PageTreeNode = PageTreeRoot['children'][number];
 type PageTreeFolder = Extract<PageTreeNode, { type: 'folder' }>;
 
-// Type for the page result
-type Page = NonNullable<ReturnType<typeof baseSource.getPage>>;
-
 // ============================================================================
 // CACHES FOR PERFORMANCE
 // ============================================================================

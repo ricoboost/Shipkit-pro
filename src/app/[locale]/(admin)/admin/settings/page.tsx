@@ -10,7 +10,7 @@ import { FeatureFlagsManager } from '@/components/admin/feature-flags-manager';
 import { SiteSettingsEditor } from '@/components/admin/site-settings-editor';
 import { ProviderSelector } from '@/components/admin/provider-selector';
 import { LanguageSettings } from '@/components/admin/language-settings';
-import { Settings, ToggleLeft, Globe, Plug, Languages } from 'lucide-react';
+import { ToggleLeft, Globe, Plug, Languages } from 'lucide-react';
 
 export default async function AdminSettingsPage() {
   const config = await admin.getAppConfig();

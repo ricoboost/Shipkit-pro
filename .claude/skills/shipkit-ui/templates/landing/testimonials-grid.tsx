@@ -87,7 +87,7 @@ export function TestimonialsGrid({
 
               {/* Quote */}
               <blockquote className="flex-1 text-muted-foreground">
-                "{testimonial.quote}"
+                &ldquo;{testimonial.quote}&rdquo;
               </blockquote>
 
               {/* Author */}

@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Save, Loader2, Shield, CreditCard, Cpu } from 'lucide-react';
 
 interface AppConfig {

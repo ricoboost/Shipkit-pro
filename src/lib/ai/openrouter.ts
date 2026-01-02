@@ -42,8 +42,7 @@ interface OpenRouterResponse {
 export class OpenRouterProvider implements AIProviderInterface {
   private async makeRequest(
     endpoint: string,
-    body: Record<string, unknown>,
-    stream = false
+    body: Record<string, unknown>
   ): Promise<Response> {
     const response = await fetch(`${OPENROUTER_BASE_URL}${endpoint}`, {
       method: 'POST',

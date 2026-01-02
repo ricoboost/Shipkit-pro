@@ -113,7 +113,7 @@ async function main() {
     console.log('Available AI providers:\n');
 
     const providerList = Object.entries(aiProviders);
-    providerList.forEach(([key, config], index) => {
+    providerList.forEach(([, config], index) => {
       console.log(`  ${index + 1}. ${config.name}`);
       console.log(`     ${config.description}`);
       console.log(`     Models: ${config.models.slice(0, 3).join(', ')}\n`);
@@ -165,7 +165,7 @@ async function main() {
     rl.close();
   } else {
     // Show setup instructions
-    console.log('=Ë Setup Instructions:\n');
+    console.log('=ï¿½ Setup Instructions:\n');
     config.setupInstructions.forEach((instruction) => {
       console.log(`  ${instruction}`);
     });
@@ -186,7 +186,7 @@ async function main() {
       }
       console.log(`\n API key saved\n`);
     } else {
-      console.log(`\n   No API key provided. Add it to .env manually.\n`);
+      console.log(`\nï¿½  No API key provided. Add it to .env manually.\n`);
     }
 
     fs.writeFileSync(envPath, envContent);
@@ -194,7 +194,7 @@ async function main() {
   }
 
   // Show available models
-  console.log('=æ Available Models:\n');
+  console.log('=ï¿½ Available Models:\n');
   config.models.forEach((model) => {
     console.log(`  " ${model}`);
   });
@@ -227,11 +227,11 @@ async function main() {
       if (valid) {
         console.log(' API key format looks valid\n');
       } else {
-        console.log('   API key format may be incorrect. Please verify.\n');
+        console.log('ï¿½  API key format may be incorrect. Please verify.\n');
       }
     }
   } catch {
-    console.log('   Could not validate API key format\n');
+    console.log('ï¿½  Could not validate API key format\n');
   }
 
   console.log('Next steps:');

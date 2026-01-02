@@ -57,7 +57,7 @@ AUTH_SECRET="your-secret-key-min-32-chars"
 export function EnvCheckStep() {
   const { nextStep, markComplete } = useWizard();
   const [isChecking, setIsChecking] = useState(true);
-  const [checkResult, setCheckResult] = useState<CheckResult | null>(null);
+  const [_checkResult, setCheckResult] = useState<CheckResult | null>(null);
   const [envStatus, setEnvStatus] = useState<EnvStatus>({
     database: { configured: false },
     auth: { configured: false },

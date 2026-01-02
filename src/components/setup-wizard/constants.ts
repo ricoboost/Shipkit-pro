@@ -8,9 +8,6 @@ import {
   Settings,
   User,
   Rocket,
-  Database,
-  CreditCard,
-  Bot,
   type LucideIcon,
 } from 'lucide-react';
 

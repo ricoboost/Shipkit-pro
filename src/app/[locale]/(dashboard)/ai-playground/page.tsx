@@ -160,61 +160,6 @@ export default function AIPlaygroundPage(): React.JSX.Element {
     }
   };
 
-  // Non-streaming fallback
-  const handleSubmitNonStreaming = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault();
-    if (!input.trim() || loading) return;
-
-    const userMessage = input.trim();
-    setInput('');
-    setError(null);
-    setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
-    setLoading(true);
-
-    try {
-      const chatMessages = [
-        ...messages.map((m) => ({ role: m.role, content: m.content })),
-        { role: 'user' as const, content: userMessage },
-      ];
-
-      const response = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: settings.model,
-          messages: chatMessages,
-          temperature: settings.temperature,
-          maxTokens: settings.maxTokens,
-          stream: false,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to get response');
-      }
-
-      const data = await response.json();
-
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: data.content },
-      ]);
-
-      if (data.usage) {
-        setUsage(data.usage);
-      }
-
-      toast.success(`Used ${selectedModel?.creditsPerRequest || 0} credits`);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const clearChat = (): void => {
     setMessages([]);
     setUsage(null);

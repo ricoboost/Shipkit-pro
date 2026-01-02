@@ -22,49 +22,6 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
-const radiusOptions = [
-  { value: '0', label: 'Sharp', preview: 'rounded-none' },
-  { value: '0.3rem', label: 'Subtle', preview: 'rounded-sm' },
-  { value: '0.5rem', label: 'Medium', preview: 'rounded-md' },
-  { value: '0.75rem', label: 'Rounded', preview: 'rounded-lg' },
-  { value: '1rem', label: 'Full', preview: 'rounded-xl' },
-];
-
-const colorGroups = [
-  {
-    title: 'Brand Colors',
-    colors: [
-      { key: 'primary', label: 'Primary', description: 'Main brand color for buttons and links' },
-      { key: 'secondary', label: 'Secondary', description: 'Supporting color for less prominent elements' },
-      { key: 'accent', label: 'Accent', description: 'Highlight color for special elements' },
-    ],
-  },
-  {
-    title: 'Semantic Colors',
-    colors: [
-      { key: 'destructive', label: 'Destructive', description: 'Color for errors and dangerous actions' },
-      { key: 'muted', label: 'Muted', description: 'Subtle background for inactive elements' },
-    ],
-  },
-  {
-    title: 'Surface Colors',
-    colors: [
-      { key: 'background', label: 'Background', description: 'Main page background' },
-      { key: 'foreground', label: 'Foreground', description: 'Main text color' },
-      { key: 'card', label: 'Card', description: 'Card and panel backgrounds' },
-      { key: 'popover', label: 'Popover', description: 'Dropdown and popover backgrounds' },
-    ],
-  },
-  {
-    title: 'UI Colors',
-    colors: [
-      { key: 'border', label: 'Border', description: 'Border color for inputs and dividers' },
-      { key: 'input', label: 'Input', description: 'Input field border color' },
-      { key: 'ring', label: 'Ring', description: 'Focus ring color' },
-    ],
-  },
-];
-
 export default function ThemeBuilderPage() {
   const t = useTranslations('admin.theme');
   const { theme: savedTheme, setTheme: setGlobalTheme, saveTheme, resetTheme, setDefaultMode, isSaving } = useCustomTheme();
@@ -175,7 +132,7 @@ export default function ThemeBuilderPage() {
       await saveTheme();
       setHasChanges(false);
       toast.success(t('themeSaved'));
-    } catch (error) {
+    } catch {
       toast.error(t('themeSaveFailed'));
     }
   };
@@ -186,7 +143,7 @@ export default function ThemeBuilderPage() {
       setActivePreset('default');
       setHasChanges(false);
       toast.success(t('themeReset'));
-    } catch (error) {
+    } catch {
       toast.error(t('themeResetFailed'));
     }
   };

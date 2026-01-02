@@ -19,7 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Check, Globe } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 interface AppConfig {
   id: string;

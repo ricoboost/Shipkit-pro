@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Clock, Users } from 'lucide-react';
+import { AlertTriangle, Users } from 'lucide-react';
 
 interface AppConfig {
   id: string;

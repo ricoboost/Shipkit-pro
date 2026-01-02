@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -57,7 +58,7 @@ export function TwoFactorSetup({ onSetupComplete }: TwoFactorSetupProps) {
       const data = await response.json()
       setSetupData(data)
       setStep('setup')
-    } catch (error) {
+    } catch {
       toast.error('Failed to start 2FA setup. Please try again.')
     } finally {
       setIsLoading(false)
@@ -84,7 +85,7 @@ export function TwoFactorSetup({ onSetupComplete }: TwoFactorSetupProps) {
 
       setStep('backup')
       setShowBackupDialog(true)
-    } catch (error) {
+    } catch {
       toast.error('Invalid code. Please try again.')
       setVerificationCode('')
     } finally {
@@ -147,12 +148,13 @@ export function TwoFactorSetup({ onSetupComplete }: TwoFactorSetupProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-center">
-            <img
+            <Image
               src={setupData.qrCodeDataUrl}
               alt="2FA QR Code"
               className="rounded-lg border"
               width={200}
               height={200}
+              unoptimized
             />
           </div>
           <div className="space-y-2">

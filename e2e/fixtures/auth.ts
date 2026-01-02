@@ -17,9 +17,10 @@ export const test = base.extend<{
 }>({
   // Placeholder for authenticated page fixture
   // Will be implemented when auth is set up in test environment
-  authenticatedPage: async ({ page: _page }, use) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  authenticatedPage: async ({ page: _page }, useFixture) => {
     // For now, just use the regular page
-    await use(base)
+    await useFixture(base)
   },
 })
 

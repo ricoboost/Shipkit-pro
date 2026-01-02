@@ -345,6 +345,7 @@ export const csrf = {
 
     // Use crypto.timingSafeEqual for constant-time comparison
     try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const cryptoModule = require('crypto');
       return cryptoModule.timingSafeEqual(
         Buffer.from(tokenPadded),
@@ -467,6 +468,7 @@ export const encryption = {
    * Encrypt a string value
    */
   encrypt(value: string, key?: string): string {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const cryptoModule = require('crypto');
     const encryptionKey = key || process.env.FIELD_ENCRYPTION_KEY;
 
@@ -506,6 +508,7 @@ export const encryption = {
       return encryptedValue;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const cryptoModule = require('crypto');
     const encryptionKey = key || process.env.FIELD_ENCRYPTION_KEY;
 

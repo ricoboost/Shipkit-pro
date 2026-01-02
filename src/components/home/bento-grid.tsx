@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   Shield,
   CreditCard,
@@ -39,7 +39,6 @@ const containerVariants = {
 
 export function BentoGrid() {
   const t = useTranslations('home.bento');
-  const router = useRouter();
 
   // Simple 4-column equal grid
   const features = [
@@ -242,13 +241,13 @@ export function BentoGrid() {
             </p>
           </div>
           <div className="flex gap-3">
-            <a
+            <Link
               href="/docs"
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               <BookOpen className="w-4 h-4" />
               {t('gettingStarted.viewDocs')}
-            </a>
+            </Link>
             <a
               href="https://github.com"
               target="_blank"

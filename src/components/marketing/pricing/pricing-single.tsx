@@ -148,7 +148,7 @@ export function PricingSingle({
             <PricingToggle
               value={billingPeriod}
               onChange={setBillingPeriod}
-              colorScheme={colorScheme as any}
+              colorScheme={colorScheme}
             />
           </div>
         )}

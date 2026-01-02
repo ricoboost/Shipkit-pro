@@ -66,7 +66,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     const cancelUrl = `${baseUrl}/settings/billing?canceled=true`;
 
     // Get or create payment customer
-    let user = await db.user.findUnique({
+    const user = await db.user.findUnique({
       where: { id: session.user.id },
       select: { id: true, email: true, name: true, stripeCustomerId: true },
     });

@@ -1,8 +1,10 @@
 'use client'
 
+/* eslint-disable @next/next/no-html-link-for-pages */
 /**
  * Global Error Boundary
  * Catches errors in the root layout and reports them to Sentry
+ * Note: Using <a> instead of <Link> intentionally - global error must work even when Next.js internals fail
  */
 
 import * as Sentry from '@sentry/nextjs'

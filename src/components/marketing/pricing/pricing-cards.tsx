@@ -143,7 +143,7 @@ export function PricingCards({
             <PricingToggle
               value={billingPeriod}
               onChange={setBillingPeriod}
-              colorScheme={colorScheme as any}
+              colorScheme={colorScheme}
             />
           </div>
         )}
@@ -152,7 +152,7 @@ export function PricingCards({
           className="grid gap-8 lg:grid-cols-3"
           {...wrapperProps}
         >
-          {tiers.map((tier, index) => (
+          {tiers.map((tier) => (
             <Item
               key={tier.name}
               className={cn(cardVariants({ highlighted: tier.highlighted }))}

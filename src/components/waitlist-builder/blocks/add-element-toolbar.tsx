@@ -1,6 +1,6 @@
 'use client';
 
-import { Type, Image, MousePointerClick, Plus } from 'lucide-react';
+import { Type, Image as ImageIcon, MousePointerClick, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -34,7 +34,7 @@ export function AddElementToolbar({ sectionId }: AddElementToolbarProps) {
             Text
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => addBlock(sectionId, 'image')}>
-            <Image className="mr-2 h-4 w-4" />
+            <ImageIcon className="mr-2 h-4 w-4" />
             Image
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => addBlock(sectionId, 'button')}>

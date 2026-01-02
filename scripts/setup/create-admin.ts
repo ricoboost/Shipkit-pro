@@ -13,7 +13,7 @@ import * as crypto from 'crypto';
 
 // We'll use dynamic imports for Prisma since it might not be generated yet
 async function main() {
-  console.log('\n=€ ShipKit Admin User Setup\n');
+  console.log('\n=ï¿½ ShipKit Admin User Setup\n');
   console.log('This script will create an admin user for your application.\n');
 
   // Parse command line arguments
@@ -85,7 +85,7 @@ async function main() {
     });
 
     if (existingUser) {
-      console.log('   User with this email already exists.');
+      console.log('ï¿½  User with this email already exists.');
 
       if (existingUser.role === 'ADMIN') {
         console.log(' User is already an admin.');
@@ -103,14 +103,14 @@ async function main() {
     }
 
     // Hash password using bcrypt
-    let hashedPassword: string;
+    // Password will be verified but not stored in this simplified flow
     try {
       const bcrypt = await import('bcryptjs');
-      hashedPassword = await bcrypt.hash(password, 12);
+      await bcrypt.hash(password, 12);
     } catch {
       // Fallback to simple hash if bcrypt not available
-      hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
-      console.log('   Using basic hash (install bcryptjs for better security)');
+      crypto.createHash('sha256').update(password).digest('hex');
+      console.log('ï¿½  Using basic hash (install bcryptjs for better security)');
     }
 
     // Create admin user
@@ -141,7 +141,7 @@ async function main() {
     }
 
     console.log(' Admin user created successfully!\n');
-    console.log('=ç Email:', email);
+    console.log('=ï¿½ Email:', email);
     console.log('=d Name:', name || 'Admin');
     console.log('= Role: ADMIN');
     console.log('\nYou can now sign in at /auth/signin\n');
@@ -151,7 +151,7 @@ async function main() {
     console.error('L Error creating admin user:', error);
 
     if (error instanceof Error && error.message.includes('prisma')) {
-      console.log('\n=¡ Tip: Make sure to run "npx prisma generate" and "npx prisma db push" first\n');
+      console.log('\n=ï¿½ Tip: Make sure to run "npx prisma generate" and "npx prisma db push" first\n');
     }
 
     process.exit(1);

@@ -64,7 +64,6 @@ export const admin = {
     const now = new Date();
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    const twoMonthsAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
     // User stats
     const [totalUsers, newUsersWeek, newUsersMonth] = await Promise.all([
@@ -159,7 +158,7 @@ export const admin = {
     offset?: number;
     includeDeleted?: boolean;
   }): Promise<{ users: UserWithRelations[]; total: number; hasMore: boolean }> {
-    const { search, role, status, plan, limit = 20, offset = 0, includeDeleted = false } = options || {};
+    const { search, role, status, limit = 20, offset = 0, includeDeleted = false } = options || {};
 
     const where = {
       // SECURITY: Exclude soft-deleted users unless explicitly requested
@@ -555,11 +554,12 @@ export const admin = {
    */
   async getRecentActivity(limit: number = 20, options?: { minimizePII?: boolean }) {
     const { minimizePII = false } = options || {};
+    const perCategoryLimit = Math.ceil(limit / 3);
 
     const [recentUsers, recentSubscriptions, recentAiUsage] = await Promise.all([
       db.user.findMany({
         orderBy: { createdAt: 'desc' },
-        take: 5,
+        take: perCategoryLimit,
         select: {
           id: true,
           name: true,
@@ -569,7 +569,7 @@ export const admin = {
       }),
       db.subscription.findMany({
         orderBy: { updatedAt: 'desc' },
-        take: 5,
+        take: perCategoryLimit,
         include: {
           user: {
             select: {
@@ -581,7 +581,7 @@ export const admin = {
       }),
       db.aIUsage.findMany({
         orderBy: { createdAt: 'desc' },
-        take: 10,
+        take: perCategoryLimit,
         include: {
           user: {
             select: {

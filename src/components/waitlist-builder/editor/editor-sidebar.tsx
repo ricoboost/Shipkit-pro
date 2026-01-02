@@ -46,7 +46,7 @@ export function EditorSidebar() {
     isPreviewMode,
     metaTitle,
     metaDescription,
-    updateSection,
+    updateSection: _updateSection,
     setMetaTitle,
     setMetaDescription,
   } = useEditorStore();

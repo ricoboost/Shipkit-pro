@@ -23,18 +23,6 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// Helper to check admin access (session-based for non-critical ops)
-async function requireAdmin() {
-  const session = await auth.getSession();
-  if (!session?.user?.id) {
-    return { error: 'Unauthorized', status: 401 };
-  }
-  if (session.user.role !== 'ADMIN') {
-    return { error: 'Admin access required', status: 403 };
-  }
-  return { session };
-}
-
 // PATCH /api/admin/users/[id] - Update user
 // SECURITY: Uses database verification for consistency with DELETE
 export async function PATCH(req: NextRequest, { params }: RouteParams) {

@@ -2,7 +2,7 @@
  * NextAuth.js v5 Implementation
  */
 
-import NextAuth from 'next-auth';
+import NextAuth, { type Session } from 'next-auth';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import Google from 'next-auth/providers/google';
 import GitHub from 'next-auth/providers/github';
@@ -20,12 +20,16 @@ import {
   UpdatePasswordOptions,
   ImpersonationData,
 } from './types';
+
+// Import type augmentation
+import '@/types/next-auth';
 import { getImpersonationState, getImpersonatedUser } from '@/lib/impersonation';
 
 // NextAuth configuration
 // SECURITY: Session hardened with shorter expiry, secure cookies, and sameSite
 export const { handlers, auth: getNextAuthSession, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(db) as any,
+  // @ts-expect-error - PrismaAdapter types are incompatible with NextAuth v5
+  adapter: PrismaAdapter(db),
   session: {
     strategy: 'jwt',
     maxAge: 24 * 60 * 60, // 24 hours (was 30 days default)
@@ -102,14 +106,14 @@ export const { handlers, auth: getNextAuthSession, signIn, signOut } = NextAuth(
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as any).role || 'USER';
+        token.role = user.role || 'USER';
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id as string;
-        (session.user as any).role = token.role as string;
+        session.user.id = token.id;
+        session.user.role = token.role;
       }
       return session;
     },
@@ -188,14 +192,14 @@ export class NextAuthProvider implements AuthProviderInterface {
     return this.buildNormalSession(session);
   }
 
-  private buildNormalSession(session: any): AuthSession {
+  private buildNormalSession(session: Session): AuthSession {
     return {
       user: {
-        id: session.user.id!,
+        id: session.user.id,
         email: session.user.email!,
         name: session.user.name || undefined,
         image: session.user.image || undefined,
-        role: (session.user as { role?: 'USER' | 'ADMIN' }).role || 'USER',
+        role: session.user.role || 'USER',
         provider: 'nextauth',
       },
       expiresAt: new Date(session.expires),
@@ -219,7 +223,7 @@ export class NextAuthProvider implements AuthProviderInterface {
         redirectTo: options.redirectTo || '/dashboard',
       });
       return { url: options.redirectTo || '/dashboard' };
-    } catch (error) {
+    } catch {
       return { error: 'Invalid credentials' };
     }
   }
@@ -284,7 +288,7 @@ export class NextAuthProvider implements AuthProviderInterface {
           id: user.id,
           email: user.email,
           name: user.name || undefined,
-          role: user.role as any,
+          role: user.role as 'USER' | 'ADMIN',
           provider: 'nextauth',
         },
       };
@@ -302,7 +306,7 @@ export class NextAuthProvider implements AuthProviderInterface {
     try {
       const result = await signIn(provider, { redirect: false });
       return { url: result || '/dashboard' };
-    } catch (error) {
+    } catch {
       return { url: `/login?error=OAuthError`, error: 'OAuth failed' };
     }
   }
