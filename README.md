@@ -14,9 +14,8 @@
 </p>
 
 <p align="center">
-  <a href="https://shipkit.pro">Website</a> &bull;
-  <a href="https://shipkit.pro/docs">Documentation</a> &bull;
-  <a href="https://shipkit.pro/demo">Live Demo</a>
+  <a href="content/docs/en/index.mdx">Documentation</a> &bull;
+  <a href="content/docs/en/getting-started/installation.mdx">Getting Started</a>
 </p>
 
 ---
@@ -240,12 +239,12 @@ shipkit/
 
 ## Documentation
 
-- **[Getting Started](https://shipkit.pro/docs/getting-started)** - Installation and first steps
-- **[Architecture](https://shipkit.pro/docs/architecture)** - How ShipKit is structured
-- **[Providers](https://shipkit.pro/docs/providers)** - Configuring auth, payments, AI
-- **[Customization](https://shipkit.pro/docs/customization)** - Theming and branding
-- **[Deployment](https://shipkit.pro/docs/deployment)** - Vercel, Docker, and more
-- **[AI Development](https://shipkit.pro/docs/ai-development)** - Vibecoding best practices
+- **[Getting Started](content/docs/en/getting-started/installation.mdx)** - Installation and first steps
+- **[Architecture](content/docs/en/getting-started/project-structure.mdx)** - How ShipKit is structured
+- **[Providers](content/docs/en/getting-started/configuration.mdx)** - Configuring auth, payments, and AI
+- **[Customization](content/docs/en/features/theming.mdx)** - Theming and branding
+- **[Deployment](content/docs/en/tutorials/deploy-production.mdx)** - Vercel, Railway, Docker, and more
+- **[AI Development](content/docs/en/tutorials/ai-saas.mdx)** - Build an AI-powered SaaS with credits
 
 ---
 
@@ -358,11 +357,10 @@ Upon purchase, you receive a **non-exclusive, perpetual, worldwide, non-transfer
 
 30-day money-back guarantee on first purchase (if terms not violated).
 
-For full license terms, visit: [shipkit.pro/license](https://www.shipkit.pro/license)
+The license terms are included in this section.
 
 ---
 
 <p align="center">
-  <strong>Built for developers who ship with or without AI.</strong><br>
-  <a href="https://shipkit.pro">shipkit.pro</a>
+  <strong>Built for developers who ship with or without AI.</strong>
 </p>
